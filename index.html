@@ -725,7 +725,7 @@ function renderChrome() {
   document.getElementById('footName').textContent = T('site');
   document.getElementById('footSlogan').textContent = T('phil');
   document.getElementById('footNote').textContent = T('loc') + ' · ' + T('committee');
-  var items = [['home','home'],['champs','champsT'],['sched','schedT'],['res','resT'],['leaderboard','leaderboard'],['community','communityT'],['venue','venueT'],['screen','screen'],['award','award'],['admin','admin']];
+  var items = [['home','home'],['champs','champsT'],['sched','schedT'],['res','resT'],['register','register'],['surveys','surveys'],['leaderboard','leaderboard'],['community','communityT'],['venue','venueT'],['screen','screen'],['award','award'],['admin','admin']];
   var nav = document.getElementById('mainNav');
   nav.innerHTML = items.map(function (it) {
     return '<a data-v="' + it[0] + '" class="' + (view === it[0] ? 'active' : '') + '">' + esc(T(it[1])) + '</a>';
@@ -774,15 +774,28 @@ function validateFields(root) {
 /* ============ views ============ */
 var R = {};
 
-R.home = function () {
-  var portals = Object.keys(FORMS).map(function (k) {
+function portalsGrid() {
+  return Object.keys(FORMS).map(function (k) {
     var f = FORMS[k];
     return '<div class="card link" onclick="go(\'form\',\'' + k + '\')"><div class="ic">' + f.ic + '</div><div class="tt">' + esc(tx(f.t)) + '</div><div class="dd">' + esc(tx(f.d)) + '</div></div>';
   }).join('');
-  var svs = Object.keys(SURVEYS).map(function (k) {
+}
+function surveysGrid() {
+  return Object.keys(SURVEYS).map(function (k) {
     var s = SURVEYS[k];
     return '<div class="card link" onclick="go(\'survey\',\'' + k + '\')"><div class="ic">' + s.ic + '</div><div class="tt">' + esc(tx(s.t)) + '</div><div class="dd">' + esc(tx(s.d)) + '</div></div>';
   }).join('');
+}
+R.register = function () {
+  return '<section class="container section"><h2 class="sec-title">' + esc(T('regTitle')) + '</h2><p class="sec-intro">' + esc(T('regIntro')) + '</p><div class="grid g4">' + portalsGrid() + '</div>' +
+    '<div class="panel" style="margin-top:14px"><strong>🏆 ' + esc(A('مشارك في البطولات؟', 'Competing in a championship?')) + '</strong> ' +
+    '<button class="btn sm gold" onclick="go(\'champs\')">' + esc(A('التسجيل من صفحة البطولة مباشرة', 'Register from the championship page')) + '</button></div></section>';
+};
+R.surveys = function () {
+  return '<section class="container section"><h2 class="sec-title">' + esc(T('svTitle')) + '</h2><p class="sec-intro">' + esc(T('svIntro')) + '</p><div class="grid g3">' + surveysGrid() + '</div></section>';
+};
+
+R.home = function () {
   timers.push(setInterval(function () { window.carGo(carIdx + 1); }, 4500));
   timers.push(setInterval(function () {
     var t = new Date('2026-12-10T16:00:00+04:00').getTime() - Date.now();
@@ -805,21 +818,22 @@ R.home = function () {
     '<button class="btn primary" onclick="go(\'join\')">🎫 ' + esc(A('تصريح الزيارة المجاني', 'Free Visitor Pass')) + '</button>' +
     '<button class="btn ghost" onclick="go(\'res\')">' + esc(A('النتائج المباشرة', 'Live Results')) + '</button></div></section>' +
     tickerHtml() +
-    statsHtml() +
-    featuredHtml() +
-    carouselHtml() +
-    '<section class="container section"><h2 class="sec-title">' + esc(T('regTitle')) + '</h2><p class="sec-intro">' + esc(T('regIntro')) + '</p><div class="grid g4">' + portals + '</div></section>' +
-    '<section class="container section"><h2 class="sec-title">' + esc(T('svTitle')) + '</h2><p class="sec-intro">' + esc(T('svIntro')) + '</p><div class="grid g3">' + svs + '</div></section>' +
-    '<section class="container section"><div class="grid g2">' +
-    '<div class="card link" onclick="go(\'agenda\')"><div class="ic">🗓️</div><div class="tt">' + esc(T('agenda')) + '</div><div class="dd">' + esc(T('dates')) + '</div></div>' +
-    '<div class="card link" onclick="go(\'map\')"><div class="ic">🗺️</div><div class="tt">' + esc(T('map')) + '</div><div class="dd">' + esc(T('mapTitle')) + '</div></div>' +
+    '<section class="container section" style="text-align:center;max-width:760px">' +
+    '<p style="font-size:1.1rem;line-height:1.9;margin:0 0 16px">' + esc(A(
+      'ثمانية أيام على كورنيش كلباء تجمع 13 بطولة معتمدة وفعاليات مجتمعية وورشاً صحية، بنظام نقاط يحوّل كل زائر إلى مشارك.',
+      'Eight days on the Kalba Corniche: 13 accredited championships, community events and health workshops — with a points system that turns every visitor into a participant.')) + '</p>' +
+    '<div class="btn-row" style="justify-content:center">' +
+    '<button class="btn ghost" onclick="go(\'champs\')">🏆 ' + esc(T('champsT')) + '</button>' +
+    '<button class="btn ghost" onclick="go(\'sched\')">🗓️ ' + esc(T('schedT')) + '</button>' +
+    '<button class="btn ghost" onclick="go(\'register\')">📝 ' + esc(T('register')) + '</button>' +
+    '<button class="btn ghost" onclick="go(\'res\')">📊 ' + esc(T('resT')) + '</button>' +
+    '<button class="btn ghost" onclick="go(\'surveys\')">💬 ' + esc(T('surveys')) + '</button>' +
     '</div></section>' +
-    '<section class="container section"><div class="panel" style="background:var(--deep);color:#fff;text-align:center">' +
-    '<h2 style="margin-top:0">' + esc(T('subTitle')) + ' 🔔</h2><p style="color:#94a3b8">' + esc(T('subIntro')) + '</p>' +
-    '<div class="frow" style="justify-content:center;max-width:640px;margin:0 auto">' +
-    '<input type="email" id="subEmail" placeholder="' + esc(T('email')) + '" style="max-width:230px">' +
-    '<input type="tel" id="subPhone" placeholder="' + esc(T('phone')) + '" style="max-width:180px" dir="ltr">' +
-    '<button class="btn gold" onclick="toast(T(\'subscribed\'))">' + esc(T('subBtn')) + '</button></div></div></section>';
+    carouselHtml() +
+    '<section class="container section" style="padding-top:12px"><h2 class="sec-title center">📍 ' + esc(A('خريطة شاطئ كلباء', 'Kalba beach map')) + '</h2>' +
+    '<p class="sec-intro" style="text-align:center">' + esc(A('موقع المهرجان على الكورنيش — الملاعب، التسجيل، الإسعاف، المواقف والأنشطة.', 'The festival site on the Corniche — fields, registration, first aid, parking and activities.')) + '</p>' +
+    '<div class="panel" style="padding:10px;max-width:860px;margin:0 auto">' + venueSvgHtml('') + '</div>' +
+    '<div class="btn-row" style="justify-content:center"><button class="btn ghost" onclick="go(\'venue\')">' + esc(A('استكشف الخريطة كاملة مع التصفية', 'Explore the full map with filters')) + '</button></div></section>';
 };
 
 R.form = function () {
@@ -1362,23 +1376,26 @@ function liveMatchesHtml() {
 }
 
 var venueFilter = '';
-R.venue = function () {
+function venueSvgHtml(filter) {
   var pins = VENUE.map(function (p) {
-    var dim = venueFilter && p.f !== venueFilter;
+    var dim = filter && p.f !== filter;
     return '<g style="opacity:' + (dim ? '.14' : '1') + '"><circle cx="' + p.x + '" cy="' + p.y + '" r="17" fill="' + p.col + '"/>' +
       '<text x="' + p.x + '" y="' + (p.y + 6) + '" text-anchor="middle" font-size="16">' + p.e + '</text>' +
       '<text x="' + p.x + '" y="' + (p.y + 36) + '" text-anchor="middle" font-size="12" fill="#2a3442">' + esc(A(p.ar, p.en)) + '</text></g>';
   }).join('');
+  return '<svg viewBox="0 0 700 500" style="width:100%;height:auto">' +
+    '<rect width="700" height="500" rx="18" fill="#f6f3ec"/><rect width="700" height="60" rx="18" fill="#183254"/>' +
+    '<text x="350" y="38" text-anchor="middle" fill="#ddbe8a" font-size="18">' + esc(A('🌊 شاطئ كلباء', '🌊 Kalba beach')) + '</text>' +
+    '<rect y="465" width="700" height="35" fill="#e6e3dc"/><text x="350" y="488" text-anchor="middle" fill="#74808f" font-size="13">' + esc(A('شارع الكورنيش', 'Corniche road')) + '</text>' +
+    pins + '</svg>';
+}
+R.venue = function () {
   return '<section class="container section"><h2 class="sec-title">📍 ' + esc(A('الخريطة التفاعلية لموقع المهرجان', 'Interactive venue map')) + '</h2>' +
     '<p class="sec-intro">' + esc(A('مخطط الموقع على كورنيش كلباء — التوجيه الداخلي وتحديد الموقع مع تطبيق الجوال.', 'Site plan on the Kalba Corniche — indoor navigation comes with the mobile app.')) + '</p>' +
     '<div class="lb-tabs">' + VENUE_KINDS.map(function (k) {
       return '<span class="lb-tab ' + (venueFilter === k[0] ? 'active' : '') + '" onclick="venueFilter=\'' + k[0] + '\';go(\'venue\')">' + esc(A(k[1], k[2])) + '</span>';
     }).join('') + '</div>' +
-    '<div class="panel" style="padding:10px"><svg viewBox="0 0 700 500" style="width:100%;height:auto">' +
-    '<rect width="700" height="500" rx="18" fill="#f6f3ec"/><rect width="700" height="60" rx="18" fill="#183254"/>' +
-    '<text x="350" y="38" text-anchor="middle" fill="#ddbe8a" font-size="18">' + esc(A('🌊 شاطئ كلباء', '🌊 Kalba beach')) + '</text>' +
-    '<rect y="465" width="700" height="35" fill="#e6e3dc"/><text x="350" y="488" text-anchor="middle" fill="#74808f" font-size="13">' + esc(A('شارع الكورنيش', 'Corniche road')) + '</text>' +
-    pins + '</svg></div></section>';
+    '<div class="panel" style="padding:10px">' + venueSvgHtml(venueFilter) + '</div></section>';
 };
 
 R.community = function () {
