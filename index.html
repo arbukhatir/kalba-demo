@@ -250,6 +250,8 @@
   .sched-row { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; border-top: 1px dashed var(--line); font-size: .92rem; flex-wrap: wrap; }
   .sched-time { color: var(--sea-dark); font-weight: 700; font-size: .8rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .ok-text { color: var(--ok); } .bad-text { color: var(--bad); }
+  .win-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .win-row .win-card { flex: 0 0 248px; scroll-snap-align: start; }
   .win-card { text-align: center; }
   .win-card.is-live { border-color: var(--gold); background: #fdf9f1; }
   .win-crown { font-size: 1.7rem; min-height: 1.9rem; }
@@ -872,6 +874,7 @@ R.home = function () {
     '<div class="cd-cell"><span class="cd-num" id="cdM">--</span><span class="cd-lbl">' + esc(A('دقيقة', 'min')) + '</span></div>' +
     '<div class="cd-cell"><span class="cd-num" id="cdS">--</span><span class="cd-lbl">' + esc(A('ثانية', 'sec')) + '</span></div></div>' +
     '<div class="ctas"><button class="btn gold" onclick="go(\'register\')">' + esc(A('سجّل الآن', 'Register Now')) + '</button></div></section>' +
+    carouselHtml() +
     tickerHtml() +
     winnersHtml() +
     '<section class="container section" style="text-align:center;max-width:760px">' +
@@ -885,7 +888,6 @@ R.home = function () {
     '<button class="btn ghost" onclick="go(\'res\')">📊 ' + esc(T('resT')) + '</button>' +
     '<button class="btn ghost" onclick="go(\'surveys\')">💬 ' + esc(T('surveys')) + '</button>' +
     '</div></section>' +
-    carouselHtml() +
     '<section class="container section" style="padding-top:12px"><h2 class="sec-title center">📍 ' + esc(A('خريطة شاطئ كلباء', 'Kalba beach map')) + '</h2>' +
     '<p class="sec-intro" style="text-align:center">' + esc(A('موقع المهرجان على الكورنيش — الملاعب، التسجيل، الإسعاف، المواقف والأنشطة.', 'The festival site on the Corniche — fields, registration, first aid, parking and activities.')) + '</p>' +
     '<div class="panel" style="padding:10px;max-width:860px;margin:0 auto">' + realMapHtml(380) + '</div>' +
@@ -1319,7 +1321,7 @@ function winnersHtml() {
       '<div class="dd">' + esc(m.st === 'live' ? A('مباشر الآن', 'Live now') : A('نتيجة نهائية', 'Final score')) + '</div></div>');
   });
   return '<section class="container section" style="padding-bottom:6px"><h2 class="sec-title center">🏆 ' + esc(A('الأبطال وآخر النتائج', 'Winners & Latest Scores')) + '</h2>' +
-    '<div class="grid g3">' + cards.join('') + '</div>' +
+    '<div class="win-row">' + cards.join('') + '</div>' +
     '<div class="btn-row" style="justify-content:center"><button class="btn ghost" onclick="go(\'res\')">' + esc(A('كل النتائج والترتيب', 'All results & standings')) + '</button></div></section>';
 }
 function tickerHtml() {
