@@ -227,6 +227,28 @@
   .sec-title { color: var(--sea-dark); }
   .sec-title::after { content: ''; display: block; width: 54px; height: 3px; background: var(--gold); border-radius: 2px; margin-top: 7px; }
   .sec-title.center::after { margin-inline: auto; }
+
+  /* v2 modules */
+  .countdown { display: flex; gap: 10px; justify-content: center; margin: 16px 0 4px; direction: ltr; }
+  .cd-cell { background: rgba(255,255,255,.08); border: 1px solid rgba(207,167,98,.4); border-radius: 12px; padding: 9px 13px; min-width: 72px; text-align: center; }
+  .cd-num { display: block; font-size: 1.7rem; font-weight: 800; color: var(--gold-soft); font-variant-numeric: tabular-nums; }
+  .cd-lbl { font-size: .7rem; color: #c9d3e0; }
+  @media (max-width: 520px) { .cd-cell { min-width: 58px; padding: 7px 7px; } .cd-num { font-size: 1.25rem; } }
+  .ticker { background: var(--sea-dark); color: #fff; display: flex; align-items: center; gap: 12px; padding: 8px 16px; overflow: hidden; border-top: 2px solid var(--gold); }
+  .ticker-label { font-weight: 700; color: var(--gold-soft); white-space: nowrap; font-size: .84rem; }
+  .ticker-track { display: flex; gap: 32px; overflow-x: auto; scrollbar-width: none; white-space: nowrap; }
+  .ticker-track::-webkit-scrollbar { display: none; }
+  .ticker-track a { color: #e7ecf3; font-size: .86rem; cursor: pointer; }
+  .champ-hero { background: linear-gradient(150deg, var(--deep), var(--deep2)); color: #fff; border-radius: 14px; padding: 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .match-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); margin-bottom: 8px; flex-wrap: wrap; background: #fff; }
+  .match-row.live { border-color: var(--gold); background: #fdf9f1; }
+  .m-champ { flex-basis: 100%; color: var(--muted); font-size: .78rem; }
+  .m-side { flex: 1; font-weight: 700; min-width: 80px; }
+  .m-side:last-of-type { text-align: end; }
+  .m-score { font-weight: 800; font-size: 1.05rem; color: var(--sea-dark); background: var(--sand); border-radius: 8px; padding: 2px 12px; font-variant-numeric: tabular-nums; }
+  .sched-row { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; border-top: 1px dashed var(--line); font-size: .92rem; flex-wrap: wrap; }
+  .sched-time { color: var(--sea-dark); font-weight: 700; font-size: .8rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .ok-text { color: var(--ok); } .bad-text { color: var(--bad); }
 </style>
 </head>
 <body>
@@ -457,6 +479,7 @@ var L = {
     site: 'مهرجان كلباء الرياضي 2026',
     loc: 'مدينة كلباء — إمارة الشارقة، الإمارات العربية المتحدة',
     galleryTitle: 'من أجواء كلباء الرياضية',
+    champsT: 'البطولات', schedT: 'الجدول', resT: 'النتائج', communityT: 'المجتمع', venueT: 'الموقع', newsT: 'الأخبار',
     demo: '🔍 نسخة تجريبية للعرض — البيانات وهمية ولا يتم حفظ أي شيء | Demo preview',
     home: 'الرئيسية', register: 'التسجيل', surveys: 'الاستبيانات', leaderboard: 'المتصدرون',
     map: 'الخريطة', agenda: 'الأجندة', screen: 'الشاشة', admin: 'لوحة التحكم', award: 'واجهة المنظم',
@@ -493,6 +516,7 @@ var L = {
     site: 'Kalba Sports Festival 2026',
     loc: 'City of Kalba — Emirate of Sharjah, United Arab Emirates',
     galleryTitle: 'Kalba sports in action',
+    champsT: 'Championships', schedT: 'Schedule', resT: 'Results', communityT: 'Community', venueT: 'Venue', newsT: 'News',
     demo: '🔍 Interactive demo — sample data only, nothing is saved',
     home: 'Home', register: 'Register', surveys: 'Surveys', leaderboard: 'Leaderboard',
     map: 'Map', agenda: 'Agenda', screen: 'Screen', admin: 'Admin', award: 'Organizer',
@@ -701,7 +725,7 @@ function renderChrome() {
   document.getElementById('footName').textContent = T('site');
   document.getElementById('footSlogan').textContent = T('phil');
   document.getElementById('footNote').textContent = T('loc') + ' · ' + T('committee');
-  var items = [['home','home'],['register','register'],['surveys','surveys'],['leaderboard','leaderboard'],['map','map'],['agenda','agenda'],['screen','screen'],['award','award'],['admin','admin']];
+  var items = [['home','home'],['champs','champsT'],['sched','schedT'],['res','resT'],['leaderboard','leaderboard'],['community','communityT'],['venue','venueT'],['screen','screen'],['award','award'],['admin','admin']];
   var nav = document.getElementById('mainNav');
   nav.innerHTML = items.map(function (it) {
     return '<a data-v="' + it[0] + '" class="' + (view === it[0] ? 'active' : '') + '">' + esc(T(it[1])) + '</a>';
@@ -760,12 +784,29 @@ R.home = function () {
     return '<div class="card link" onclick="go(\'survey\',\'' + k + '\')"><div class="ic">' + s.ic + '</div><div class="tt">' + esc(tx(s.t)) + '</div><div class="dd">' + esc(tx(s.d)) + '</div></div>';
   }).join('');
   timers.push(setInterval(function () { window.carGo(carIdx + 1); }, 4500));
+  timers.push(setInterval(function () {
+    var t = new Date('2026-12-10T16:00:00+04:00').getTime() - Date.now();
+    if (t < 0) t = 0;
+    var el = function (id, v) { var x = document.getElementById(id); if (x) x.textContent = v; };
+    el('cdD', Math.floor(t / 86400000));
+    el('cdH', ('0' + Math.floor(t / 3600000) % 24).slice(-2));
+    el('cdM', ('0' + Math.floor(t / 60000) % 60).slice(-2));
+    el('cdS', ('0' + Math.floor(t / 1000) % 60).slice(-2));
+  }, 1000));
   return '<section class="hero"><div class="hero-bookmark" aria-hidden="true"><svg viewBox="0 0 44 70" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 H44 V46 Q44 62 22 70 Q0 62 0 46 Z" fill="#CFA762"/></svg></div><img class="hero-logo" src="data:image/png;base64,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" alt="Sharjah Sports Council"><h1>' + esc(T('site')) + '</h1>' +
     '<p class="slogan">📍 ' + esc(T('loc')) + '</p>' +
     '<p class="dates">' + esc(T('dates')) + '<br><small>' + esc(T('dawn')) + '</small></p>' +
     '<p class="phil">' + esc(T('phil')) + '</p>' +
-    '<div class="ctas"><button class="btn gold" onclick="go(\'join\')">' + esc(T('ctaJoin')) + '</button>' +
-    '<button class="btn ghost" onclick="go(\'leaderboard\')">' + esc(T('ctaLb')) + '</button></div></section>' +
+    '<div class="countdown"><div class="cd-cell"><span class="cd-num" id="cdD">--</span><span class="cd-lbl">' + esc(A('يوم', 'days')) + '</span></div>' +
+    '<div class="cd-cell"><span class="cd-num" id="cdH">--</span><span class="cd-lbl">' + esc(A('ساعة', 'hours')) + '</span></div>' +
+    '<div class="cd-cell"><span class="cd-num" id="cdM">--</span><span class="cd-lbl">' + esc(A('دقيقة', 'min')) + '</span></div>' +
+    '<div class="cd-cell"><span class="cd-num" id="cdS">--</span><span class="cd-lbl">' + esc(A('ثانية', 'sec')) + '</span></div></div>' +
+    '<div class="ctas"><button class="btn gold" onclick="go(\'champs\')">🏆 ' + esc(A('سجّل الآن في البطولات', 'Register Now')) + '</button>' +
+    '<button class="btn primary" onclick="go(\'join\')">🎫 ' + esc(A('تصريح الزيارة المجاني', 'Free Visitor Pass')) + '</button>' +
+    '<button class="btn ghost" onclick="go(\'res\')">' + esc(A('النتائج المباشرة', 'Live Results')) + '</button></div></section>' +
+    tickerHtml() +
+    statsHtml() +
+    featuredHtml() +
     carouselHtml() +
     '<section class="container section"><h2 class="sec-title">' + esc(T('regTitle')) + '</h2><p class="sec-intro">' + esc(T('regIntro')) + '</p><div class="grid g4">' + portals + '</div></section>' +
     '<section class="container section"><h2 class="sec-title">' + esc(T('svTitle')) + '</h2><p class="sec-intro">' + esc(T('svIntro')) + '</p><div class="grid g3">' + svs + '</div></section>' +
@@ -1108,6 +1149,258 @@ function appsTable(rows) {
 window.setStatus = function (id, s) {
   var a = APPS.find(function (x) { return x.id === id; });
   if (a) { a.status = s; render(); toast(T(s)); }
+};
+
+/* ============ v2: championships / schedule / results / venue / community / news ============ */
+function A(a, b) { return lang === 'ar' ? a : b; }
+
+var CHAMPS = [
+  { s: 'beach-football', ic: '⚽', ar: 'كرة القدم الشاطئية', en: 'Beach Football', f: '' },
+  { s: 'community-football', ic: '⚽', ar: 'كرة القدم المجتمعية', en: 'Community Football', f: '7 ضد 7' },
+  { s: 'beach-volleyball', ic: '🏐', ar: 'الطائرة الشاطئية', en: 'Beach Volleyball', f: '2 ضد 2' },
+  { s: 'community-volleyball', ic: '🏐', ar: 'الطائرة المجتمعية', en: 'Community Volleyball', f: '6 ضد 6' },
+  { s: 'obstacles', ic: '🧗', ar: 'الحواجز والموانع', en: 'Obstacle Course', f: '' },
+  { s: 'half-marathon', ic: '🏃', ar: 'نصف ماراثون مهرجان كلباء', en: 'Kalba Half Marathon', f: '' },
+  { s: 'cycling', ic: '🚴', ar: 'سباق الدراجات الهوائية', en: 'Cycling Race', f: '' },
+  { s: 'basketball', ic: '🏀', ar: 'كرة السلة', en: 'Basketball', f: '' },
+  { s: 'kayak', ic: '🛶', ar: 'بطولة الكاياك', en: 'Kayak Championship', f: '' },
+  { s: 'patrol', ic: '🛡️', ar: 'مسابقة الباترول', en: 'Patrol Challenge', f: '' },
+  { s: 'jiujitsu', ic: '🥋', ar: 'بطولة الجوجيتسو', en: 'Jiu-Jitsu', f: '' },
+  { s: 'crossfit', ic: '🏋️', ar: 'بطولة الكروسفت (الإيروسوفت)', en: 'CrossFit', f: '' },
+  { s: 'boxing', ic: '🥊', ar: 'بطولة الملاكمة', en: 'Boxing', f: '' }
+];
+function champName(c) { return (lang === 'ar' ? c.ar : c.en) + (c.f ? ' ' + c.f : ''); }
+
+var NEWS = [
+  { u: 1, ar: 'افتتاح باب التسجيل في البطولات الـ13 المعتمدة', en: 'Registration opens for the 13 approved championships' },
+  { u: 0, ar: 'الكشف عن مسار نصف ماراثون كلباء على الكورنيش', en: 'Kalba half-marathon route revealed along the Corniche' },
+  { u: 0, ar: 'ورش صحية مجانية بمقاعد محدودة — احجز مبكراً', en: 'Free health workshops, limited seats — book early' }
+];
+var SCHED = [
+  { d: '10/12', t: '15:00', k: '📝', ar: 'التسجيل والاعتماد الميداني', en: 'Registration & accreditation', v: 'نقطة التسجيل' },
+  { d: '11/12', t: '16:30', k: '🩺', ar: 'ورشة: أساسيات اللياقة العامة', en: 'Workshop: fitness basics', v: 'خيمة الورش', ws: 1, cap: 30, left: 14 },
+  { d: '11/12', t: '17:00', k: '🤸', ar: 'التحديات اليومية والكالستينكس', en: 'Daily challenges & calisthenics', v: 'ساحة الكورنيش' },
+  { d: '11/12', t: '18:00', k: '🏆', ar: 'الطائرة الشاطئية — دور المجموعات', en: 'Beach volleyball — groups', v: 'ملعب الطائرة' },
+  { d: '12/12', t: '06:00', k: '🏆', ar: 'انطلاق نصف الماراثون', en: 'Half-marathon start', v: 'الكورنيش' },
+  { d: '12/12', t: '16:30', k: '🩺', ar: 'ورشة: التغذية الرياضية الصحية', en: 'Workshop: sports nutrition', v: 'خيمة الورش', ws: 1, cap: 30, left: 6 },
+  { d: '12/12', t: '17:00', k: '🤸', ar: 'الألعاب الشعبية (الكيرم وشد الحبل)', en: 'Traditional games', v: 'المنطقة المجتمعية' },
+  { d: '13/12', t: '18:00', k: '🏆', ar: 'كرة القدم الشاطئية — نصف النهائي', en: 'Beach football — semifinal', v: 'الملعب الشاطئي' },
+  { d: '17/12', t: '20:00', k: '🏅', ar: 'حفل التتويج والتكريم', en: 'Awards ceremony', v: 'المسرح الرئيسي' }
+];
+var MATCHES = [
+  { c: 0, ar: 'فريق الساحل', en: 'Coast Team', ar2: 'نوارس كلباء', en2: 'Kalba Gulls', a: 3, b: 2, st: 'live' },
+  { c: 2, ar: 'ثنائي المانغروف', en: 'Mangrove Duo', ar2: 'أمواج الخليج', en2: 'Gulf Waves', a: 21, b: 18, st: 'live' },
+  { c: 5, ar: 'سباق الفئة العامة — 21 كم', en: 'Open category — 21 km', ar2: '', en2: '', a: null, b: null, st: 'upcoming' },
+  { c: 7, ar: 'صقور الشارقة', en: 'Sharjah Falcons', ar2: 'عمالقة كلباء', en2: 'Kalba Giants', a: 64, b: 71, st: 'finished' },
+  { c: 12, ar: 'نزال الوزن المتوسط — النهائي', en: 'Middleweight final', ar2: '', en2: '', a: null, b: null, st: 'upcoming' }
+];
+var STANDINGS = [
+  { c: 5, rows: [['أحمد المنصوري', '1:12:44'], ['سالم الكتبي', '1:14:02'], ['خالد النقبي', '1:15:37']] },
+  { c: 8, rows: [['فريق المد البحري', '3 انتصارات'], ['كاياك الشرقية', '2'], ['مجداف كلباء', '1']] }
+];
+var OVERALL = [['أحمد المنصوري', 160], ['فريق المد البحري', 140], ['سالم الكتبي', 120], ['نوارس كلباء', 100], ['خالد النقبي', 80]];
+var CHAMPIONS = [{ c: 5, n: 'أحمد المنصوري', m: '1:12:44' }, { c: 8, n: 'فريق المد البحري', m: '' }];
+
+var VENUE = [
+  { f: 'fields', e: '⚽', col: '#24466e', x: 90, y: 120, ar: 'الملعب الشاطئي', en: 'Beach pitch' },
+  { f: 'fields', e: '🏐', col: '#24466e', x: 250, y: 100, ar: 'ملعب الطائرة', en: 'Volleyball court' },
+  { f: 'fields', e: '🧗', col: '#24466e', x: 420, y: 120, ar: 'ساحة الحواجز', en: 'Obstacle arena' },
+  { f: 'fields', e: '🚴', col: '#24466e', x: 590, y: 100, ar: 'مسار الجري والدراجات', en: 'Track' },
+  { f: 'registration', e: '📝', col: '#cfa762', x: 350, y: 330, ar: 'نقطة التسجيل', en: 'Registration' },
+  { f: 'aid', e: '⛑️', col: '#dc2626', x: 180, y: 250, ar: 'إسعاف 1 + مياه', en: 'First aid 1' },
+  { f: 'aid', e: '⛑️', col: '#dc2626', x: 520, y: 250, ar: 'إسعاف 2 + مياه', en: 'First aid 2' },
+  { f: 'parking', e: '🅿️', col: '#475569', x: 80, y: 420, ar: 'مواقف A + المدخل', en: 'Parking A' },
+  { f: 'parking', e: '🅿️', col: '#475569', x: 620, y: 420, ar: 'مواقف B + العائلات', en: 'Parking B' },
+  { f: 'activities', e: '🤸', col: '#16a34a', x: 250, y: 330, ar: 'الفعاليات المجتمعية', en: 'Community' },
+  { f: 'activities', e: '🩺', col: '#16a34a', x: 460, y: 330, ar: 'خيمة الورش', en: 'Workshops' },
+  { f: 'awards', e: '🏅', col: '#b45309', x: 350, y: 200, ar: 'المسرح — التتويج', en: 'Main stage' }
+];
+var VENUE_KINDS = [['', 'الكل', 'All'], ['fields', '⚽ الملاعب', '⚽ Fields'], ['registration', '📝 التسجيل', '📝 Registration'], ['aid', '⛑️ الإسعاف', '⛑️ First aid'], ['parking', '🅿️ المواقف', '🅿️ Parking'], ['activities', '🤸 الأنشطة', '🤸 Activities'], ['awards', '🏅 التتويج', '🏅 Awards']];
+
+function tickerHtml() {
+  return '<div class="ticker"><span class="ticker-label">📰 ' + esc(T('newsT')) + '</span><div class="ticker-track">' +
+    NEWS.map(function (n, i) { return '<a onclick="go(\'news\')">' + (n.u ? '🔴 ' : '') + esc(A(n.ar, n.en)) + '</a>'; }).join('') +
+    '</div></div>';
+}
+function statsHtml() {
+  var s = [['🏆', 13, A('بطولة معتمدة', 'championships')], ['🤸', 4, A('فعاليات مجتمعية', 'community events')], ['🩺', 6, A('ورش صحية', 'workshops')], ['📝', 87, A('مشارك مسجل', 'participants')], ['🎫', 342, A('تصريح زيارة', 'visitor passes')]];
+  return '<section class="container section" style="padding-bottom:6px"><div class="stat-grid">' +
+    s.map(function (x) { return '<div class="stat"><div class="n">' + x[0] + ' ' + x[1] + '</div><div class="l">' + esc(x[2]) + '</div></div>'; }).join('') +
+    '</div></section>';
+}
+function featuredHtml() {
+  return '<section class="container section"><h2 class="sec-title">' + esc(A('🏆 أبرز البطولات', '🏆 Featured Championships')) + '</h2><div class="grid g4">' +
+    [0, 2, 4, 5].map(function (i) {
+      var c = CHAMPS[i];
+      return '<div class="card link" onclick="go(\'champ\',' + i + ')"><div class="ic">' + c.ic + '</div><div class="tt">' + esc(champName(c)) + '</div><div class="dd">' + esc(A('التفاصيل والتسجيل المباشر', 'Details & registration')) + '</div></div>';
+    }).join('') +
+    '</div><div class="btn-row" style="justify-content:center"><button class="btn ghost" onclick="go(\'champs\')">' + esc(A('كل البطولات الـ13', 'All 13 championships')) + '</button></div></section>';
+}
+
+R.champs = function () {
+  return '<section class="container section"><h2 class="sec-title">🏆 ' + esc(A('البطولات الـ13 المعتمدة', 'The 13 Approved Championships')) + '</h2>' +
+    '<p class="sec-intro">' + esc(A('منافسات رسمية معتمدة — اضغط أي بطولة للتفاصيل والتسجيل.', 'Official competitions — tap any championship for details & registration.')) + '</p><div class="grid g4">' +
+    CHAMPS.map(function (c, i) {
+      return '<div class="card link" style="text-align:center" onclick="go(\'champ\',' + i + ')"><div class="ic">' + c.ic + '</div><div class="tt">' + esc(champName(c)) + '</div></div>';
+    }).join('') + '</div></section>';
+};
+
+R.champ = function () {
+  var c = CHAMPS[viewArg || 0];
+  var blocks = [
+    ['🎯', A('الفئات وشروط المشاركة', 'Categories & conditions'), A('أشبال / ناشئون / كبار / سيدات — التفاصيل تُدار من لوحة التحكم.', 'Cubs / juniors / seniors / women — details managed from the admin panel.')],
+    ['📋', A('اللوائح والقواعد', 'Rules & regulations'), A('تُطبّق لوائح الاتحاد المعتمدة ويلتزم المشاركون بقرارات الحكام.', 'Official federation regulations apply.')],
+    ['🗓️', A('الجدول والمواعيد', 'Schedule'), A('تُعرض مواعيد هذه البطولة في الجدول التفاعلي.', 'Fixtures appear in the interactive schedule.')],
+    ['🏅', A('الجوائز والتكريم', 'Prizes'), A('كأس وميداليات للمراكز الثلاثة الأولى وشهادات للجميع.', 'Cup & medals for the top three, certificates for all.')]
+  ];
+  return '<section class="container section"><a class="backlink" onclick="go(\'champs\')">&larr; ' + esc(T('champsT')) + '</a>' +
+    '<div class="champ-hero"><div style="font-size:3rem">' + c.ic + '</div><div style="flex:1"><h2 style="margin:0 0 4px">' + esc(champName(c)) + '</h2>' +
+    '<p style="margin:0;color:#c9d3e0">' + esc(A('منافسة رسمية معتمدة ضمن مهرجان كلباء الرياضي 2026.', 'An official accredited competition at Kalba Sports Festival 2026.')) + '</p></div>' +
+    '<button class="btn gold" onclick="go(\'pform\',' + (viewArg || 0) + ')">📝 ' + esc(A('سجّل الآن', 'Register Now')) + '</button></div>' +
+    '<div class="grid g2">' + blocks.map(function (b) {
+      return '<div class="panel"><h3 style="margin-top:0">' + b[0] + ' ' + esc(b[1]) + '</h3><p class="muted">' + esc(b[2]) + '</p></div>';
+    }).join('') + '</div></section>';
+};
+
+R.pform = function () {
+  var c = CHAMPS[viewArg || 0];
+  return '<section class="container section" style="max-width:620px"><a class="backlink" onclick="go(\'champ\',' + (viewArg || 0) + ')">&larr; ' + esc(champName(c)) + '</a>' +
+    '<div class="panel"><h2>🏆 ' + esc(A('تسجيل مشارك — ', 'Participant registration — ')) + esc(champName(c)) + '</h2>' +
+    '<p class="sec-intro">' + esc(A('ستحصل على رقم تسجيل فريد ورمز QR للاعتماد الميداني.', 'You will get a unique reg number and a QR code for field accreditation.')) + '</p>' +
+    '<div id="formErr"></div><div id="formFields">' +
+    '<div class="field" data-n="_n" data-t="text" data-r="1"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" id="pfName"></div>' +
+    '<div class="field" data-n="_p" data-t="text" data-r="1"><label class="flabel">' + esc(T('phone')) + ' <span class="req">*</span></label><input type="tel" dir="ltr"></div>' +
+    '<div class="field" data-n="_c" data-t="select" data-r="1"><label class="flabel">' + esc(A('الفئة', 'Category')) + ' <span class="req">*</span></label>' +
+    '<select><option value="">' + esc(T('choose')) + '</option><option>' + esc(A('ناشئون', 'Juniors')) + '</option><option>' + esc(A('كبار', 'Seniors')) + '</option><option>' + esc(A('سيدات', 'Women')) + '</option></select></div>' +
+    '<div class="field" data-n="_d" data-t="file" data-r="0"><label class="flabel">' + esc(A('صورة الهوية', 'ID copy')) + ' <span class="opt">(' + esc(A('تجريبي', 'demo')) + ')</span></label><input type="file"></div>' +
+    '</div><button class="btn gold block" onclick="submitPform(' + (viewArg || 0) + ')">📝 ' + esc(A('سجّل واحصل على رمز الاعتماد', 'Register & get accreditation QR')) + '</button></div></section>';
+};
+window.submitPform = function (ci) {
+  var root = document.getElementById('formFields');
+  var missing = validateFields(root);
+  if (missing.length) {
+    document.getElementById('formErr').innerHTML = '<div class="flash err">' + esc(T('required')) + ': ' + esc(missing.join('، ')) + '</div>';
+    return;
+  }
+  var name = document.getElementById('pfName').value.trim();
+  var reg = 'P-000' + (40 + Math.floor(Math.random() * 50));
+  var c = CHAMPS[ci];
+  document.getElementById('app').innerHTML =
+    '<section class="container section" style="max-width:520px">' +
+    '<div class="flash ok">' + esc(A('تم استلام تسجيلك! رمز QR هو اعتمادك الميداني.', 'Registered! The QR is your field accreditation.')) + '</div>' +
+    '<div class="vcard"><div class="vh">' + c.ic + ' ' + esc(champName(c)) + '</div><h2>' + esc(name) + '</h2>' +
+    '<div class="vqr" id="pQr"></div>' +
+    '<div class="vcode">' + esc(A('رقم التسجيل', 'Reg no.')) + ': <b dir="ltr">' + reg + '</b></div>' +
+    '<div class="vstats"><div class="vstat"><div class="n" style="font-size:1rem"><span class="badge pending">' + esc(T('pending')) + '</span></div><div class="l">' + esc(A('حالة الطلب', 'Status')) + '</div></div>' +
+    '<div class="vstat"><div class="n" style="font-size:1rem">—</div><div class="l">' + esc(A('الاعتماد الميداني', 'Check-in')) + '</div></div></div>' +
+    '<p class="hint" style="color:#94a3b8">' + esc(A('يمسحه المنظم عند نقطة الاعتماد يوم البطولة.', 'Scanned by an organizer at the accreditation point.')) + '</p></div>' +
+    '<div class="btn-row" style="justify-content:center"><button class="btn primary" onclick="go(\'admin\',\'apps\')">' + esc(T('admin')) + ' ←</button>' +
+    '<button class="btn ghost" onclick="go(\'champs\')">' + esc(T('champsT')) + '</button></div></section>';
+  document.getElementById('pQr').innerHTML = QR.svg('https://kalba2026.example/p/' + reg, { ecl: 'M', margin: 2 });
+};
+
+var schedFilter = '';
+R.sched = function () {
+  var kinds = [['', A('الكل', 'All')], ['🏆', A('البطولات', 'Fixtures')], ['🤸', A('مجتمعية', 'Community')], ['🩺', A('الورش', 'Workshops')], ['🏅', A('التتويج', 'Ceremonies')], ['📝', A('التسجيل', 'Registration')]];
+  var rows = SCHED.filter(function (r) { return !schedFilter || r.k === schedFilter; });
+  return '<section class="container section"><h2 class="sec-title">🗓️ ' + esc(A('الجدول الزمني التفاعلي', 'Interactive Schedule')) + '</h2>' +
+    '<p class="sec-intro">' + esc(A('صفِّ حسب النوع وأضف أي فعالية لتقويمك مع تنبيه قبل 30 دقيقة.', 'Filter by type; add events to your calendar with a 30-min reminder.')) + '</p>' +
+    '<div class="lb-tabs">' + kinds.map(function (k) {
+      return '<span class="lb-tab ' + (schedFilter === k[0] ? 'active' : '') + '" onclick="schedFilter=\'' + k[0] + '\';go(\'sched\')">' + (k[0] || '📋') + ' ' + esc(k[1]) + '</span>';
+    }).join('') + '</div><div class="panel">' +
+    rows.map(function (r) {
+      return '<div class="sched-row"><span>' + r.k + '</span><span class="sched-time" dir="ltr">' + r.d + ' · ' + r.t + '</span>' +
+        '<span style="flex:1">' + esc(A(r.ar, r.en)) + ' <small class="muted">📍 ' + esc(r.v) + '</small>' +
+        (r.ws ? ' <small class="' + (r.left > 0 ? 'ok-text' : 'bad-text') + '">' + esc(A('مقاعد متبقية: ', 'Seats left: ')) + r.left + '/' + r.cap + '</small>' : '') + '</span>' +
+        '<button class="btn sm" onclick="toast(A(\'أُضيفت للتقويم مع تنبيه قبل 30 دقيقة 🔔\',\'Added to calendar with a 30-min reminder 🔔\'))">🔔 +</button></div>';
+    }).join('') + '</div></section>';
+};
+
+var resTab = 'live';
+R.res = function () {
+  var tabs = [['live', '⚡ ' + A('نتائج فورية', 'Instant results')], ['standings', '🏆 ' + A('ترتيب البطولات', 'Standings')], ['overall', '👑 ' + A('الترتيب الكلي والأبطال', 'Overall & champions')]];
+  var body = '';
+  if (resTab === 'live') {
+    timers.push(setInterval(function () {
+      var m = MATCHES[Math.floor(Math.random() * 2)];
+      if (m.st === 'live') { Math.random() > .5 ? m.a++ : m.b++; var el = document.getElementById('resBody'); if (el) el.innerHTML = liveMatchesHtml(); }
+    }, 5000));
+    body = '<div class="panel" id="resBody">' + liveMatchesHtml() + '</div><p class="hint center">' + esc(A('محاكاة تحديث مباشر أثناء اللعب', 'Simulating live in-play updates')) + '</p>';
+  } else if (resTab === 'standings') {
+    body = STANDINGS.map(function (s) {
+      var c = CHAMPS[s.c];
+      return '<div class="panel"><h3 style="margin-top:0">' + c.ic + ' ' + esc(champName(c)) + '</h3>' +
+        s.rows.map(function (r, i) {
+          return '<div class="lb-row ' + (i < 3 ? 't' + (i + 1) : '') + '"><span class="lb-rank">' + (i + 1) + '</span><span class="lb-name">' + esc(r[0]) + '</span><span class="lb-pts" dir="ltr">' + esc(r[1]) + '</span></div>';
+        }).join('') + '</div>';
+    }).join('');
+  } else {
+    body = '<div class="grid g2"><div class="panel"><h3 style="margin-top:0">👑 ' + esc(A('الترتيب الشامل عبر البطولات', 'Overall ranking')) + '</h3>' +
+      OVERALL.map(function (r, i) {
+        return '<div class="lb-row ' + (i < 3 ? 't' + (i + 1) : '') + '"><span class="lb-rank">' + (i + 1) + '</span><span class="lb-name">' + esc(r[0]) + '</span><span class="lb-pts">' + r[1] + ' ' + esc(T('pts')) + '</span></div>';
+      }).join('') + '</div><div class="panel"><h3 style="margin-top:0">🏅 ' + esc(A('صفحة الأبطال', 'Champions')) + '</h3>' +
+      CHAMPIONS.map(function (ch) {
+        var c = CHAMPS[ch.c];
+        return '<div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)"><span style="font-size:1.6rem">🏆</span><div><strong>' + esc(ch.n) + '</strong><br><small class="muted">' + c.ic + ' ' + esc(champName(c)) + (ch.m ? ' — ' + esc(ch.m) : '') + '</small></div></div>';
+      }).join('') + '</div></div>';
+  }
+  return '<section class="container section"><h2 class="sec-title">📊 ' + esc(A('النتائج والترتيب الفوري', 'Results & Live Rankings')) + ' <span class="live-dot"></span></h2>' +
+    '<div class="lb-tabs">' + tabs.map(function (t2) {
+      return '<span class="lb-tab ' + (resTab === t2[0] ? 'active' : '') + '" onclick="resTab=\'' + t2[0] + '\';go(\'res\')">' + t2[1] + '</span>';
+    }).join('') + '</div>' + body + '</section>';
+};
+function liveMatchesHtml() {
+  var lbl = { live: ['مباشر الآن', 'LIVE'], upcoming: ['قادمة', 'Upcoming'], finished: ['انتهت', 'Finished'] };
+  return MATCHES.map(function (m) {
+    var c = CHAMPS[m.c];
+    return '<div class="match-row ' + m.st + '"><span class="m-champ">' + c.ic + ' <small>' + esc(champName(c)) + '</small></span>' +
+      '<span class="m-side">' + esc(A(m.ar, m.en)) + '</span>' +
+      '<span class="m-score" dir="ltr">' + (m.a !== null ? m.a : '–') + (m.ar2 ? ' : ' + (m.b !== null ? m.b : '–') : '') + '</span>' +
+      '<span class="m-side">' + esc(A(m.ar2, m.en2)) + '</span>' +
+      '<span class="badge ' + (m.st === 'live' ? 'accepted' : m.st === 'finished' ? 'rejected' : 'pending') + '">' + esc(A(lbl[m.st][0], lbl[m.st][1])) + '</span></div>';
+  }).join('');
+}
+
+var venueFilter = '';
+R.venue = function () {
+  var pins = VENUE.map(function (p) {
+    var dim = venueFilter && p.f !== venueFilter;
+    return '<g style="opacity:' + (dim ? '.14' : '1') + '"><circle cx="' + p.x + '" cy="' + p.y + '" r="17" fill="' + p.col + '"/>' +
+      '<text x="' + p.x + '" y="' + (p.y + 6) + '" text-anchor="middle" font-size="16">' + p.e + '</text>' +
+      '<text x="' + p.x + '" y="' + (p.y + 36) + '" text-anchor="middle" font-size="12" fill="#2a3442">' + esc(A(p.ar, p.en)) + '</text></g>';
+  }).join('');
+  return '<section class="container section"><h2 class="sec-title">📍 ' + esc(A('الخريطة التفاعلية لموقع المهرجان', 'Interactive venue map')) + '</h2>' +
+    '<p class="sec-intro">' + esc(A('مخطط الموقع على كورنيش كلباء — التوجيه الداخلي وتحديد الموقع مع تطبيق الجوال.', 'Site plan on the Kalba Corniche — indoor navigation comes with the mobile app.')) + '</p>' +
+    '<div class="lb-tabs">' + VENUE_KINDS.map(function (k) {
+      return '<span class="lb-tab ' + (venueFilter === k[0] ? 'active' : '') + '" onclick="venueFilter=\'' + k[0] + '\';go(\'venue\')">' + esc(A(k[1], k[2])) + '</span>';
+    }).join('') + '</div>' +
+    '<div class="panel" style="padding:10px"><svg viewBox="0 0 700 500" style="width:100%;height:auto">' +
+    '<rect width="700" height="500" rx="18" fill="#f6f3ec"/><rect width="700" height="60" rx="18" fill="#183254"/>' +
+    '<text x="350" y="38" text-anchor="middle" fill="#ddbe8a" font-size="18">' + esc(A('🌊 شاطئ كلباء', '🌊 Kalba beach')) + '</text>' +
+    '<rect y="465" width="700" height="35" fill="#e6e3dc"/><text x="350" y="488" text-anchor="middle" fill="#74808f" font-size="13">' + esc(A('شارع الكورنيش', 'Corniche road')) + '</text>' +
+    pins + '</svg></div></section>';
+};
+
+R.community = function () {
+  var evs = [['🤸', A('التحديات اليومية والكالستينكس', 'Daily challenges & calisthenics')], ['🎯', A('الألعاب الشعبية (الكيرم وشد الحبل)', 'Traditional games')], ['⚽', A('مسابقات جماهيرية قصيرة', 'Short public contests')], ['👟', A('عروض تعريفية للمحترفين', 'Pro demo sessions')]];
+  var ws = [[A('أساسيات اللياقة العامة', 'Fitness basics'), 14], [A('التغذية الرياضية الصحية', 'Sports nutrition'), 6], [A('الوقاية من الإصابات', 'Injury prevention'), 22], [A('أساسيات الجري والسباقات', 'Running basics'), 0], [A('الإسعافات الأولية الرياضية', 'Sports first aid'), 9], [A('لياقة كبار السن', 'Senior fitness'), 17]];
+  return '<section class="container section"><h2 class="sec-title">🤸 ' + esc(A('الفعاليات المجتمعية والورش الصحية', 'Community & Health Workshops')) + '</h2>' +
+    '<p class="sec-intro">' + esc(T('phil')) + '</p><div class="grid g4">' +
+    evs.map(function (e2) { return '<div class="card"><div class="ic">' + e2[0] + '</div><div class="tt" style="font-size:.95rem">' + esc(e2[1]) + '</div></div>'; }).join('') +
+    '</div><h3 style="margin-top:26px">' + esc(A('الورش الصحية — سجّل مسبقاً لضمان مقعدك', 'Health workshops — pre-register for a seat')) + '</h3><div class="grid g3">' +
+    ws.map(function (w) {
+      return '<div class="card"><div class="ic">🩺</div><div class="tt" style="font-size:.95rem">' + esc(w[0]) + '</div>' +
+        '<div class="dd ' + (w[1] > 0 ? 'ok-text' : 'bad-text') + '">' + (w[1] > 0 ? esc(A('مقاعد متبقية: ', 'Seats left: ')) + w[1] + '/30' : esc(A('اكتمل العدد', 'Fully booked'))) + '</div>' +
+        (w[1] > 0 ? '<button class="btn sm primary" onclick="toast(A(\'تم حجز مقعدك ✔\',\'Seat reserved ✔\'))">' + esc(A('احجز', 'Reserve')) + '</button>' : '') + '</div>';
+    }).join('') + '</div></section>';
+};
+
+R.news = function () {
+  return '<section class="container section" style="max-width:640px"><h2 class="sec-title">📰 ' + esc(A('الأخبار والإعلام', 'News & Media')) + '</h2>' +
+    NEWS.map(function (n) {
+      return '<div class="panel">' + (n.u ? '<span class="badge rejected">' + esc(A('عاجل', 'Urgent')) + '</span> ' : '') +
+        '<strong>' + esc(A(n.ar, n.en)) + '</strong><div class="muted" style="font-size:.8rem" dir="ltr">2026-12-0' + (Math.floor(Math.random() * 0) + 8) + '</div></div>';
+    }).join('') + '</section>';
 };
 
 /* ============ boot ============ */
