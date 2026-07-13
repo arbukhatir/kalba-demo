@@ -517,8 +517,8 @@ var L = {
     home: 'الرئيسية', register: 'التسجيل', surveys: 'الاستبيانات', leaderboard: 'المتصدرون',
     map: 'الخريطة', agenda: 'الأجندة', screen: 'الشاشة', admin: 'لوحة التحكم', award: 'واجهة المنظم',
     join: 'انضم لنظام النقاط', langBtn: 'English',
-    dates: '10 – 17 ديسمبر 2026 | يومياً 4 – 10 مساءً', dawn: 'مع أنشطة الفجر والصباح الطبيعية',
-    phil: '«كل زائر مشارك لا متفرج»', ctaJoin: 'شارك واجمع النقاط', ctaLb: 'شاهد المتصدرين',
+    dates: '10 – 17 ديسمبر 2026 | يومياً 4 – 10 مساءً',
+    ctaJoin: 'شارك واجمع النقاط', ctaLb: 'شاهد المتصدرين',
     regTitle: 'بوابات التسجيل', regIntro: 'اختر البوابة المناسبة وقدّم طلبك — تتم مراجعته من اللجنة (قيد المراجعة / مقبول / مرفوض).',
     svTitle: 'الاستبيانات', svIntro: 'رأيك يصنع المهرجان — ثلاث أدوات قياس: قبل، أثناء وبعد.',
     fullName: 'الاسم الكامل', phone: 'رقم الهاتف المتحرك', email: 'البريد الإلكتروني', ageGroup: 'الفئة العمرية',
@@ -554,8 +554,8 @@ var L = {
     home: 'Home', register: 'Register', surveys: 'Surveys', leaderboard: 'Leaderboard',
     map: 'Map', agenda: 'Agenda', screen: 'Screen', admin: 'Admin', award: 'Organizer',
     join: 'Join the Points Program', langBtn: 'العربية',
-    dates: 'Dec 10 – 17, 2026 | Daily 4 – 10 PM', dawn: 'plus dawn & morning nature activities',
-    phil: '"Every visitor is a participant, not a spectator"', ctaJoin: 'Join & Earn Points', ctaLb: 'View Leaderboard',
+    dates: 'Dec 10 – 17, 2026 | Daily 4 – 10 PM',
+    ctaJoin: 'Join & Earn Points', ctaLb: 'View Leaderboard',
     regTitle: 'Registration Portals', regIntro: 'Pick a portal and apply — the committee reviews it (under review / accepted / rejected).',
     svTitle: 'Surveys', svIntro: 'Three measurement tools: before, during and after the festival.',
     fullName: 'Full name', phone: 'Mobile', email: 'Email', ageGroup: 'Age group',
@@ -757,7 +757,7 @@ function renderChrome() {
   document.getElementById('brandName').textContent = T('site');
   document.getElementById('brandLogo').src = LOGO;
   document.getElementById('footName').textContent = T('site');
-  document.getElementById('footSlogan').textContent = T('phil');
+  document.getElementById('footSlogan').textContent = T('dates');
   document.getElementById('footNote').textContent = T('loc') + ' · ' + T('committee');
   var MENUS = [
     [A('المنافسات', 'Competitions'), [['champs', '🏆 ' + T('champsT')], ['res', '📊 ' + T('resT')], ['leaderboard', '👑 ' + T('leaderboard')]]],
@@ -866,8 +866,7 @@ R.home = function () {
   }, 1000));
   return '<section class="hero"><div class="hero-bookmark" aria-hidden="true"><svg viewBox="0 0 44 70" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 H44 V46 Q44 62 22 70 Q0 62 0 46 Z" fill="#CFA762"/></svg></div><h1>' + esc(T('site')) + '</h1>' +
     '<p class="slogan">📍 ' + esc(T('loc')) + '</p>' +
-    '<p class="dates">' + esc(T('dates')) + '<br><small>' + esc(T('dawn')) + '</small></p>' +
-    '<p class="phil">' + esc(T('phil')) + '</p>' +
+    '<p class="dates">' + esc(T('dates')) + '</p>' +
     '<div class="countdown"><div class="cd-cell"><span class="cd-num" id="cdD">--</span><span class="cd-lbl">' + esc(A('يوم', 'days')) + '</span></div>' +
     '<div class="cd-cell"><span class="cd-num" id="cdH">--</span><span class="cd-lbl">' + esc(A('ساعة', 'hours')) + '</span></div>' +
     '<div class="cd-cell"><span class="cd-num" id="cdM">--</span><span class="cd-lbl">' + esc(A('دقيقة', 'min')) + '</span></div>' +
@@ -960,7 +959,7 @@ R.join = function () {
   var ageOpts = Object.keys(AGES).map(function (k) { return '<option value="' + k + '">' + esc(tx(AGES[k])) + '</option>'; }).join('');
   return '<section class="container section" style="max-width:600px"><div class="panel">' +
     '<h2>🎯 ' + esc(T('joinTitle')) + '</h2><p class="sec-intro">' + esc(T('joinIntro')) + '</p>' +
-    '<p class="muted" style="font-style:italic">' + esc(T('phil')) + '</p><div id="formErr"></div>' +
+    '<div id="formErr"></div>' +
     '<div class="field"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" id="jName" maxlength="100"></div>' +
     '<div class="field"><label class="flabel">' + esc(T('ageGroup')) + ' <span class="req">*</span></label><select id="jAge"><option value="">' + esc(T('choose')) + '</option>' + ageOpts + '</select></div>' +
     '<button class="btn gold block" onclick="doJoin()">' + esc(T('joinBtn')) + '</button></div></section>';
@@ -1071,7 +1070,7 @@ R.screen = function () {
     '<span class="ss-live"><span class="live-dot"></span> ' + esc(T('live')) + '</span></div>' +
     '<div class="ss-cols"><div><h3>🏆 Top 10</h3><div id="ssMain"></div></div>' +
     '<div><h3 id="ssSideT"></h3><div id="ssSide"></div></div></div>' +
-    '<div class="ss-foot">' + esc(T('phil')) + '</div></div>' +
+    '<div class="ss-foot">' + esc(T('loc')) + '</div></div>' +
     '<p class="hint center">' + esc(T('screenNote')) + '</p></section>';
 };
 
@@ -1508,7 +1507,7 @@ R.community = function () {
   var evs = [['🤸', A('التحديات اليومية والكالستينكس', 'Daily challenges & calisthenics')], ['🎯', A('الألعاب الشعبية (الكيرم وشد الحبل)', 'Traditional games')], ['⚽', A('مسابقات جماهيرية قصيرة', 'Short public contests')], ['👟', A('عروض تعريفية للمحترفين', 'Pro demo sessions')]];
   var ws = [[A('أساسيات اللياقة العامة', 'Fitness basics'), 14], [A('التغذية الرياضية الصحية', 'Sports nutrition'), 6], [A('الوقاية من الإصابات', 'Injury prevention'), 22], [A('أساسيات الجري والسباقات', 'Running basics'), 0], [A('الإسعافات الأولية الرياضية', 'Sports first aid'), 9], [A('لياقة كبار السن', 'Senior fitness'), 17]];
   return '<section class="container section"><h2 class="sec-title">🤸 ' + esc(A('الفعاليات المجتمعية والورش الصحية', 'Community & Health Workshops')) + '</h2>' +
-    '<p class="sec-intro">' + esc(T('phil')) + '</p><div class="grid g4">' +
+    '<p class="sec-intro">' + esc(A('فعاليات مفتوحة للجميع وورش صحية بمقاعد محدودة — سجّل مسبقاً لضمان مقعدك.', 'Events open to everyone and health workshops with limited seats — pre-register to guarantee yours.')) + '</p><div class="grid g4">' +
     evs.map(function (e2) { return '<div class="card"><div class="ic">' + e2[0] + '</div><div class="tt" style="font-size:.95rem">' + esc(e2[1]) + '</div></div>'; }).join('') +
     '</div><h3 style="margin-top:26px">' + esc(A('الورش الصحية — سجّل مسبقاً لضمان مقعدك', 'Health workshops — pre-register for a seat')) + '</h3><div class="grid g3">' +
     ws.map(function (w) {
