@@ -249,6 +249,31 @@
   .sched-row { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; border-top: 1px dashed var(--line); font-size: .92rem; flex-wrap: wrap; }
   .sched-time { color: var(--sea-dark); font-weight: 700; font-size: .8rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .ok-text { color: var(--ok); } .bad-text { color: var(--bad); }
+
+  /* dropdown nav menus */
+  .menu { position: relative; }
+  .menu-btn { background: none; border: 0; color: #cbd5e1; padding: 7px 10px; border-radius: 8px; font-family: inherit; font-size: .88rem; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .menu-btn:hover, .menu.open .menu-btn { background: rgba(255,255,255,.12); color: #fff; }
+  .caret { font-size: .68rem; transition: transform .15s; }
+  .menu.open .caret { transform: rotate(180deg); }
+  .dropdown { display: none; position: absolute; top: 100%; inset-inline-start: 0; min-width: 215px; background: #fff; border-radius: 12px; box-shadow: 0 14px 38px rgba(15,23,42,.22); padding: 8px; z-index: 70; border: 1px solid var(--line); }
+  .menu.open .dropdown { display: block; }
+  @media (hover: hover) and (min-width: 861px) {
+    .menu:hover .dropdown { display: block; }
+    .menu:hover .menu-btn { background: rgba(255,255,255,.12); color: #fff; }
+  }
+  .dropdown a { display: block; color: var(--ink); padding: 9px 12px; border-radius: 8px; font-size: .89rem; cursor: pointer; }
+  .dropdown a:hover { background: var(--sand); color: var(--sea-dark); }
+  @media (max-width: 860px) {
+    .menu { width: 100%; }
+    .menu-btn { width: 100%; justify-content: space-between; }
+    .dropdown { position: static; box-shadow: none; background: rgba(255,255,255,.06); border: 0; }
+    .dropdown a { color: #cbd5e1; }
+    .dropdown a:hover { background: rgba(255,255,255,.1); color: #fff; }
+  }
+  .realmap { position: relative; }
+  .realmap iframe { width: 100%; border: 0; border-radius: 10px; display: block; background: #e8e6e0; }
+  .realmap-open { position: absolute; bottom: 12px; inset-inline-start: 12px; background: #fff; box-shadow: 0 4px 14px rgba(15,23,42,.25); }
 </style>
 </head>
 <body>
@@ -725,14 +750,38 @@ function renderChrome() {
   document.getElementById('footName').textContent = T('site');
   document.getElementById('footSlogan').textContent = T('phil');
   document.getElementById('footNote').textContent = T('loc') + ' · ' + T('committee');
-  var items = [['home','home'],['champs','champsT'],['sched','schedT'],['res','resT'],['register','register'],['surveys','surveys'],['leaderboard','leaderboard'],['community','communityT'],['venue','venueT'],['screen','screen'],['award','award'],['admin','admin']];
+  var MENUS = [
+    [A('المنافسات', 'Competitions'), [['champs', '🏆 ' + T('champsT')], ['res', '📊 ' + T('resT')], ['leaderboard', '👑 ' + T('leaderboard')]]],
+    [A('الفعاليات', 'Programme'), [['sched', '🗓️ ' + T('schedT')], ['community', '🤸 ' + T('communityT')], ['agenda', '📆 ' + T('agenda')]]],
+    [A('التسجيل', 'Register'), [['champs', '🏆 ' + A('تسجيل المشاركين', 'Participants')], ['register', '📝 ' + T('register')], ['join', '🎫 ' + A('تصريح الزيارة', 'Visitor Pass')], ['surveys', '💬 ' + T('surveys')]]],
+    [A('استكشف', 'Explore'), [['venue', '📍 ' + T('venueT')], ['map', '🌟 ' + T('map')], ['news', '📰 ' + T('newsT')]]],
+    [A('التشغيل', 'Operations'), [['screen', '📺 ' + T('screen')], ['award', '🎯 ' + T('award')], ['admin', '🛡️ ' + T('admin')]]]
+  ];
   var nav = document.getElementById('mainNav');
-  nav.innerHTML = items.map(function (it) {
-    return '<a data-v="' + it[0] + '" class="' + (view === it[0] ? 'active' : '') + '">' + esc(T(it[1])) + '</a>';
-  }).join('') + '<a class="cta" data-v="join">' + esc(T('join')) + '</a>' +
+  nav.innerHTML = '<a data-v="home" class="' + (view === 'home' ? 'active' : '') + '">' + esc(T('home')) + '</a>' +
+    MENUS.map(function (m, mi) {
+      return '<div class="menu"><button type="button" class="menu-btn">' + esc(m[0]) + ' <span class="caret">▾</span></button><div class="dropdown">' +
+        m[1].map(function (it) { return '<a data-v="' + it[0] + '">' + esc(it[1]) + '</a>'; }).join('') +
+        '</div></div>';
+    }).join('') +
+    '<a class="cta" data-v="join">' + esc(A('تصريح الزيارة', 'Visitor Pass')) + '</a>' +
     '<a class="lang" data-lang="1">' + esc(T('langBtn')) + '</a>';
   nav.querySelectorAll('a[data-v]').forEach(function (a) { a.onclick = function () { go(a.dataset.v); }; });
   nav.querySelector('a[data-lang]').onclick = function () { setLang(lang === 'ar' ? 'en' : 'ar'); };
+  nav.querySelectorAll('.menu-btn').forEach(function (btn) {
+    btn.onclick = function (ev) {
+      ev.stopPropagation();
+      var menu = btn.parentElement, wasOpen = menu.classList.contains('open');
+      nav.querySelectorAll('.menu.open').forEach(function (m2) { m2.classList.remove('open'); });
+      if (!wasOpen) menu.classList.add('open');
+    };
+  });
+  if (!window._menuCloser) {
+    window._menuCloser = true;
+    document.addEventListener('click', function () {
+      document.querySelectorAll('nav.main .menu.open').forEach(function (m2) { m2.classList.remove('open'); });
+    });
+  }
 }
 
 /* ============ field rendering (shared by forms & surveys) ============ */
@@ -832,8 +881,8 @@ R.home = function () {
     carouselHtml() +
     '<section class="container section" style="padding-top:12px"><h2 class="sec-title center">📍 ' + esc(A('خريطة شاطئ كلباء', 'Kalba beach map')) + '</h2>' +
     '<p class="sec-intro" style="text-align:center">' + esc(A('موقع المهرجان على الكورنيش — الملاعب، التسجيل، الإسعاف، المواقف والأنشطة.', 'The festival site on the Corniche — fields, registration, first aid, parking and activities.')) + '</p>' +
-    '<div class="panel" style="padding:10px;max-width:860px;margin:0 auto">' + venueSvgHtml('') + '</div>' +
-    '<div class="btn-row" style="justify-content:center"><button class="btn ghost" onclick="go(\'venue\')">' + esc(A('استكشف الخريطة كاملة مع التصفية', 'Explore the full map with filters')) + '</button></div></section>';
+    '<div class="panel" style="padding:10px;max-width:860px;margin:0 auto">' + realMapHtml(380) + '</div>' +
+    '<div class="btn-row" style="justify-content:center"><button class="btn ghost" onclick="go(\'venue\')">' + esc(A('مرافق الموقع كاملة (ملاعب، إسعاف، مواقف...)', 'Full site facilities (fields, first aid, parking...)')) + '</button></div></section>';
 };
 
 R.form = function () {
@@ -1375,6 +1424,13 @@ function liveMatchesHtml() {
   }).join('');
 }
 
+function realMapHtml(h) {
+  var src = 'https://maps.google.com/maps?q=25.0795,56.3630&z=15&t=k&hl=' + (lang === 'ar' ? 'ar' : 'en') + '&output=embed';
+  return '<div class="realmap"><iframe src="' + src + '" height="' + (h || 400) + '" loading="lazy" allowfullscreen title="Kalba"></iframe>' +
+    '<a class="btn sm realmap-open" href="https://www.google.com/maps/search/?api=1&query=25.0795,56.3630" target="_blank" rel="noopener">🧭 ' +
+    esc(A('افتح في خرائط Google', 'Open in Google Maps')) + '</a></div>';
+}
+
 var venueFilter = '';
 function venueSvgHtml(filter) {
   var pins = VENUE.map(function (p) {
@@ -1390,12 +1446,17 @@ function venueSvgHtml(filter) {
     pins + '</svg>';
 }
 R.venue = function () {
-  return '<section class="container section"><h2 class="sec-title">📍 ' + esc(A('الخريطة التفاعلية لموقع المهرجان', 'Interactive venue map')) + '</h2>' +
-    '<p class="sec-intro">' + esc(A('مخطط الموقع على كورنيش كلباء — التوجيه الداخلي وتحديد الموقع مع تطبيق الجوال.', 'Site plan on the Kalba Corniche — indoor navigation comes with the mobile app.')) + '</p>' +
-    '<div class="lb-tabs">' + VENUE_KINDS.map(function (k) {
-      return '<span class="lb-tab ' + (venueFilter === k[0] ? 'active' : '') + '" onclick="venueFilter=\'' + k[0] + '\';go(\'venue\')">' + esc(A(k[1], k[2])) + '</span>';
-    }).join('') + '</div>' +
-    '<div class="panel" style="padding:10px">' + venueSvgHtml(venueFilter) + '</div></section>';
+  var groups = {};
+  VENUE.forEach(function (p) { (groups[p.f] = groups[p.f] || []).push(p); });
+  var cards = VENUE_KINDS.slice(1).map(function (k) {
+    var items = groups[k[0]] || [];
+    return '<div class="card"><div class="ic">' + (items[0] ? items[0].e : '') + '</div><div class="tt" style="font-size:.95rem">' + esc(A(k[1].replace(/^\S+ /, ''), k[2].replace(/^\S+ /, ''))) + '</div>' +
+      '<div class="dd">' + items.map(function (p) { return esc(A(p.ar, p.en)); }).join('<br>') + '</div></div>';
+  }).join('');
+  return '<section class="container section"><h2 class="sec-title">📍 ' + esc(A('خريطة موقع المهرجان — كورنيش كلباء', 'Venue map — Kalba Corniche')) + '</h2>' +
+    '<p class="sec-intro">' + esc(A('الموقع الفعلي على الخريطة، ومرافق الموقع الستة أدناه. التوجيه الداخلي مع تطبيق الجوال.', 'The real location on the map, with the six facility groups below. Indoor navigation comes with the mobile app.')) + '</p>' +
+    '<div class="panel" style="padding:10px">' + realMapHtml(480) + '</div>' +
+    '<div class="grid g3">' + cards + '</div></section>';
 };
 
 R.community = function () {
