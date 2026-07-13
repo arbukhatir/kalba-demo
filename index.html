@@ -250,6 +250,12 @@
   .sched-row { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; border-top: 1px dashed var(--line); font-size: .92rem; flex-wrap: wrap; }
   .sched-time { color: var(--sea-dark); font-weight: 700; font-size: .8rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .ok-text { color: var(--ok); } .bad-text { color: var(--bad); }
+  .win-card { text-align: center; }
+  .win-card.is-live { border-color: var(--gold); background: #fdf9f1; }
+  .win-crown { font-size: 1.7rem; min-height: 1.9rem; }
+  .win-name { font-size: 1.15rem; font-weight: 800; color: var(--sea-dark); margin: 4px 0; }
+  .win-score { margin: 6px 0; display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; font-size: .92rem; }
+  .win-score b { background: var(--deep); color: var(--gold-soft); border-radius: 8px; padding: 3px 12px; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
 
   /* dropdown nav menus */
   .menu { position: relative; }
@@ -515,7 +521,7 @@ var L = {
     phil: '«كل زائر مشارك لا متفرج»', ctaJoin: 'شارك واجمع النقاط', ctaLb: 'شاهد المتصدرين',
     regTitle: 'بوابات التسجيل', regIntro: 'اختر البوابة المناسبة وقدّم طلبك — تتم مراجعته من اللجنة (قيد المراجعة / مقبول / مرفوض).',
     svTitle: 'الاستبيانات', svIntro: 'رأيك يصنع المهرجان — ثلاث أدوات قياس: قبل، أثناء وبعد.',
-    fullName: 'الاسم الكامل', phone: 'رقم الجوال', email: 'البريد الإلكتروني', ageGroup: 'الفئة العمرية',
+    fullName: 'الاسم الكامل', phone: 'رقم الهاتف المتحرك', email: 'البريد الإلكتروني', ageGroup: 'الفئة العمرية',
     optional: 'اختياري', submit: 'إرسال', send: 'إرسال الطلب', choose: '— اختر —',
     okTitle: 'تم استلام طلبك بنجاح', okRef: 'رقم الطلب المرجعي', okNote: 'ستقوم اللجنة بمراجعة الطلب والتواصل معك. (تجريبي — لم يُرسل شيء فعلياً)',
     svOk: 'شكراً لمشاركتك! ملاحظاتك تساعدنا في صناعة تجربة أفضل.',
@@ -870,6 +876,7 @@ R.home = function () {
     '<button class="btn primary" onclick="go(\'join\')">🎫 ' + esc(A('تصريح الزيارة المجاني', 'Free Visitor Pass')) + '</button>' +
     '<button class="btn ghost" onclick="go(\'res\')">' + esc(A('النتائج المباشرة', 'Live Results')) + '</button></div></section>' +
     tickerHtml() +
+    winnersHtml() +
     '<section class="container section" style="text-align:center;max-width:760px">' +
     '<p style="font-size:1.1rem;line-height:1.9;margin:0 0 16px">' + esc(A(
       'ثمانية أيام على كورنيش كلباء تجمع 13 بطولة معتمدة وفعاليات مجتمعية وورشاً صحية، بنظام نقاط يحوّل كل زائر إلى مشارك.',
@@ -1156,7 +1163,7 @@ R.agenda = function () {
 var adminTab = 'dash';
 R.admin = function () {
   if (viewArg) { adminTab = viewArg; viewArg = null; }
-  var tabs = [['dash', T('dash'), '📊'], ['apps', T('apps'), '📥'], ['surveys', T('svRes'), '📈'], ['matrix', T('matrix'), '🎯']];
+  var tabs = [['dash', T('dash'), '📊'], ['apps', T('apps'), '📥'], ['scores', A('إدخال النتائج', 'Results Entry'), '⚡'], ['surveys', T('svRes'), '📈'], ['matrix', T('matrix'), '🎯']];
   var tabBar = '<div class="lb-tabs">' + tabs.map(function (t) {
     return '<span class="lb-tab ' + (adminTab === t[0] ? 'active' : '') + '" onclick="setAdminTab(\'' + t[0] + '\')">' + t[2] + ' ' + esc(t[1]) + '</span>';
   }).join('') + '</div>';
@@ -1175,6 +1182,21 @@ R.admin = function () {
       '<div class="panel"><h3 style="margin-top:0">' + esc(lang === 'ar' ? 'أحدث الطلبات' : 'Latest applications') + '</h3>' + appsTable(APPS.slice(0, 5)) + '</div>';
   } else if (adminTab === 'apps') {
     body = '<div class="panel">' + appsTable(APPS) + '<p class="hint">' + esc(lang === 'ar' ? 'في النسخة الحقيقية: عرض تفاصيل الطلب كاملة مع المرفقات (شهادات السلامة، التأمين، الرخص) وتصدير CSV لبرنامج Excel.' : 'Real version: full application details with attachments (safety certs, insurance, licenses) and CSV export for Excel.') + '</p></div>';
+  } else if (adminTab === 'scores') {
+    var lbl = { live: A('🔴 مباشر', '🔴 LIVE'), upcoming: A('قادمة', 'Upcoming'), finished: A('انتهت', 'Finished') };
+    body = '<div class="panel"><p class="sec-intro">' + esc(A('واجهة «محرر النتائج» — دور مخصص يدخل نتائج جميع البطولات، وتظهر فوراً في الصفحة الرئيسية وصفحة النتائج.', 'The "Results editor" role — enters scores for all championships; they appear instantly on the homepage and results page.')) + '</p>' +
+      MATCHES.map(function (m, i) {
+        var c = CHAMPS[m.c];
+        return '<div class="match-row ' + m.st + '"><span class="m-champ">' + c.ic + ' <small>' + esc(champName(c)) + '</small></span>' +
+          '<span class="m-side">' + esc(A(m.ar, m.en)) + '</span>' +
+          '<input type="number" value="' + (m.a !== null ? m.a : '') + '" style="width:64px;padding:5px 8px" dir="ltr" onchange="MATCHES[' + i + '].a=parseInt(this.value)||0">' +
+          (m.ar2 ? '<input type="number" value="' + (m.b !== null ? m.b : '') + '" style="width:64px;padding:5px 8px" dir="ltr" onchange="MATCHES[' + i + '].b=parseInt(this.value)||0">' +
+          '<span class="m-side">' + esc(A(m.ar2, m.en2)) + '</span>' : '') +
+          '<select style="width:auto;padding:5px 8px" onchange="MATCHES[' + i + '].st=this.value">' +
+          ['upcoming', 'live', 'finished'].map(function (st) { return '<option value="' + st + '"' + (m.st === st ? ' selected' : '') + '>' + esc(lbl[st]) + '</option>'; }).join('') +
+          '</select>' +
+          '<button class="btn sm primary" onclick="toast(A(\'تم حفظ النتيجة — تظهر الآن في الرئيسية ✔\',\'Score saved — now on the homepage ✔\'))">💾</button></div>';
+      }).join('') + '</div>';
   } else if (adminTab === 'surveys') {
     var bars = [[lang==='ar'?'رياضات بحرية':'Sea sports', 78], [lang==='ar'?'أنشطة جبلية':'Mountain', 64], [lang==='ar'?'أنشطة عائلية':'Family', 59], [lang==='ar'?'تحديات لياقة':'Fitness', 47], [lang==='ar'?'فعاليات تراثية':'Heritage', 41], [lang==='ar'?'زيارات المزارع':'Farms', 33]];
     var mx = bars[0][1];
@@ -1283,6 +1305,26 @@ var VENUE = [
 ];
 var VENUE_KINDS = [['', 'الكل', 'All'], ['fields', '⚽ الملاعب', '⚽ Fields'], ['registration', '📝 التسجيل', '📝 Registration'], ['aid', '⛑️ الإسعاف', '⛑️ First aid'], ['parking', '🅿️ المواقف', '🅿️ Parking'], ['activities', '🤸 الأنشطة', '🤸 Activities'], ['awards', '🏅 التتويج', '🏅 Awards']];
 
+function winnersHtml() {
+  var cards = CHAMPIONS.map(function (ch) {
+    var c = CHAMPS[ch.c];
+    return '<div class="card win-card"><div class="win-crown">👑</div>' +
+      '<div class="dd">' + c.ic + ' ' + esc(champName(c)) + '</div>' +
+      '<div class="win-name">' + esc(ch.n) + '</div>' +
+      '<div class="dd">' + esc(A('بطل النسخة الأولى', 'First edition champion')) + (ch.m ? ' — <span dir="ltr">' + esc(ch.m) + '</span>' : '') + '</div></div>';
+  });
+  MATCHES.filter(function (m) { return m.st !== 'upcoming'; }).slice(0, 6 - cards.length).forEach(function (m) {
+    var c = CHAMPS[m.c];
+    cards.push('<div class="card win-card ' + (m.st === 'live' ? 'is-live' : '') + '"><div class="win-crown">' + (m.st === 'live' ? '<span class="live-dot"></span>' : '⏱️') + '</div>' +
+      '<div class="dd">' + c.ic + ' ' + esc(champName(c)) + '</div>' +
+      '<div class="win-score" dir="ltr"><span>' + esc(A(m.ar, m.en)) + '</span>' +
+      (m.ar2 ? ' <b>' + (m.a !== null ? m.a : '–') + ' : ' + (m.b !== null ? m.b : '–') + '</b> <span>' + esc(A(m.ar2, m.en2)) + '</span>' : '') + '</div>' +
+      '<div class="dd">' + esc(m.st === 'live' ? A('مباشر الآن', 'Live now') : A('نتيجة نهائية', 'Final score')) + '</div></div>');
+  });
+  return '<section class="container section" style="padding-bottom:6px"><h2 class="sec-title center">🏆 ' + esc(A('الأبطال وآخر النتائج', 'Winners & Latest Scores')) + '</h2>' +
+    '<div class="grid g3">' + cards.join('') + '</div>' +
+    '<div class="btn-row" style="justify-content:center"><button class="btn ghost" onclick="go(\'res\')">' + esc(A('كل النتائج والترتيب', 'All results & standings')) + '</button></div></section>';
+}
 function tickerHtml() {
   return '<div class="ticker"><span class="ticker-label">📰 ' + esc(T('newsT')) + '</span><div class="ticker-track">' +
     NEWS.map(function (n, i) { return '<a onclick="go(\'news\')">' + (n.u ? '🔴 ' : '') + esc(A(n.ar, n.en)) + '</a>'; }).join('') +
