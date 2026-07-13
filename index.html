@@ -439,7 +439,7 @@ var QR = (function () {
 var lang = 'ar';
 var L = {
   ar: {
-    site: 'مهرجان كلباء الرياضي 2026', slogan: 'كلباء — الإمارات التي لم ترها بعد',
+    site: 'مهرجان كلباء الرياضي 2026',
     loc: 'مدينة كلباء — إمارة الشارقة، الإمارات العربية المتحدة',
     galleryTitle: 'من أجواء كلباء الرياضية',
     demo: '🔍 نسخة تجريبية للعرض — البيانات وهمية ولا يتم حفظ أي شيء | Demo preview',
@@ -475,7 +475,7 @@ var L = {
     blocks: [['⛅','05:30','أنشطة الفجر: كاياك المانغروف، هايكنج، جولات المزارع'],['🏟️','16:00','المنطقة الرئيسية: مسابقات، تحدي القوة، منطقة الأطفال'],['🎭','18:00','العروض الجماهيرية + الأكشاك والمأكولات'],['🏆','20:00','مسابقات المساء وإعلان متصدري اليوم']]
   },
   en: {
-    site: 'Kalba Sports Festival 2026', slogan: "Kalba — a side of the UAE you haven't seen yet",
+    site: 'Kalba Sports Festival 2026',
     loc: 'City of Kalba — Emirate of Sharjah, United Arab Emirates',
     galleryTitle: 'Kalba sports in action',
     demo: '🔍 Interactive demo — sample data only, nothing is saved',
@@ -684,7 +684,7 @@ function renderChrome() {
   document.getElementById('demoBanner').textContent = T('demo');
   document.getElementById('brandName').textContent = T('site');
   document.getElementById('footName').textContent = T('site');
-  document.getElementById('footSlogan').textContent = T('slogan');
+  document.getElementById('footSlogan').textContent = T('phil');
   document.getElementById('footNote').textContent = T('loc') + ' · ' + T('committee');
   var items = [['home','home'],['register','register'],['surveys','surveys'],['leaderboard','leaderboard'],['map','map'],['agenda','agenda'],['screen','screen'],['award','award'],['admin','admin']];
   var nav = document.getElementById('mainNav');
@@ -746,8 +746,7 @@ R.home = function () {
   }).join('');
   timers.push(setInterval(function () { window.carGo(carIdx + 1); }, 4500));
   return '<section class="hero"><div class="star-big">★</div><h1>' + esc(T('site')) + '</h1>' +
-    '<p class="slogan">' + esc(T('slogan')) + '</p>' +
-    '<p style="color:#94a3b8;font-size:.85rem;margin:2px 0 10px">📍 ' + esc(T('loc')) + '</p>' +
+    '<p class="slogan">📍 ' + esc(T('loc')) + '</p>' +
     '<p class="dates">' + esc(T('dates')) + '<br><small>' + esc(T('dawn')) + '</small></p>' +
     '<p class="phil">' + esc(T('phil')) + '</p>' +
     '<div class="ctas"><button class="btn gold" onclick="go(\'join\')">' + esc(T('ctaJoin')) + '</button>' +
@@ -943,7 +942,7 @@ R.screen = function () {
     '<span class="ss-live"><span class="live-dot"></span> ' + esc(T('live')) + '</span></div>' +
     '<div class="ss-cols"><div><h3>🏆 Top 10</h3><div id="ssMain"></div></div>' +
     '<div><h3 id="ssSideT"></h3><div id="ssSide"></div></div></div>' +
-    '<div class="ss-foot">' + esc(T('phil')) + ' — ' + esc(T('slogan')) + '</div></div>' +
+    '<div class="ss-foot">' + esc(T('phil')) + '</div></div>' +
     '<p class="hint center">' + esc(T('screenNote')) + '</p></section>';
 };
 
