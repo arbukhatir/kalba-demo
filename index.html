@@ -17,6 +17,7 @@
   html, body { background: var(--sand); }
   body { margin: 0; font-family: var(--font); color: var(--ink); line-height: 1.6; font-size: 17px; }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   a { color: var(--sea-dark); text-decoration: none; cursor: pointer; }
   h1, h2, h3 { line-height: 1.3; }
   .container { max-width: 1050px; margin: 0 auto; padding: 0 16px; }
@@ -385,6 +386,11 @@
   .footer-nl { display: flex; gap: 6px; }
   .footer-nl input { border-radius: 9px; border: 1px solid #3b537a; background: rgba(255,255,255,.08); color: #fff; padding: 8px 12px; font-size: .84rem; min-width: 0; }
   .footer-nl input::placeholder { color: #8fa1bb; }
+  .hero-thumbs { display: flex; gap: 10px; flex-wrap: wrap; }
+  .hero-thumb { position: relative; }
+  .hero-thumb img { width: 126px; height: 76px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); display: block; }
+  .hero-thumb button { position: absolute; top: 4px; inset-inline-end: 4px; }
+  .kbot-typing { color: var(--muted); letter-spacing: 3px; }
   .realmap { position: relative; }
   .realmap iframe { width: 100%; border: 0; border-radius: 10px; display: block; background: #e8e6e0; }
   .realmap-open { position: absolute; bottom: 12px; inset-inline-start: 12px; background: #fff; box-shadow: 0 4px 14px rgba(15,23,42,.25); }
@@ -1379,7 +1385,7 @@ R.agenda = function () {
 var adminTab = 'dash';
 R.admin = function () {
   if (viewArg) { adminTab = viewArg; viewArg = null; }
-  var tabs = [['dash', T('dash'), '📊'], ['apps', T('apps'), '📥'], ['scores', A('إدخال النتائج', 'Results Entry'), '⚡'], ['surveys', T('svRes'), '📈'], ['matrix', T('matrix'), '🎯']];
+  var tabs = [['dash', T('dash'), '📊'], ['apps', T('apps'), '📥'], ['scores', A('إدخال النتائج', 'Results Entry'), '⚡'], ['surveys', T('svRes'), '📈'], ['matrix', T('matrix'), '🎯'], ['settings', A('الإعدادات', 'Settings'), '⚙️']];
   var tabBar = '<div class="lb-tabs">' + tabs.map(function (t) {
     return '<span class="lb-tab ' + (adminTab === t[0] ? 'active' : '') + '" onclick="setAdminTab(\'' + t[0] + '\')">' + t[2] + ' ' + esc(t[1]) + '</span>';
   }).join('') + '</div>';
@@ -1413,6 +1419,24 @@ R.admin = function () {
           '</select>' +
           '<button class="btn sm primary" onclick="toast(A(\'تم حفظ النتيجة — تظهر الآن في الرئيسية ✔\',\'Score saved — now on the homepage ✔\'))">💾</button></div>';
       }).join('') + '</div>';
+  } else if (adminTab === 'settings') {
+    body = '<div class="panel"><h3 style="margin-top:0">🖼️ ' + esc(A('صور البانر الرئيسي', 'Hero banner images')) + '</h3>' +
+      '<p class="sec-intro">' + esc(A('ارفع حتى 6 صور تتناوب في خلفية البانر — أو فيديو hero.mp4. (في النسخة الحقيقية تُحفظ الصور وتظهر فوراً)', 'Upload up to 6 rotating hero images — or a hero.mp4 video. (In the real app they save and appear instantly)')) + '</p>' +
+      '<div class="hero-thumbs">' + [4, 2, 3, 0].map(function (gi) {
+        return '<div class="hero-thumb"><img src="' + GALLERY[gi].src + '" alt="">' +
+          '<button class="btn sm danger" onclick="toast(A(\'حُذفت الصورة (تجريبي)\',\'Image deleted (demo)\'))">🗑</button></div>';
+      }).join('') + '</div>' +
+      '<div class="btn-row"><input type="file" accept=".jpg,.png,.webp" style="max-width:240px">' +
+      '<button class="btn primary" onclick="toast(A(\'تم رفع الصورة ✔ (تجريبي)\',\'Image uploaded ✔ (demo)\'))">⬆️ ' + esc(A('رفع صورة', 'Upload')) + '</button></div></div>' +
+
+      '<div class="panel"><h3 style="margin-top:0">🤖 ' + esc(A('مساعد الزوار — مزود الذكاء الاصطناعي', 'Visitor assistant — AI provider')) + '</h3>' +
+      '<p class="sec-intro">' + esc(A('بدون مزود يجيب المساعد من القاعدة المدمجة، ومع ChatGPT أو Gemini يجيب الذكاء الاصطناعي ويعود للقاعدة تلقائياً عند أي خلل.', 'Without a provider the bot uses built-in rules; with ChatGPT or Gemini the AI answers, falling back to rules on failure.')) + '</p>' +
+      '<div class="field" style="max-width:340px"><label class="flabel">' + esc(A('المزود', 'Provider')) + '</label>' +
+      '<select id="aiProv"><option value="none">' + esc(A('بدون — القاعدة المدمجة', 'None — built-in rules')) + '</option>' +
+      '<option value="openai">ChatGPT (OpenAI)</option><option value="gemini">Gemini (Google)</option></select></div>' +
+      '<div class="frow"><div class="field"><label class="flabel">OpenAI API Key</label><input type="password" dir="ltr" placeholder="sk-..."></div>' +
+      '<div class="field"><label class="flabel">Gemini API Key</label><input type="password" dir="ltr" placeholder="AIza..."></div></div>' +
+      '<button class="btn primary" onclick="toast(A(\'حُفظت إعدادات المساعد ✔ (في النسخة الحقيقية يتحول الرد للذكاء الاصطناعي فوراً)\',\'Assistant settings saved ✔\'))">💾 ' + esc(A('حفظ', 'Save')) + '</button></div>';
   } else if (adminTab === 'surveys') {
     var bars = [[lang==='ar'?'رياضات بحرية':'Sea sports', 78], [lang==='ar'?'أنشطة جبلية':'Mountain', 64], [lang==='ar'?'أنشطة عائلية':'Family', 59], [lang==='ar'?'تحديات لياقة':'Fitness', 47], [lang==='ar'?'فعاليات تراثية':'Heritage', 41], [lang==='ar'?'زيارات المزارع':'Farms', 33]];
     var mx = bars[0][1];
@@ -1951,10 +1975,10 @@ function kbotAnswer(q) {
     if (!kb.hidden && !box.children.length) {
       kbotMsg(esc(A('أهلاً بك في مهرجان كلباء الرياضي 2026! 👋 كيف أقدر أساعدك؟', 'Welcome to Kalba Sports Festival 2026! 👋 How can I help?')));
       var chips = document.getElementById('kbotChips');
-      [[A('كيف أسجل؟', 'How do I register?'), 'تسجيل'], [A('الجدول', 'Schedule'), 'جدول'], [A('تصريح الزيارة', 'Visitor pass'), 'تصريح'], [A('النقاط', 'Points'), 'نقاط'], [A('الموقع', 'Location'), 'موقع']].forEach(function (c) {
+      [[A('كيف أسجل في البطولات؟', 'How do I register?'), 'تسجيل'], [A('ما مواعيد الفعاليات؟', 'What is the schedule?'), 'جدول'], [A('كيف أحصل على تصريح الزيارة؟', 'How do I get a visitor pass?'), 'تصريح']].forEach(function (c) {
         var b = document.createElement('button');
         b.type = 'button'; b.className = 'kbot-chip'; b.textContent = c[0];
-        b.onclick = function () { kbotAsk(c[1]); };
+        b.onclick = function () { kbotAsk(c[0]); };
         chips.appendChild(b);
       });
     }
