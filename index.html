@@ -309,6 +309,38 @@
   .foot-links { margin-top: 10px; font-size: .84rem; }
   .foot-links a { color: #cbd5e1; cursor: pointer; }
   .foot-links a:hover { color: var(--gold-soft); }
+  /* feedback: hero motion bg, chatbot, agenda timeline */
+  .hero-media { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+  .hm-slide { position: absolute; inset: -7%; background-size: cover; background-position: center; opacity: 0; animation: heroKB 24s linear infinite; }
+  @keyframes heroKB { 0% { opacity: 0; transform: scale(1); } 5% { opacity: 1; } 25% { opacity: 1; } 33% { opacity: 0; transform: scale(1.14); } 100% { opacity: 0; transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .hm-slide { animation: none; } .hm-slide:first-child { opacity: 1; } }
+  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(16,32,56,.78), rgba(24,50,84,.88)); }
+  .hero.hero-live::before { opacity: .09; z-index: 1; }
+  .hero.hero-live > * { position: relative; z-index: 2; }
+  .hero.hero-live .hero-media { z-index: 0; }
+  #kbotBtn { position: fixed; bottom: 20px; inset-inline-end: 20px; z-index: 150; width: 56px; height: 56px; border-radius: 50%; border: 0; cursor: pointer; background: var(--gold); font-size: 1.45rem; box-shadow: 0 8px 24px rgba(24,50,84,.35); }
+  #kbot { position: fixed; bottom: 86px; inset-inline-end: 20px; z-index: 150; width: 330px; max-width: calc(100vw - 32px); max-height: 70vh; background: #fff; border-radius: 16px; box-shadow: 0 18px 50px rgba(15,23,42,.35); display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); }
+  .kbot-head { background: var(--deep); color: #fff; padding: 11px 15px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+  .kbot-head button { background: none; border: 0; color: #cbd5e1; font-size: 1rem; cursor: pointer; }
+  .kbot-msgs { padding: 13px; overflow-y: auto; flex: 1; min-height: 170px; max-height: 42vh; display: flex; flex-direction: column; gap: 8px; background: var(--sand); }
+  .kbot-msg { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; font-size: .88rem; max-width: 88%; align-self: flex-start; }
+  .kbot-msg.mine { background: var(--sea); color: #fff; border-color: var(--sea); align-self: flex-end; }
+  .kbot-links { display: flex; flex-direction: column; gap: 5px; margin-top: 7px; }
+  .kbot-links a { background: var(--sand); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font-size: .84rem; color: var(--sea-dark); font-weight: 600; }
+  .kbot-links a:hover { border-color: var(--gold); }
+  .kbot-chips { display: flex; gap: 6px; flex-wrap: wrap; padding: 8px 11px; background: #fff; border-top: 1px solid var(--line); }
+  .kbot-chip { background: var(--sand); border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; font-size: .78rem; cursor: pointer; font-family: inherit; color: var(--sea-dark); }
+  #kbotForm { display: flex; border-top: 1px solid var(--line); }
+  #kbotForm input { border: 0; padding: 11px 13px; }
+  #kbotForm input:focus { outline: none; }
+  #kbotForm button { border: 0; background: var(--gold); color: var(--deep); width: 50px; font-size: 1rem; cursor: pointer; }
+  .agenda-blocks { list-style: none; margin: 0; padding: 0 20px 0 0; position: relative; }
+  .agenda-blocks::before { content: ''; position: absolute; inset-inline-start: 6px; top: 10px; bottom: 10px; width: 2px; background: var(--gold); opacity: .45; }
+  .agenda-blocks li { display: flex; gap: 10px; padding: 10px 0; font-size: .98rem; align-items: baseline; position: relative; border-top: 0; }
+  .agenda-blocks li::before { content: ''; position: absolute; inset-inline-start: -18px; top: 18px; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 3px rgba(207,167,98,.25); }
+  .agenda-time { color: var(--sea-dark); font-weight: 800; white-space: nowrap; font-size: .9rem; background: var(--sand); border: 1px solid var(--line); padding: 2px 9px; border-radius: 8px; font-variant-numeric: tabular-nums; }
+  .agenda-desc { font-size: .98rem; }
+  .mini-cd { font-weight: 800; color: var(--gold); font-size: 1.1rem; margin: 8px 0; font-variant-numeric: tabular-nums; }
   .realmap { position: relative; }
   .realmap iframe { width: 100%; border: 0; border-radius: 10px; display: block; background: #e8e6e0; }
   .realmap-open { position: absolute; bottom: 12px; inset-inline-start: 12px; background: #fff; box-shadow: 0 4px 14px rgba(15,23,42,.25); }
@@ -330,6 +362,13 @@
   <div id="footNote"></div>
   <div class="foot-links" id="footLinks"></div>
 </footer>
+<button id="kbotBtn" type="button" aria-label="chat">💬</button>
+<div id="kbot" hidden>
+  <div class="kbot-head"><span id="kbotTitle">🤖</span><button id="kbotClose" type="button" aria-label="close">✕</button></div>
+  <div class="kbot-msgs" id="kbotMsgs"></div>
+  <div class="kbot-chips" id="kbotChips"></div>
+  <form id="kbotForm" autocomplete="off"><input id="kbotIn" maxlength="200"><button type="submit" aria-label="send">➤</button></form>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -800,6 +839,8 @@ function renderChrome() {
   document.getElementById('footName').textContent = T('site');
   document.getElementById('footSlogan').textContent = T('dates');
   document.getElementById('footNote').textContent = T('loc') + ' · ' + T('committee');
+  document.getElementById('kbotTitle').textContent = '🤖 ' + A('مساعد المهرجان', 'Festival Assistant');
+  document.getElementById('kbotIn').placeholder = A('اكتب سؤالك...', 'Type your question...');
   document.getElementById('footLinks').innerHTML = [
     ['about', A('عن المهرجان', 'About')], ['gallery', A('المعرض', 'Gallery')], ['faq', A('الأسئلة الشائعة', 'FAQ')],
     ['contact', A('تواصل معنا', 'Contact')], ['privacy', A('الخصوصية', 'Privacy')], ['terms', A('الشروط', 'Terms')]
@@ -809,7 +850,7 @@ function renderChrome() {
     [A('الفعاليات', 'Programme'), [['sched', '🗓️ ' + T('schedT')], ['community', '🤸 ' + T('communityT')], ['agenda', '📆 ' + T('agenda')]]],
     [A('التسجيل', 'Register'), [['champs', '🏆 ' + A('تسجيل المشاركين', 'Participants')], ['register', '📝 ' + T('register')], ['join', '🎫 ' + A('تصريح الزيارة', 'Visitor Pass')], ['surveys', '💬 ' + T('surveys')]]],
     [A('استكشف', 'Explore'), [['about', 'ℹ️ ' + A('عن المهرجان', 'About')], ['venue', '📍 ' + T('venueT')], ['map', '🌟 ' + T('map')], ['gallery', '🖼️ ' + A('المعرض الإعلامي', 'Gallery')], ['news', '📰 ' + T('newsT')], ['faq', '❓ ' + A('الأسئلة الشائعة', 'FAQ')], ['contact', '✉️ ' + A('تواصل معنا', 'Contact')]]],
-    [A('التشغيل', 'Operations'), [['screen', '📺 ' + T('screen')], ['award', '🎯 ' + T('award')], ['admin', '🛡️ ' + T('admin')]]]
+    [A('🔒 بوابة التشغيل', '🔒 Operations'), [['ops:screen', '📺 ' + T('screen')], ['ops:award', '🎯 ' + T('award')], ['ops:admin', '🛡️ ' + T('admin')]]]
   ];
   var nav = document.getElementById('mainNav');
   nav.innerHTML = '<a data-v="home" class="' + (view === 'home' ? 'active' : '') + '">' + esc(T('home')) + '</a>' +
@@ -820,7 +861,14 @@ function renderChrome() {
     }).join('') +
     '<a class="cta" data-v="join">' + esc(A('تصريح الزيارة', 'Visitor Pass')) + '</a>' +
     '<a class="lang" data-lang="1">' + esc(T('langBtn')) + '</a>';
-  nav.querySelectorAll('a[data-v]').forEach(function (a) { a.onclick = function () { go(a.dataset.v); }; });
+  nav.querySelectorAll('a[data-v]').forEach(function (a) {
+    a.onclick = function () {
+      var v = a.dataset.v;
+      if (v.indexOf('ops:') === 0) {
+        if (window.opsOk) go(v.slice(4)); else go('gate', v.slice(4));
+      } else go(v);
+    };
+  });
   nav.querySelector('a[data-lang]').onclick = function () { setLang(lang === 'ar' ? 'en' : 'ar'); };
   nav.querySelectorAll('.menu-btn').forEach(function (btn) {
     btn.onclick = function (ev) {
@@ -911,7 +959,7 @@ R.home = function () {
     el('cdM', ('0' + Math.floor(t / 60000) % 60).slice(-2));
     el('cdS', ('0' + Math.floor(t / 1000) % 60).slice(-2));
   }, 1000));
-  return '<section class="hero"><div class="hero-bookmark" aria-hidden="true"><svg viewBox="0 0 44 70" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 H44 V46 Q44 62 22 70 Q0 62 0 46 Z" fill="#CFA762"/></svg></div><h1>' + esc(T('site')) + '</h1>' +
+  return '<section class="hero hero-live">' + heroMediaHtml() + '<div class="hero-bookmark" aria-hidden="true"><svg viewBox="0 0 44 70" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 H44 V46 Q44 62 22 70 Q0 62 0 46 Z" fill="#CFA762"/></svg></div><h1>' + esc(T('site')) + '</h1>' +
     '<p class="slogan">📍 ' + esc(T('loc')) + '</p>' +
     '<p class="dates">' + esc(T('dates')) + '</p>' +
     '<div class="countdown"><div class="cd-cell"><span class="cd-num" id="cdD">--</span><span class="cd-lbl">' + esc(A('يوم', 'days')) + '</span></div>' +
@@ -1200,13 +1248,31 @@ R.map = function () {
 };
 
 R.agenda = function () {
+  var ms = [
+    ['🏟️', A('حفل الافتتاح', 'Opening ceremony'), '2026-12-10T16:00:00'],
+    ['🏃', A('انطلاق نصف الماراثون', 'Half-marathon start'), '2026-12-12T06:00:00'],
+    ['🏅', A('حفل التتويج والختام', 'Awards & closing'), '2026-12-17T20:00:00']
+  ];
+  timers.push(setInterval(function () {
+    document.querySelectorAll('.mini-cd[data-target]').forEach(function (el) {
+      var t = new Date(el.dataset.target + '+04:00').getTime() - Date.now();
+      if (t <= 0) { el.textContent = A('انطلقت الآن!', 'Live now!'); return; }
+      var d = Math.floor(t / 86400000), h = Math.floor(t / 3600000) % 24, m = Math.floor(t / 60000) % 60, s2 = Math.floor(t / 1000) % 60;
+      el.textContent = (d > 0 ? d + A(' يوم ', 'd ') : '') + ('0' + h).slice(-2) + ':' + ('0' + m).slice(-2) + ':' + ('0' + s2).slice(-2);
+    });
+  }, 1000));
+  var msHtml = '<h3>' + esc(A('⏳ أبرز المحطات القادمة', '⏳ Upcoming milestones')) + '</h3><div class="grid g3" style="margin-bottom:20px">' +
+    ms.map(function (m) {
+      return '<div class="card" style="text-align:center"><div class="ic">' + m[0] + '</div><div class="tt">' + esc(m[1]) + '</div>' +
+        '<div class="mini-cd" dir="ltr" data-target="' + m[2] + '">--</div></div>';
+    }).join('') + '</div>';
   var days = T('days').map(function (d, i) {
-    return '<div class="aday"><div class="ah"><span class="num">' + (i + 1) + '</span> ' + esc(d) + '</div><ul>' +
-      T('blocks').map(function (b) { return '<li><span>' + b[0] + '</span><span class="tm" dir="ltr">' + b[1] + '</span><span>' + esc(b[2]) + '</span></li>'; }).join('') +
+    return '<div class="aday"><div class="ah"><span class="num">' + (i + 1) + '</span> ' + esc(d) + '</div><ul class="agenda-blocks">' +
+      T('blocks').map(function (b) { return '<li><span>' + b[0] + '</span><span class="agenda-time" dir="ltr">' + b[1] + '</span><span class="agenda-desc">' + esc(b[2]) + '</span></li>'; }).join('') +
       '</ul></div>';
   }).join('');
   return '<section class="container section"><h2 class="sec-title">🗓️ ' + esc(T('agTitle')) + '</h2>' +
-    '<p class="sec-intro">' + esc(T('agIntro')) + '</p><div class="agenda-days">' + days + '</div></section>';
+    '<p class="sec-intro">' + esc(T('agIntro')) + '</p>' + msHtml + '<div class="agenda-days">' + days + '</div></section>';
 };
 
 var adminTab = 'dash';
@@ -1354,6 +1420,13 @@ var VENUE = [
 ];
 var VENUE_KINDS = [['', 'الكل', 'All'], ['fields', '⚽ الملاعب', '⚽ Fields'], ['registration', '📝 التسجيل', '📝 Registration'], ['aid', '⛑️ الإسعاف', '⛑️ First aid'], ['parking', '🅿️ المواقف', '🅿️ Parking'], ['activities', '🤸 الأنشطة', '🤸 Activities'], ['awards', '🏅 التتويج', '🏅 Awards']];
 
+function heroMediaHtml() {
+  var order = [4, 2, 3, 0];
+  return '<div class="hero-media" aria-hidden="true">' +
+    order.map(function (gi, i) {
+      return '<div class="hm-slide" style="background-image:url(' + GALLERY[gi].src + ');animation-delay:' + (i * 6) + 's"></div>';
+    }).join('') + '<div class="hero-overlay"></div></div>';
+}
 function winnersHtml() {
   var cards = CHAMPIONS.map(function (ch) {
     var c = CHAMPS[ch.c];
@@ -1680,6 +1753,109 @@ function sponsorsHtml() {
   return '<section class="container section" style="padding-bottom:14px"><h2 class="sec-title center">🤝 ' + esc(A('شركاؤنا الداعمون', 'Our Partners & Sponsors')) + '</h2>' +
     '<div class="sponsor-marquee"><div class="sponsor-track">' + items + items + '</div></div></section>';
 }
+
+/* ============ operations login gate (feedback #3) ============ */
+R.gate = function () {
+  var target = viewArg || 'admin';
+  return '<section class="container section" style="max-width:420px"><div class="panel" style="text-align:center">' +
+    '<div style="font-size:2.4rem">🔒</div><h2>' + esc(A('بوابة التشغيل والإدارة', 'Operations & Admin Portal')) + '</h2>' +
+    '<p class="sec-intro">' + esc(A('منفصلة عن الموقع العام — للمصرح لهم فقط. في العرض التجريبي استخدم أي بيانات.', 'Separated from the public site — authorized staff only. In this demo, any credentials work.')) + '</p>' +
+    '<div class="field" style="text-align:start"><label class="flabel">' + esc(A('اسم المستخدم', 'Username')) + '</label><input type="text" id="gUser" dir="ltr" value="demo"></div>' +
+    '<div class="field" style="text-align:start"><label class="flabel">' + esc(A('كلمة المرور', 'Password')) + '</label><input type="password" id="gPass" dir="ltr" value="demo1234"></div>' +
+    '<button class="btn primary block" onclick="window.opsOk=true;toast(A(\'تم تسجيل الدخول ✔\',\'Logged in ✔\'));go(\'' + target + '\')">' + esc(A('تسجيل الدخول', 'Log in')) + '</button>' +
+    '</div></section>';
+};
+
+/* ============ festival assistant chatbot (feedback #4) ============ */
+window.kbotAsk = function (q) {
+  kbotMsg(q, true);
+  setTimeout(function () { kbotAnswer(q); }, 350);
+};
+function kbotMsg(html, mine) {
+  var box = document.getElementById('kbotMsgs');
+  var d = document.createElement('div');
+  d.className = 'kbot-msg' + (mine ? ' mine' : '');
+  if (mine) d.textContent = html; else d.innerHTML = html;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+function kbotLink(label, view) {
+  return '<a onclick="go(\'' + view + '\')" style="cursor:pointer">' + esc(label) + '</a>';
+}
+function kbotAnswer(q) {
+  var lq = q.toLowerCase();
+  var I = [
+    [['سجل', 'تسجيل', 'مشارك', 'اشترك', 'register', 'sign', 'join', 'participat'],
+     A('يمكنك التسجيل مباشرة من هنا:', 'Register directly here:'),
+     [[A('🏆 تسجيل المشاركين', '🏆 Participants'), 'champs'], [A('📝 بوابات التسجيل', '📝 Portals'), 'register'], [A('🎫 تصريح الزيارة', '🎫 Visitor pass'), 'join']]],
+    [['بطول', 'مسابق', 'championship', 'competition'],
+     A('لدينا 13 بطولة معتمدة — لكل بطولة صفحة بالشروط والجوائز والتسجيل المباشر.', '13 accredited championships, each with rules, prizes and direct registration.'),
+     [[A('🏆 تصفح البطولات', '🏆 Championships'), 'champs']]],
+    [['جدول', 'موعد', 'متى', 'وقت', 'schedule', 'when', 'time'],
+     A('المهرجان 10–17 ديسمبر 2026، الفعاليات الرئيسية 4–10 مساءً.', 'Dec 10–17, 2026 — main events 4–10 PM.'),
+     [[A('🗓️ الجدول الزمني', '🗓️ Schedule'), 'sched'], [A('📆 الأجندة', '📆 Agenda'), 'agenda']]],
+    [['ورش', 'صحي', 'workshop', 'health'],
+     A('6 ورش صحية مجانية بمقاعد محدودة — احجز مسبقاً.', '6 free health workshops with limited seats — pre-register.'),
+     [[A('🩺 الورش والحجز', '🩺 Workshops'), 'community']]],
+    [['تصريح', 'زيار', 'دخول', 'عائل', 'pass', 'entry', 'family'],
+     A('تصريح الزيارة مجاني برمز QR يُمسح عند الدخول ويجمع نقاطك، مع خيار عائلي حتى 12 فرداً.', 'Free QR visitor pass, scanned at entry, also collects points; family option up to 12.'),
+     [[A('🎫 احصل على تصريحك', '🎫 Get your pass'), 'join']]],
+    [['نقاط', 'متصدر', 'point', 'leader'],
+     A('يمسح المنظم رمزك بعد كل نشاط فتضاف النقاط فوراً وتظهر على اللوحات.', 'Organizers scan your QR after each activity; points appear instantly.'),
+     [[A('👑 المتصدرون', '👑 Leaderboard'), 'leaderboard']]],
+    [['نتائج', 'نتيجة', 'ترتيب', 'result', 'score', 'standing'],
+     A('النتائج الفورية وترتيب البطولات والأبطال في صفحة النتائج.', 'Live scores, standings and champions on the results page.'),
+     [[A('📊 النتائج', '📊 Results'), 'res']]],
+    [['وين', 'أين', 'موقع', 'خريط', 'مواقف', 'where', 'location', 'map', 'parking'],
+     A('المهرجان على كورنيش كلباء بإمارة الشارقة — الخريطة تعرض كل المرافق.', 'On the Kalba Corniche, Sharjah — the map shows all facilities.'),
+     [[A('📍 خريطة الموقع', '📍 Venue map'), 'venue']]],
+    [['جائز', 'كأس', 'ميدال', 'prize', 'award', 'medal'],
+     A('كأس وميداليات للمراكز الثلاثة الأولى في كل بطولة وشهادات للجميع.', 'Cup & medals for the top three of every championship; certificates for all.'),
+     [[A('🏆 البطولات', '🏆 Championships'), 'champs']]],
+    [['سعر', 'رسوم', 'مجان', 'price', 'fee', 'free'],
+     A('الدخول والتصريح والورش مجانية بالكامل. 🎉', 'Entry, passes and workshops are completely free. 🎉'), []],
+    [['تواصل', 'اتصال', 'contact', 'phone', 'email', 'help'],
+     A('يسعد الفريق بمساعدتك.', 'The team is happy to help.'),
+     [[A('✉️ تواصل معنا', '✉️ Contact'), 'contact']]]
+  ];
+  var hit = null;
+  for (var i = 0; i < I.length; i++) {
+    if (I[i][0].some(function (kw) { return lq.indexOf(kw) !== -1; })) { hit = I[i]; break; }
+  }
+  if (!hit) {
+    kbotMsg(esc(A('لم أفهم سؤالك تماماً 🤔 — جرّب الأزرار بالأسفل أو الأسئلة الشائعة.', "I didn't quite get that 🤔 — try the buttons below or the FAQ.")) +
+      '<div class="kbot-links">' + kbotLink(A('❓ الأسئلة الشائعة', '❓ FAQ'), 'faq') + kbotLink(A('✉️ تواصل معنا', '✉️ Contact'), 'contact') + '</div>');
+    return;
+  }
+  var html = esc(hit[1]);
+  if (hit[2].length) html += '<div class="kbot-links">' + hit[2].map(function (l) { return kbotLink(l[0], l[1]); }).join('') + '</div>';
+  kbotMsg(html);
+}
+(function () {
+  var btn = document.getElementById('kbotBtn'), kb = document.getElementById('kbot');
+  btn.addEventListener('click', function () {
+    kb.hidden = !kb.hidden;
+    var box = document.getElementById('kbotMsgs');
+    if (!kb.hidden && !box.children.length) {
+      kbotMsg(esc(A('أهلاً بك في مهرجان كلباء الرياضي 2026! 👋 كيف أقدر أساعدك؟', 'Welcome to Kalba Sports Festival 2026! 👋 How can I help?')));
+      var chips = document.getElementById('kbotChips');
+      [[A('كيف أسجل؟', 'How do I register?'), 'تسجيل'], [A('الجدول', 'Schedule'), 'جدول'], [A('تصريح الزيارة', 'Visitor pass'), 'تصريح'], [A('النقاط', 'Points'), 'نقاط'], [A('الموقع', 'Location'), 'موقع']].forEach(function (c) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'kbot-chip'; b.textContent = c[0];
+        b.onclick = function () { kbotAsk(c[1]); };
+        chips.appendChild(b);
+      });
+    }
+  });
+  document.getElementById('kbotClose').addEventListener('click', function () { kb.hidden = true; });
+  document.getElementById('kbotForm').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var q = document.getElementById('kbotIn').value.trim();
+    if (!q) return;
+    document.getElementById('kbotIn').value = '';
+    kbotAsk(q);
+  });
+})();
 
 /* ============ boot ============ */
 function render() {
