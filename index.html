@@ -300,8 +300,12 @@
   .lightbox { position: fixed; inset: 0; background: rgba(10,18,32,.92); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4vh 4vw; cursor: pointer; }
   .lightbox img { max-width: 92vw; max-height: 80vh; border-radius: 10px; }
   .lb-cap { color: #e2e8f0; margin-top: 10px; }
-  .sponsor-strip { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-  .sponsor-chip { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 19px; font-weight: 700; color: var(--sea-dark); box-shadow: var(--shadow); }
+  .sponsor-marquee { overflow: hidden; position: relative; padding: 6px 0; }
+  .sponsor-track { display: flex; gap: 54px; width: max-content; align-items: center; direction: ltr; animation: spScroll 26s linear infinite; }
+  .sponsor-marquee:hover .sponsor-track { animation-play-state: paused; }
+  @keyframes spScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .sponsor-track { animation: none; } }
+  .sponsor-logo { height: 56px; width: auto; flex-shrink: 0; }
   .foot-links { margin-top: 10px; font-size: .84rem; }
   .foot-links a { color: #cbd5e1; cursor: pointer; }
   .foot-links a:hover { color: var(--gold-soft); }
@@ -929,11 +933,11 @@ R.home = function () {
     '<button class="btn ghost" onclick="go(\'res\')">📊 ' + esc(T('resT')) + '</button>' +
     '<button class="btn ghost" onclick="go(\'surveys\')">💬 ' + esc(T('surveys')) + '</button>' +
     '</div></section>' +
-    sponsorsHtml() +
     '<section class="container section" style="padding-top:12px"><h2 class="sec-title center">📍 ' + esc(A('خريطة شاطئ كلباء', 'Kalba beach map')) + '</h2>' +
     '<p class="sec-intro" style="text-align:center">' + esc(A('موقع المهرجان على الكورنيش — الملاعب، التسجيل، الإسعاف، المواقف والأنشطة.', 'The festival site on the Corniche — fields, registration, first aid, parking and activities.')) + '</p>' +
     '<div class="panel" style="padding:10px;max-width:860px;margin:0 auto">' + realMapHtml(380) + '</div>' +
-    '<div class="btn-row" style="justify-content:center"><button class="btn ghost" onclick="go(\'venue\')">' + esc(A('مرافق الموقع كاملة (ملاعب، إسعاف، مواقف...)', 'Full site facilities (fields, first aid, parking...)')) + '</button></div></section>';
+    '<div class="btn-row" style="justify-content:center"><button class="btn ghost" onclick="go(\'venue\')">' + esc(A('مرافق الموقع كاملة (ملاعب، إسعاف، مواقف...)', 'Full site facilities (fields, first aid, parking...)')) + '</button></div></section>' +
+    sponsorsHtml();
 };
 
 R.form = function () {
@@ -1658,10 +1662,23 @@ R.terms = function () {
     items.map(function (it) { return '<div class="panel"><h3 style="margin-top:0">' + esc(it[0]) + '</h3><p style="margin:0">' + esc(it[1]) + '</p></div>'; }).join('') + '</section>';
 };
 
+function sponsorLogoSvg(name, sub) {
+  return '<svg class="sponsor-logo" viewBox="0 0 200 58" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M14 8 L18 19 L30 20 L21 28 L24 40 L14 33 L4 40 L7 28 L-2 20 L10 19 Z" transform="translate(8,4)" fill="#CFA762"/>' +
+    '<text x="52" y="27" font-size="15" font-weight="800" fill="#183254" font-family="Sakkal Majalla, Segoe UI, Tahoma">' + esc(name) + '</text>' +
+    '<text x="52" y="46" font-size="10" fill="#74808f" font-family="Segoe UI, Tahoma">' + esc(sub) + '</text></svg>';
+}
 function sponsorsHtml() {
-  var names = ['مجلس الشارقة الرياضي', 'بلدية كلباء', 'بيئة', 'هيئة الشارقة للإذاعة والتلفزيون'];
-  return '<section class="container section" style="padding-top:0;padding-bottom:6px"><h2 class="sec-title center">🤝 ' + esc(A('شركاؤنا الداعمون', 'Our Partners & Sponsors')) + '</h2>' +
-    '<div class="sponsor-strip">' + names.map(function (n) { return '<span class="sponsor-chip">' + esc(n) + '</span>'; }).join('') + '</div></section>';
+  var logos = [
+    [A('مجلس الشارقة الرياضي', 'Sharjah Sports Council'), 'SHARJAH SPORTS COUNCIL'],
+    [A('بلدية كلباء', 'Kalba Municipality'), 'KALBA MUNICIPALITY'],
+    [A('بيئة', "BEE'AH"), 'BEEAH GROUP'],
+    [A('هيئة الشارقة للإذاعة والتلفزيون', 'Sharjah Broadcasting'), 'SBA'],
+    [A('الشارقة للسياحة', 'Sharjah Tourism'), 'SCTDA']
+  ];
+  var items = logos.map(function (l) { return sponsorLogoSvg(l[0], l[1]); }).join('');
+  return '<section class="container section" style="padding-bottom:14px"><h2 class="sec-title center">🤝 ' + esc(A('شركاؤنا الداعمون', 'Our Partners & Sponsors')) + '</h2>' +
+    '<div class="sponsor-marquee"><div class="sponsor-track">' + items + items + '</div></div></section>';
 }
 
 /* ============ boot ============ */
