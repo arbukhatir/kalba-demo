@@ -655,9 +655,11 @@ var FORMS = {
     ]},
   games: { ic: '🎠', t: {ar:'موردو الألعاب (منطقة الأطفال)',en:'Games Suppliers (Kids Zone)'}, d: {ar:'شهادة السلامة ووثيقة التأمين إلزامية وترفع عبر النموذج مباشرة',en:'Safety certificate & accident insurance are mandatory uploads'},
     fields: [
+      { n:'gname', t:'text', r:1, l:{ar:'اسم اللعبة',en:'Game name'} },
       { n:'gtype', t:'select', r:1, l:{ar:'نوع الألعاب',en:'Games type'}, o:[{ar:'ألعاب هوائية',en:'Inflatables'},{ar:'كهربائية',en:'Electric rides'},{ar:'مهارات',en:'Skill games'},{ar:'تعليمية',en:'Educational'}] },
       { n:'ages', t:'checks', r:1, l:{ar:'الفئة العمرية',en:'Age category'}, o:[{ar:'3–6',en:'3–6'},{ar:'7–12',en:'7–12'},{ar:'+13',en:'13+'}] },
       { n:'area', t:'number', r:1, l:{ar:'المساحة (م²)',en:'Area (m²)'} },
+      { n:'sup', t:'number', r:1, l:{ar:'عدد المشرفين',en:'Supervisors count'} },
       { n:'elec', t:'textarea', r:0, l:{ar:'متطلبات الكهرباء',en:'Electricity requirements'} },
       { n:'safety', t:'file', r:1, l:{ar:'شهادة السلامة (إلزامي)',en:'Safety certificate (mandatory)'} },
       { n:'insur', t:'file', r:1, l:{ar:'وثيقة التأمين ضد الحوادث (إلزامي)',en:'Accident insurance (mandatory)'} }
@@ -665,17 +667,21 @@ var FORMS = {
   exhibitor: { ic: '🛍️', t: {ar:'العارضون والأكشاك',en:'Exhibitors & Kiosks'}, d: {ar:'حِرف يدوية ومنتجات محلية',en:'Crafts & local products'},
     fields: [
       { n:'atype', t:'select', r:1, l:{ar:'نوع النشاط',en:'Activity type'}, o:[{ar:'حِرف يدوية',en:'Handicrafts'},{ar:'منتجات محلية',en:'Local products'},{ar:'أخرى',en:'Other'}] },
+      { n:'products', t:'textarea', r:1, l:{ar:'المنتجات / الخدمات',en:'Products / services'} },
       { n:'area', t:'number', r:1, l:{ar:'المساحة (م²)',en:'Area (m²)'} },
-      { n:'reqs', t:'textarea', r:0, l:{ar:'المتطلبات',en:'Requirements'} }
+      { n:'reqs', t:'textarea', r:0, l:{ar:'متطلبات المساحة والكهرباء',en:'Area & electricity requirements'} }
     ]},
   sponsor: { ic: '🤝', t: {ar:'الرعاة والشركاء',en:'Sponsors & Partners'}, d: {ar:'اسم الجهة وفئة الرعاية وجهة الاتصال',en:'Entity, category & contact'},
     fields: [
       { n:'entity', t:'text', r:1, l:{ar:'اسم الجهة',en:'Entity name'} },
-      { n:'cat', t:'select', r:1, l:{ar:'فئة الرعاية',en:'Category'}, o:[{ar:'بلاتيني',en:'Platinum'},{ar:'ذهبي',en:'Gold'},{ar:'فضي',en:'Silver'},{ar:'شريك دعم',en:'Partner'}] }
+      { n:'cat', t:'select', r:1, l:{ar:'فئة الرعاية / حزمة الشراكة',en:'Category / package'}, o:[{ar:'بلاتيني',en:'Platinum'},{ar:'ذهبي',en:'Gold'},{ar:'فضي',en:'Silver'},{ar:'شريك دعم',en:'Partner'}] },
+      { n:'auth', t:'textarea', r:0, l:{ar:'الأشخاص المخولون بالتواصل',en:'Authorized contacts'} }
     ]},
   volunteer: { ic: '🙌', t: {ar:'المتطوعون',en:'Volunteers'}, d: {ar:'الاسم والعمر والمهارات وأيام التوفر',en:'Name, age, skills & availability'},
     fields: [
       { n:'age', t:'number', r:1, l:{ar:'العمر',en:'Age'} },
+      { n:'gender', t:'select', r:1, l:{ar:'الجنس',en:'Gender'}, o:[{ar:'ذكر',en:'Male'},{ar:'أنثى',en:'Female'}] },
+      { n:'exp', t:'textarea', r:0, l:{ar:'خبرات سابقة',en:'Previous experience'} },
       { n:'skills', t:'checks', r:1, l:{ar:'المهارات',en:'Skills'}, o:[{ar:'تنظيم',en:'Organizing'},{ar:'استقبال',en:'Reception'},{ar:'إسعافات أولية',en:'First aid'},{ar:'ترجمة',en:'Translation'},{ar:'تصوير وإعلام',en:'Media'}] },
       { n:'days', t:'days', r:1, l:{ar:'أيام التوفر',en:'Availability days'} }
     ]},
@@ -683,7 +689,9 @@ var FORMS = {
     fields: [
       { n:'stype', t:'select', r:1, l:{ar:'نوع العرض',en:'Show type'}, o:[{ar:'فني',en:'Artistic'},{ar:'موسيقي',en:'Musical'},{ar:'رياضي',en:'Sports'},{ar:'تراثي',en:'Heritage'}] },
       { n:'dur', t:'number', r:1, l:{ar:'المدة (دقائق)',en:'Duration (min)'} },
-      { n:'tech', t:'textarea', r:0, l:{ar:'المتطلبات الفنية',en:'Technical requirements'} }
+      { n:'tech', t:'textarea', r:0, l:{ar:'المتطلبات الفنية',en:'Technical requirements'} },
+      { n:'avail', t:'days', r:1, l:{ar:'جدول التوفر',en:'Availability schedule'} },
+      { n:'port', t:'file', r:0, l:{ar:'مرفقات الأعمال',en:'Portfolio'} }
     ]},
   sports: { ic: '🏅', t: {ar:'المسابقات الرياضية',en:'Sports Competitions'}, d: {ar:'النشاط والفئة العمرية والفريق',en:'Activity, age category & team'},
     fields: [
@@ -695,6 +703,7 @@ var FORMS = {
     fields: [
       { n:'entity', t:'text', r:1, l:{ar:'الجهة الإعلامية',en:'Media outlet'} },
       { n:'ctype', t:'select', r:1, l:{ar:'نوع التغطية',en:'Coverage'}, o:[{ar:'تلفزيونية',en:'TV'},{ar:'صحفية',en:'Press'},{ar:'رقمية',en:'Digital'},{ar:'إذاعية',en:'Radio'}] },
+      { n:'equip', t:'textarea', r:0, l:{ar:'المعدات المطلوبة',en:'Required equipment'} },
       { n:'days', t:'days', r:1, l:{ar:'تواريخ الحضور',en:'Attendance dates'} }
     ]}
 };
@@ -867,7 +876,8 @@ var R = {};
 function portalsGrid() {
   return Object.keys(FORMS).map(function (k) {
     var f = FORMS[k];
-    return '<div class="card link" onclick="go(\'form\',\'' + k + '\')"><div class="ic">' + f.ic + '</div><div class="tt">' + esc(tx(f.t)) + '</div><div class="dd">' + esc(tx(f.d)) + '</div></div>';
+    var target = k === 'sports' ? "go('champs')" : "go('form','" + k + "')";
+    return '<div class="card link" onclick="' + target + '"><div class="ic">' + f.ic + '</div><div class="tt">' + esc(tx(f.t)) + '</div><div class="dd">' + esc(tx(f.d)) + '</div></div>';
   }).join('');
 }
 function surveysGrid() {
