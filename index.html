@@ -284,6 +284,27 @@
     .dropdown a { color: #cbd5e1; }
     .dropdown a:hover { background: rgba(255,255,255,.1); color: #fff; }
   }
+  /* v3: about / faq / gallery / policies / sponsors / footer links */
+  .faq-item { background: #fff; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; box-shadow: var(--shadow); }
+  .faq-item summary { cursor: pointer; padding: 14px 17px; font-weight: 700; color: var(--sea-dark); list-style: none; position: relative; }
+  .faq-item summary::after { content: '▾'; position: absolute; inset-inline-end: 15px; color: var(--gold); transition: transform .15s; }
+  .faq-item[open] summary::after { transform: rotate(180deg); }
+  .faq-item p { padding: 0 17px 14px; margin: 0; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 760px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .gallery-grid { grid-template-columns: 1fr; } }
+  .gallery-item { margin: 0; border-radius: 12px; overflow: hidden; cursor: pointer; position: relative; background: var(--deep); box-shadow: var(--shadow); }
+  .gallery-item img { width: 100%; height: 200px; object-fit: cover; display: block; transition: transform .2s; }
+  .gallery-item:hover img { transform: scale(1.04); opacity: .92; }
+  .gallery-item figcaption { position: absolute; bottom: 0; inset-inline: 0; background: linear-gradient(transparent, rgba(15,23,42,.85)); color: #fff; font-size: .8rem; padding: 20px 11px 8px; }
+  .lightbox { position: fixed; inset: 0; background: rgba(10,18,32,.92); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4vh 4vw; cursor: pointer; }
+  .lightbox img { max-width: 92vw; max-height: 80vh; border-radius: 10px; }
+  .lb-cap { color: #e2e8f0; margin-top: 10px; }
+  .sponsor-strip { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .sponsor-chip { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 19px; font-weight: 700; color: var(--sea-dark); box-shadow: var(--shadow); }
+  .foot-links { margin-top: 10px; font-size: .84rem; }
+  .foot-links a { color: #cbd5e1; cursor: pointer; }
+  .foot-links a:hover { color: var(--gold-soft); }
   .realmap { position: relative; }
   .realmap iframe { width: 100%; border: 0; border-radius: 10px; display: block; background: #e8e6e0; }
   .realmap-open { position: absolute; bottom: 12px; inset-inline-start: 12px; background: #fff; box-shadow: 0 4px 14px rgba(15,23,42,.25); }
@@ -303,6 +324,7 @@
   <div class="fb">★ <span id="footName"></span></div>
   <div class="fs" id="footSlogan"></div>
   <div id="footNote"></div>
+  <div class="foot-links" id="footLinks"></div>
 </footer>
 <div class="toast" id="toast"></div>
 
@@ -765,11 +787,15 @@ function renderChrome() {
   document.getElementById('footName').textContent = T('site');
   document.getElementById('footSlogan').textContent = T('dates');
   document.getElementById('footNote').textContent = T('loc') + ' · ' + T('committee');
+  document.getElementById('footLinks').innerHTML = [
+    ['about', A('عن المهرجان', 'About')], ['gallery', A('المعرض', 'Gallery')], ['faq', A('الأسئلة الشائعة', 'FAQ')],
+    ['contact', A('تواصل معنا', 'Contact')], ['privacy', A('الخصوصية', 'Privacy')], ['terms', A('الشروط', 'Terms')]
+  ].map(function (l) { return '<a onclick="go(\'' + l[0] + '\')">' + esc(l[1]) + '</a>'; }).join(' · ');
   var MENUS = [
     [A('المنافسات', 'Competitions'), [['champs', '🏆 ' + T('champsT')], ['res', '📊 ' + T('resT')], ['leaderboard', '👑 ' + T('leaderboard')]]],
     [A('الفعاليات', 'Programme'), [['sched', '🗓️ ' + T('schedT')], ['community', '🤸 ' + T('communityT')], ['agenda', '📆 ' + T('agenda')]]],
     [A('التسجيل', 'Register'), [['champs', '🏆 ' + A('تسجيل المشاركين', 'Participants')], ['register', '📝 ' + T('register')], ['join', '🎫 ' + A('تصريح الزيارة', 'Visitor Pass')], ['surveys', '💬 ' + T('surveys')]]],
-    [A('استكشف', 'Explore'), [['venue', '📍 ' + T('venueT')], ['map', '🌟 ' + T('map')], ['news', '📰 ' + T('newsT')]]],
+    [A('استكشف', 'Explore'), [['about', 'ℹ️ ' + A('عن المهرجان', 'About')], ['venue', '📍 ' + T('venueT')], ['map', '🌟 ' + T('map')], ['gallery', '🖼️ ' + A('المعرض الإعلامي', 'Gallery')], ['news', '📰 ' + T('newsT')], ['faq', '❓ ' + A('الأسئلة الشائعة', 'FAQ')], ['contact', '✉️ ' + A('تواصل معنا', 'Contact')]]],
     [A('التشغيل', 'Operations'), [['screen', '📺 ' + T('screen')], ['award', '🎯 ' + T('award')], ['admin', '🛡️ ' + T('admin')]]]
   ];
   var nav = document.getElementById('mainNav');
@@ -893,6 +919,7 @@ R.home = function () {
     '<button class="btn ghost" onclick="go(\'res\')">📊 ' + esc(T('resT')) + '</button>' +
     '<button class="btn ghost" onclick="go(\'surveys\')">💬 ' + esc(T('surveys')) + '</button>' +
     '</div></section>' +
+    sponsorsHtml() +
     '<section class="container section" style="padding-top:12px"><h2 class="sec-title center">📍 ' + esc(A('خريطة شاطئ كلباء', 'Kalba beach map')) + '</h2>' +
     '<p class="sec-intro" style="text-align:center">' + esc(A('موقع المهرجان على الكورنيش — الملاعب، التسجيل، الإسعاف، المواقف والأنشطة.', 'The festival site on the Corniche — fields, registration, first aid, parking and activities.')) + '</p>' +
     '<div class="panel" style="padding:10px;max-width:860px;margin:0 auto">' + realMapHtml(380) + '</div>' +
@@ -967,12 +994,16 @@ R.join = function () {
     '<div id="formErr"></div>' +
     '<div class="field"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" id="jName" maxlength="100"></div>' +
     '<div class="field"><label class="flabel">' + esc(T('ageGroup')) + ' <span class="req">*</span></label><select id="jAge"><option value="">' + esc(T('choose')) + '</option>' + ageOpts + '</select></div>' +
+    '<label class="check" style="margin-bottom:12px"><input type="checkbox" id="jConsent"> <span>' +
+    esc(A('أوافق على شروط الاستخدام وسياسة الخصوصية', 'I agree to the Terms of Use and Privacy Policy')) +
+    ' — <a onclick="go(\'terms\')" style="cursor:pointer">' + esc(A('الشروط', 'Terms')) + '</a></span></label>' +
     '<button class="btn gold block" onclick="doJoin()">' + esc(T('joinBtn')) + '</button></div></section>';
 };
 window.doJoin = function () {
   var n = document.getElementById('jName').value.trim();
   var a = document.getElementById('jAge').value;
-  if (!n || !a) { document.getElementById('formErr').innerHTML = '<div class="flash err">' + esc(T('required')) + '</div>'; return; }
+  var consent = document.getElementById('jConsent');
+  if (!n || !a || (consent && !consent.checked)) { document.getElementById('formErr').innerHTML = '<div class="flash err">' + esc(T('required')) + '</div>'; return; }
   me = { id: 999, name: n, age: a, pts: 0, zonePts: {}, code: newCode() };
   VISITORS.push(me);
   go('my');
@@ -1539,6 +1570,89 @@ R.news = function () {
         '<strong>' + esc(A(n.ar, n.en)) + '</strong><div class="muted" style="font-size:.8rem" dir="ltr">2026-12-0' + (Math.floor(Math.random() * 0) + 8) + '</div></div>';
     }).join('') + '</section>';
 };
+
+/* ============ v3: about / faq / contact / gallery / policies ============ */
+R.about = function () {
+  var pillars = [
+    ['🏆', A('منافسة رسمية معتمدة', 'Official competition'), A('13 بطولة معتمدة بإشراف مجلس الشارقة الرياضي، بلوائح رسمية وجوائز وتتويج.', '13 accredited championships supervised by Sharjah Sports Council.')],
+    ['🤸', A('مجتمع مشارك', 'A participating community'), A('فعاليات مجتمعية وورش صحية مفتوحة للجميع، ونظام نقاط يكافئ المشاركة.', 'Community events and health workshops open to everyone, with a rewarding points system.')],
+    ['🌊', A('طبيعة كلباء', "Kalba's nature"), A('تجربة تمتد من الكورنيش إلى المانغروف والبحر والجبال والمزارع.', 'An experience from the Corniche to the mangrove, sea, mountains and farms.')]
+  ];
+  var facts = [['🗓️', A('8 أيام', '8 days')], ['🏆', A('13 بطولة', '13 championships')], ['🤸', A('4 فعاليات مجتمعية', '4 community events')], ['🩺', A('6 ورش صحية', '6 workshops')]];
+  return '<section class="container section" style="max-width:760px"><h2 class="sec-title">' + esc(A('عن المهرجان', 'About the Festival')) + '</h2>' +
+    '<div class="panel"><p style="font-size:1.05rem;line-height:2;margin:0">' + esc(A(
+      'مهرجان كلباء الرياضي 2026 مهرجان رياضي مجتمعي تنظمه لجنة التجربة والفعاليات بإشراف مجلس الشارقة الرياضي في مدينة كلباء بإمارة الشارقة، يجمع على الكورنيش بين المنافسات الرسمية والفعاليات المجتمعية المفتوحة.',
+      'Kalba Sports Festival 2026 is a community sports festival organized by the Experience & Events Committee under Sharjah Sports Council in Kalba, Emirate of Sharjah — combining official competitions with open community events on the Corniche.')) + '</p></div>' +
+    '<div class="grid g3">' + pillars.map(function (p) { return '<div class="card"><div class="ic">' + p[0] + '</div><div class="tt">' + esc(p[1]) + '</div><div class="dd">' + esc(p[2]) + '</div></div>'; }).join('') + '</div>' +
+    '<div class="stat-grid" style="margin-top:14px">' + facts.map(function (f) { return '<div class="stat"><div class="n" style="font-size:1.1rem">' + f[0] + ' ' + esc(f[1]) + '</div></div>'; }).join('') + '</div></section>';
+};
+
+R.faq = function () {
+  var faqs = [
+    [A('كيف أسجل للمشاركة في البطولات؟', 'How do I register for a championship?'), A('اختر بطولتك من صفحة البطولات واضغط «سجّل الآن» — تحصل فوراً على رقم تسجيل ورمز QR وتتابع حالة طلبك من نفس الصفحة.', 'Pick your championship, press Register Now — you instantly get a reg number and QR and can track your status.')],
+    [A('ما هو تصريح الزيارة؟', 'What is the visitor pass?'), A('تصريح رقمي مجاني برمز QR يُمسح عند الدخول ويجمع نقاطك، مع خيار عائلي موحد حتى 12 فرداً.', 'A free digital QR pass scanned at entry that also collects your points, with a family option up to 12 people.')],
+    [A('ما المستندات المطلوبة؟', 'What documents are required?'), A('صورة الهوية للمشاركين الرياضيين وشهادة طبية عند الحاجة، وشهادة السلامة والتأمين لموردي ألعاب الأطفال.', 'ID for athletes and a medical certificate when required; safety certificate and insurance for kids-zone suppliers.')],
+    [A('كيف يعمل نظام النقاط؟', 'How do points work?'), A('يمسح المنظم رمز QR الخاص بك بعد كل نشاط فتضاف النقاط فوراً وتظهر على لوحة المتصدرين وشاشات المهرجان.', 'An organizer scans your QR after each activity; points appear instantly on the leaderboard and screens.')],
+    [A('أين أجد النتائج والجوائز؟', 'Where are results and prizes?'), A('صفحة النتائج تعرض النتائج الفورية وترتيب البطولات والأبطال. الجوائز كؤوس وميداليات للمراكز الثلاثة الأولى.', 'The Results page shows live scores, standings and champions. Cups and medals for the top three.')],
+    [A('كيف أحجز مقعد ورشة؟', 'How do I book a workshop seat?'), A('من صفحة المجتمع والورش — المقاعد محدودة والحجز المسبق يضمن مقعدك.', 'From the Community page — seats are limited and pre-registration guarantees yours.')]
+  ];
+  return '<section class="container section" style="max-width:680px"><h2 class="sec-title">❓ ' + esc(A('الأسئلة الشائعة', 'FAQ')) + '</h2>' +
+    faqs.map(function (f) { return '<details class="faq-item"><summary>' + esc(f[0]) + '</summary><p>' + esc(f[1]) + '</p></details>'; }).join('') +
+    '<div class="panel" style="text-align:center;margin-top:14px"><button class="btn primary" onclick="go(\'contact\')">✉️ ' + esc(A('تواصل معنا', 'Contact Us')) + '</button></div></section>';
+};
+
+R.contact = function () {
+  return '<section class="container section" style="max-width:900px"><h2 class="sec-title">✉️ ' + esc(A('تواصل معنا', 'Contact Us')) + '</h2><div class="grid g2">' +
+    '<div class="panel"><h3 style="margin-top:0">' + esc(A('أرسل رسالة', 'Send a message')) + '</h3><div id="formErr"></div><div id="formFields">' +
+    '<div class="field" data-n="_n" data-t="text" data-r="1"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text"></div>' +
+    '<div class="field" data-n="_e" data-t="text" data-r="1"><label class="flabel">' + esc(T('email')) + ' / ' + esc(T('phone')) + ' <span class="req">*</span></label><input type="text" dir="ltr"></div>' +
+    '<div class="field" data-n="_m" data-t="textarea" data-r="1"><label class="flabel">' + esc(A('الرسالة', 'Message')) + ' <span class="req">*</span></label><textarea rows="4"></textarea></div>' +
+    '</div><button class="btn primary block" onclick="(function(){var m=validateFields(document.getElementById(\'formFields\'));if(m.length){document.getElementById(\'formErr\').innerHTML=\'<div class=&quot;flash err&quot;>\'+esc(T(\'required\'))+\'</div>\';}else{toast(A(\'وصلتنا رسالتك — سيتواصل معك الفريق قريباً 🙏\',\'Message received 🙏\'));go(\'home\');}})()">' + esc(A('إرسال الرسالة', 'Send Message')) + '</button></div>' +
+    '<div class="panel"><h3 style="margin-top:0">' + esc(A('بيانات التواصل', 'Contact details')) + '</h3>' +
+    '<p>📧 <span dir="ltr">info@kalbasportsfestival.ae</span><br>📞 <span dir="ltr">+971 6 000 0000</span><br>📍 ' + esc(T('loc')) + '</p>' +
+    '<div class="btn-row">' + ['Instagram', 'X', 'YouTube', 'Facebook'].map(function (s2) { return '<button class="btn sm ghost" onclick="toast(\'' + s2 + ' — demo\')">' + s2 + '</button>'; }).join('') + '</div></div></div></section>';
+};
+
+R.gallery = function () {
+  return '<section class="container section"><h2 class="sec-title">🖼️ ' + esc(A('المعرض الإعلامي', 'Media Gallery')) + '</h2>' +
+    '<p class="sec-intro">' + esc(A('صور من أجواء كلباء الرياضية — للمواد الصحفية تواصل مع اللجنة الإعلامية.', 'Photos from Kalba sports — for press kits contact the media committee.')) + '</p>' +
+    '<div class="gallery-grid">' + GALLERY.map(function (g, i) {
+      return '<figure class="gallery-item" onclick="openLb(' + i + ')"><img src="' + g.src + '" alt=""><figcaption>' + esc(tx(g.cap)) + '</figcaption></figure>';
+    }).join('') + '</div>' +
+    '<div class="panel" style="margin-top:16px"><strong>📰 ' + esc(A('للإعلام والصحافة', 'Media & press')) + '</strong> ' +
+    '<button class="btn sm ghost" onclick="go(\'form\',\'media\')">' + esc(A('اعتماد إعلامي', 'Media accreditation')) + '</button></div>' +
+    '<div class="lightbox" id="lb" hidden onclick="this.hidden=true"><img id="lbImg" alt=""><div class="lb-cap" id="lbCap"></div></div></section>';
+};
+window.openLb = function (i) {
+  document.getElementById('lbImg').src = GALLERY[i].src;
+  document.getElementById('lbCap').textContent = tx(GALLERY[i].cap);
+  document.getElementById('lb').hidden = false;
+};
+
+R.privacy = function () {
+  var items = [
+    [A('البيانات التي نجمعها', 'Data we collect'), A('الحد الأدنى اللازم للخدمة: الاسم، بيانات التواصل، وبيانات التسجيل والمستندات المطلوبة.', 'The minimum needed: name, contact details, registration data and required documents.')],
+    [A('استخدام البيانات', 'How data is used'), A('لإدارة التسجيل والاعتماد والنقاط والنتائج فقط — لا نبيع البيانات ولا نشاركها خارج الجهات المنظمة.', 'Only for registration, accreditation, points and results — never sold or shared outside the organizers.')],
+    [A('الأمان', 'Security'), A('اتصال مشفر SSL وسجلات تدقيق للعمليات الحساسة وصلاحيات محددة للإدارة.', 'SSL encryption, audit logs for sensitive operations, and role-based admin access.')]
+  ];
+  return '<section class="container section" style="max-width:680px"><h2 class="sec-title">🔒 ' + esc(A('سياسة الخصوصية', 'Privacy Policy')) + '</h2>' +
+    items.map(function (it) { return '<div class="panel"><h3 style="margin-top:0">' + esc(it[0]) + '</h3><p style="margin:0">' + esc(it[1]) + '</p></div>'; }).join('') + '</section>';
+};
+R.terms = function () {
+  var items = [
+    [A('صحة البيانات', 'Accuracy of data'), A('يتعهد المستخدم بصحة البيانات والمستندات، ويحق للجنة رفض أي طلب غير مطابق.', 'Users guarantee their data; the committee may reject non-conforming applications.')],
+    [A('الاعتماد والدخول', 'Accreditation & entry'), A('رقم التسجيل ورمز QR شخصيان وغير قابلين للتحويل.', 'Registration numbers and QR codes are personal and non-transferable.')],
+    [A('قواعد المشاركة', 'Participation rules'), A('يلتزم المشاركون بلوائح البطولات وتعليمات اللجنة وقرارات الحكام.', 'Participants must follow championship regulations, committee instructions and referees\' decisions.')]
+  ];
+  return '<section class="container section" style="max-width:680px"><h2 class="sec-title">📄 ' + esc(A('شروط الاستخدام', 'Terms of Use')) + '</h2>' +
+    items.map(function (it) { return '<div class="panel"><h3 style="margin-top:0">' + esc(it[0]) + '</h3><p style="margin:0">' + esc(it[1]) + '</p></div>'; }).join('') + '</section>';
+};
+
+function sponsorsHtml() {
+  var names = ['مجلس الشارقة الرياضي', 'بلدية كلباء', 'بيئة', 'هيئة الشارقة للإذاعة والتلفزيون'];
+  return '<section class="container section" style="padding-top:0;padding-bottom:6px"><h2 class="sec-title center">🤝 ' + esc(A('شركاؤنا الداعمون', 'Our Partners & Sponsors')) + '</h2>' +
+    '<div class="sponsor-strip">' + names.map(function (n) { return '<span class="sponsor-chip">' + esc(n) + '</span>'; }).join('') + '</div></section>';
+}
 
 /* ============ boot ============ */
 function render() {
