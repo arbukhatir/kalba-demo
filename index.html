@@ -1665,11 +1665,14 @@ R.pform = function () {
     '<p class="sec-intro">' + esc(A('ستحصل على رقم تسجيل فريد ورمز QR للاعتماد الميداني.', 'You will get a unique reg number and a QR code for field accreditation.')) + '</p>' +
     '<div id="formErr"></div><div id="formFields">' +
     '<div class="field" data-n="_n" data-t="text" data-r="1"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" id="pfName"></div>' +
-    '<div class="field" data-n="_p" data-t="text" data-r="1"><label class="flabel">' + esc(T('phone')) + ' <span class="req">*</span></label><input type="tel" dir="ltr"></div>' +
+    '<div class="frow"><div class="field" data-n="_p" data-t="text" data-r="1"><label class="flabel">' + esc(T('phone')) + ' <span class="req">*</span></label><input type="tel" dir="ltr"></div>' +
+    '<div class="field" data-n="_e" data-t="text" data-r="1"><label class="flabel">' + esc(T('email')) + ' <span class="req">*</span></label><input type="email" id="pfEmail" dir="ltr">' +
+    '<div class="hint">' + esc(A('يُرسل إليه حسابك (الرقم السري PIN) ورمز QR', 'Your account (PIN) and QR code are sent here')) + '</div></div></div>' +
     '<div class="field" data-n="_c" data-t="select" data-r="1"><label class="flabel">' + esc(A('الفئة', 'Category')) + ' <span class="req">*</span></label>' +
     '<select><option value="">' + esc(T('choose')) + '</option><option>' + esc(A('ناشئون', 'Juniors')) + '</option><option>' + esc(A('كبار', 'Seniors')) + '</option><option>' + esc(A('سيدات', 'Women')) + '</option></select></div>' +
+    '<div class="field" data-n="_i" data-t="text" data-r="1"><label class="flabel">' + esc(A('رقم الحساب المصرفي IBAN (لصرف الجوائز)', 'IBAN (for prize payouts)')) + ' <span class="req">*</span></label><input type="text" dir="ltr" placeholder="AE07 0331 2345 6789 0123 456"></div>' +
     '<div class="field" data-n="_d" data-t="file" data-r="0"><label class="flabel">' + esc(A('صورة الهوية', 'ID copy')) + ' <span class="opt">(' + esc(A('تجريبي', 'demo')) + ')</span></label><input type="file"></div>' +
-    '</div><button class="btn gold block" onclick="submitPform(' + (viewArg || 0) + ')">📝 ' + esc(A('سجّل واحصل على رمز الاعتماد', 'Register & get accreditation QR')) + '</button></div></section>';
+    '</div><button class="btn gold block" onclick="submitPform(' + (viewArg || 0) + ')">📝 ' + esc(A('سجّل — يُنشأ حسابك ويصلك الرقم السري ورمز QR بالبريد', 'Register — account created; PIN + QR arrive by email')) + '</button></div></section>';
 };
 window.submitPform = function (ci) {
   var root = document.getElementById('formFields');
@@ -1679,11 +1682,12 @@ window.submitPform = function (ci) {
     return;
   }
   var name = document.getElementById('pfName').value.trim();
+  var email = document.getElementById('pfEmail').value.trim();
   var reg = 'P-000' + (40 + Math.floor(Math.random() * 50));
   var c = CHAMPS[ci];
   document.getElementById('app').innerHTML =
     '<section class="container section" style="max-width:520px">' +
-    '<div class="flash ok">' + esc(A('تم استلام تسجيلك! رمز QR هو اعتمادك الميداني.', 'Registered! The QR is your field accreditation.')) + '</div>' +
+    '<div class="flash ok">' + esc(A('تم استلام تسجيلك وإنشاء حسابك تلقائياً! أرسلنا الرقم السري (PIN) ورمز QR إلى ', 'Registered — your account was created automatically! We emailed your PIN and QR code to ')) + '<b dir="ltr">' + esc(email) + '</b> — ' + esc(A('يُمسح الرمز عند كل مباراة.', 'the QR is scanned at each game.')) + '</div>' +
     '<div class="vcard"><div class="vh">' + c.ic + ' ' + esc(champName(c)) + '</div><h2>' + esc(name) + '</h2>' +
     '<div class="vqr" id="pQr"></div>' +
     '<div class="vcode">' + esc(A('رقم التسجيل', 'Reg no.')) + ': <b dir="ltr">' + reg + '</b></div>' +
