@@ -943,7 +943,6 @@ function renderChrome() {
         m[1].map(function (it) { return '<a data-v="' + it[0] + '">' + esc(it[1]) + '</a>'; }).join('') +
         '</div></div>';
     }).join('') +
-    '<a class="cta" data-v="join">' + esc(A('تصريح الزيارة', 'Visitor Pass')) + '</a>' +
     (!window.opsRole
       ? '<a class="nav-login" data-v="gate">👤 ' + esc(A('تسجيل الدخول', 'Log in')) + '</a>'
       : '<div class="menu"><button type="button" class="menu-btn nav-login">👤 ' + esc(ROLE_NAMES[window.opsRole]) + ' <span class="caret">▾</span></button><div class="dropdown">' +
