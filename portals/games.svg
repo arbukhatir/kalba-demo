@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f3a5f"/><stop offset="1" stop-color="#183254"/></linearGradient></defs>
+  <rect width="320" height="200" fill="url(#sky)"/>
+  <rect y="162" width="320" height="38" fill="#e8dcc3"/>
+  <!-- bunting -->
+  <path d="M0 18q160 26 320 0" stroke="#ddbe8a" stroke-width="3" fill="none"/>
+  <g fill="#cfa762"><path d="M40 22l8 14 8-13z"/><path d="M120 30l8 14 8-13z"/><path d="M200 30l8 14 8-13z"/><path d="M272 23l8 14 8-13z"/></g>
+  <!-- balloons -->
+  <g>
+    <path d="M84 96q0 4 2 8h-6q2-4 2-8" fill="#ddbe8a"/>
+    <ellipse cx="85" cy="72" rx="20" ry="26" fill="#cfa762"/>
+    <path d="M85 104q-4 26 10 42" stroke="#ddbe8a" stroke-width="2.5" fill="none"/>
+    <ellipse cx="120" cy="52" rx="16" ry="21" fill="#fbfaf7"/>
+    <path d="M120 76q-2 34 6 68" stroke="#ddbe8a" stroke-width="2.5" fill="none"/>
+  </g>
+  <!-- bouncy castle -->
+  <g transform="translate(160 96)">
+    <rect x="0" y="46" width="130" height="18" rx="9" fill="#ddbe8a"/>
+    <rect x="10" y="10" width="110" height="44" rx="12" fill="#cfa762"/>
+    <rect x="34" y="24" width="62" height="30" rx="8" fill="#24466e"/>
+    <circle cx="20" cy="10" r="10" fill="#fbfaf7"/><circle cx="110" cy="10" r="10" fill="#fbfaf7"/>
+    <rect x="14" y="10" width="12" height="46" rx="6" fill="#fbfaf7"/>
+    <rect x="104" y="10" width="12" height="46" rx="6" fill="#fbfaf7"/>
+    <path d="M60 0l5 10h-10z" fill="#fbfaf7"/>
+  </g>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f3a5f"/><stop offset="1" stop-color="#183254"/></linearGradient></defs>
+  <rect width="320" height="200" fill="url(#sky)"/>
+  <circle cx="48" cy="38" r="14" fill="#cfa762" opacity=".9"/>
+  <rect y="162" width="320" height="38" fill="#e8dcc3"/>
+  <!-- stall canopy -->
+  <g>
+    <path d="M70 52h180l14 34H56z" fill="#cfa762"/>
+    <g fill="#fbfaf7"><path d="M100 52l-11 34h22z"/><path d="M144 52l-11 34h22z"/><path d="M188 52l-11 34h22z"/><path d="M232 52l-11 34h22z"/></g>
+    <path d="M56 86h208v10q-6 10-13 0-6 10-13 0-6 10-13 0-6 10-13 0-7 10-13 0-6 10-13 0-6 10-13 0-6 10-13 0-7 10-13 0-6 10-13 0-6 10-13 0-6 10-13 0-7 10-13 0-6 10-13 0-6 10-13 0-6 10-13 0z" fill="#cfa762"/>
+  </g>
+  <!-- posts -->
+  <rect x="64" y="86" width="8" height="76" fill="#fbfaf7"/>
+  <rect x="248" y="86" width="8" height="76" fill="#fbfaf7"/>
+  <!-- table + goods -->
+  <rect x="84" y="126" width="152" height="10" rx="5" fill="#ddbe8a"/>
+  <rect x="92" y="136" width="10" height="26" fill="#ddbe8a"/>
+  <rect x="218" y="136" width="10" height="26" fill="#ddbe8a"/>
+  <g>
+    <rect x="100" y="104" width="28" height="22" rx="3" fill="#fbfaf7"/>
+    <rect x="136" y="98" width="24" height="28" rx="12" fill="#24466e"/>
+    <rect x="140" y="92" width="16" height="8" rx="3" fill="#cfa762"/>
+    <rect x="170" y="106" width="42" height="20" rx="3" fill="#fbfaf7"/>
+    <circle cx="191" cy="116" r="6" fill="#cfa762"/>
+  </g>
+</svg>

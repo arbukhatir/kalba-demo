@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f3a5f"/><stop offset="1" stop-color="#183254"/></linearGradient></defs>
+  <rect width="320" height="200" fill="url(#sky)"/>
+  <rect y="162" width="320" height="38" fill="#e8dcc3"/>
+  <!-- star -->
+  <path d="M160 20l8 17 19 3-14 13 4 19-17-9-17 9 4-19-14-13 19-3z" fill="#cfa762"/>
+  <!-- interlocking partnership rings -->
+  <g fill="none" stroke-width="14">
+    <circle cx="128" cy="112" r="38" stroke="#fbfaf7"/>
+    <circle cx="192" cy="112" r="38" stroke="#cfa762"/>
+    <path d="M166 84a38 38 0 0 0-12 8" stroke="#fbfaf7" stroke-linecap="round"/>
+    <path d="M154 140a38 38 0 0 0 12 8" stroke="#fbfaf7" stroke-linecap="round"/>
+  </g>
+  <!-- sparkles -->
+  <g fill="#ddbe8a"><circle cx="70" cy="60" r="4"/><circle cx="250" cy="60" r="4"/><circle cx="58" cy="120" r="3"/><circle cx="262" cy="120" r="3"/></g>
+</svg>

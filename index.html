@@ -68,6 +68,8 @@
   @media (max-width: 920px) { .g4, .g3 { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 600px) { .g2, .g3, .g4 { grid-template-columns: 1fr; } }
   .card { background: #fff; border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); border: 1px solid var(--line); }
+  .portal-card { padding-top: 0; overflow: hidden; }
+  .portal-card .card-img { display: block; width: calc(100% + 36px); margin: 0 -18px 12px; aspect-ratio: 16 / 10; object-fit: cover; }
   .card.link { cursor: pointer; transition: transform .12s, box-shadow .12s; }
   .card.link:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(15,23,42,.13); }
   .card .ic { font-size: 1.8rem; }
@@ -671,7 +673,7 @@ var I18N = {
     joinTitle: 'انضم لنظام النقاط', joinIntro: 'سجّل مرة واحدة واحصل على رمز QR الشخصي. أبرِزه للمنظم عند إتمام أي نشاط لتُضاف نقاطك فوراً وتظهر على الشاشات.',
     joinBtn: 'أنشئ بطاقتي', myCode: 'رمزك الشخصي', totalPts: 'مجموع النقاط', rank: 'الترتيب العام',
     cardHint: 'في النسخة الحقيقية يمسح المنظم هذا الرمز بكاميرا جواله فتُضاف النقاط فوراً.',
-    overall: 'الترتيب العام', byZone: 'حسب الامتداد', byAge: 'حسب الفئة', live: 'مباشر',
+    overall: 'الترتيب العام', byZone: 'حسب الرياضة', byAge: 'حسب الفئة', live: 'مباشر',
     lbAuto: 'تُحدَّث اللوحة لحظياً — هذه محاكاة حية للعرض', pts: 'نقطة',
     screenNote: 'محاكاة شاشة الكورنيش الكبيرة — في النسخة الحقيقية تعمل بملء الشاشة وتتحدث كل 5 ثوانٍ',
     awardFor: 'إضافة نقاط للزائر', awardOk: 'تمت إضافة النقاط', dupWarn: 'أُضيف هذا النشاط لنفس الزائر قبل قليل — اضغط مرة أخرى للتأكيد.',
@@ -708,7 +710,7 @@ var I18N = {
     joinTitle: 'Join the Points Program', joinIntro: 'Register once, get a personal QR code. Show it to an organizer after any activity — points are added instantly and appear on the screens.',
     joinBtn: 'Create My Card', myCode: 'Your personal code', totalPts: 'Total points', rank: 'Overall rank',
     cardHint: 'In the real version an organizer scans this code with their phone camera and points are added instantly.',
-    overall: 'Overall', byZone: 'By zone', byAge: 'By age', live: 'LIVE',
+    overall: 'Overall', byZone: 'By sport', byAge: 'By age', live: 'LIVE',
     lbAuto: 'The board updates live — this is a running simulation', pts: 'pts',
     screenNote: 'Simulation of the Corniche big screen — the real one runs full-screen, refreshing every 5s',
     awardFor: 'Award points to visitor', awardOk: 'Points added', dupWarn: 'Same activity awarded moments ago — press again to confirm.',
@@ -1016,7 +1018,7 @@ function portalsGrid() {
   return Object.keys(FORMS).map(function (k) {
     var f = FORMS[k];
     var target = k === 'sports' ? "go('champs')" : "go('form','" + k + "')";
-    return '<div class="card link" onclick="' + target + '"><div class="ic">' + f.ic + '</div><div class="tt">' + esc(tx(f.t)) + '</div><div class="dd">' + esc(tx(f.d)) + '</div></div>';
+    return '<div class="card link portal-card" onclick="' + target + '"><img class="card-img" src="portals/' + k + '.svg" alt="' + esc(tx(f.t)) + '"><div class="tt">' + esc(tx(f.t)) + '</div><div class="dd">' + esc(tx(f.d)) + '</div></div>';
   }).join('');
 }
 function surveysGrid() {
@@ -1230,6 +1232,14 @@ R.my = function () {
 var lbBoard = 'overall';
 function lbRows() {
   var rows;
+  if (lbBoard.indexOf('sport:') === 0) {
+    var aid = +lbBoard.slice(6);
+    var act = ACTIVITIES.filter(function (a) { return a.id === aid; })[0];
+    var az = act ? act.zone : 'corniche';
+    rows = VISITORS.map(function (v) { return { v: v, p: v.zonePts[az] || 0 }; }).filter(function (r) { return r.p > 0; });
+    rows.sort(function (a, b) { return b.p - a.p; });
+    return rows.slice(0, 10).map(function (r) { return { name: r.v.name, pts: r.p, me: r.v === me }; });
+  }
   if (lbBoard.indexOf('zone:') === 0) {
     var z = lbBoard.slice(5);
     rows = VISITORS.map(function (v) { return { v: v, p: v.zonePts[z] || 0 }; }).filter(function (r) { return r.p > 0; });
@@ -1254,7 +1264,7 @@ function lbListHtml() {
 R.leaderboard = function () {
   var tabs = '<span class="lb-tab ' + (lbBoard === 'overall' ? 'active' : '') + '" onclick="setBoard(\'overall\')">' + esc(T('overall')) + '</span>' +
     '<span class="lb-grp">' + esc(T('byZone')) + ':</span>' +
-    Object.keys(ZONES).map(function (z) { return '<span class="lb-tab ' + (lbBoard === 'zone:' + z ? 'active' : '') + '" onclick="setBoard(\'zone:' + z + '\')">' + ZONES[z].e + ' ' + esc(tx(ZONES[z])) + '</span>'; }).join('') +
+    ACTIVITIES.map(function (a) { return '<span class="lb-tab ' + (lbBoard === 'sport:' + a.id ? 'active' : '') + '" onclick="setBoard(\'sport:' + a.id + '\')">' + esc(lang === 'ar' ? a.ar : a.en) + '</span>'; }).join('') +
     '<span class="lb-grp">' + esc(T('byAge')) + ':</span>' +
     Object.keys(AGES).map(function (g) { return '<span class="lb-tab ' + (lbBoard === 'age:' + g ? 'active' : '') + '" onclick="setBoard(\'age:' + g + '\')">' + esc(tx(AGES[g])) + '</span>'; }).join('');
   timers.push(setInterval(simulateAward, 3500));

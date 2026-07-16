@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f3a5f"/><stop offset="1" stop-color="#183254"/></linearGradient></defs>
+  <rect width="320" height="200" fill="url(#sky)"/>
+  <!-- spotlights -->
+  <g fill="#cfa762" opacity=".28"><path d="M96 0l60 132h-96z"/><path d="M224 0l36 132h-96z"/></g>
+  <rect y="162" width="320" height="38" fill="#e8dcc3"/>
+  <!-- curtains -->
+  <g fill="#24466e">
+    <path d="M0 0h56q10 80-18 162H0z"/>
+    <path d="M320 0h-56q-10 80 18 162h38z"/>
+  </g>
+  <g fill="#cfa762"><rect x="0" y="0" width="320" height="14"/><path d="M50 0q8 40-6 90l12 4q14-52 8-94z"/><path d="M270 0q-8 40 6 90l-12 4q-14-52-8-94z"/></g>
+  <!-- stage -->
+  <rect x="66" y="140" width="188" height="14" rx="7" fill="#cfa762"/>
+  <!-- mic -->
+  <g>
+    <rect x="156" y="86" width="8" height="56" rx="4" fill="#fbfaf7"/>
+    <path d="M136 142h48l-6 10h-36z" fill="#fbfaf7"/>
+    <rect x="146" y="58" width="28" height="36" rx="14" fill="#cfa762"/>
+    <path d="M138 80q0 26 22 26t22-26" stroke="#ddbe8a" stroke-width="5" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- star + notes -->
+  <path d="M160 22l5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2z" fill="#ddbe8a"/>
+  <g fill="#ddbe8a"><circle cx="102" cy="72" r="5"/><rect x="105" y="48" width="4" height="24" rx="2"/><circle cx="218" cy="80" r="5"/><rect x="221" y="56" width="4" height="24" rx="2"/></g>
+</svg>

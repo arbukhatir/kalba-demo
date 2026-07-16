@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f3a5f"/><stop offset="1" stop-color="#183254"/></linearGradient></defs>
+  <rect width="320" height="200" fill="url(#sky)"/>
+  <rect y="162" width="320" height="38" fill="#e8dcc3"/>
+  <!-- heart -->
+  <path d="M160 62c-8-16-34-14-34 6 0 16 22 28 34 36 12-8 34-20 34-36 0-20-26-22-34-6z" fill="#cfa762"/>
+  <!-- volunteer figure: head + vest -->
+  <circle cx="160" cy="118" r="16" fill="#ddbe8a"/>
+  <g>
+    <path d="M128 162q0-26 32-26t32 26z" fill="#cfa762"/>
+    <path d="M144 138l16 12 16-12v24h-32z" fill="#fbfaf7"/>
+    <rect x="132" y="146" width="10" height="16" rx="4" fill="#ddbe8a"/>
+    <rect x="178" y="146" width="10" height="16" rx="4" fill="#ddbe8a"/>
+  </g>
+  <!-- raised hands each side -->
+  <g fill="#ddbe8a">
+    <rect x="76" y="96" width="12" height="52" rx="6" transform="rotate(18 82 122)"/>
+    <circle cx="72" cy="94" r="9"/>
+    <rect x="232" y="96" width="12" height="52" rx="6" transform="rotate(-18 238 122)"/>
+    <circle cx="248" cy="94" r="9"/>
+  </g>
+  <!-- sparkles -->
+  <g fill="#ddbe8a"><circle cx="110" cy="46" r="4"/><circle cx="212" cy="42" r="4"/><circle cx="238" cy="66" r="3"/><circle cx="86" cy="66" r="3"/></g>
+</svg>
