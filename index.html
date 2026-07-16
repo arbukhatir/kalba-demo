@@ -1473,14 +1473,13 @@ R.admin = function () {
       '<p class="sec-intro">' + esc(A('تظهر الصورة على بطاقة البطولة وفي «البطولات المميزة» بالرئيسية.', 'The image appears on the championship card and the homepage featured cards.')) + '</p>' +
       '<div class="cardimg-grid">' + champRows + '</div></div>' +
 
-      '<div class="panel"><h3 style="margin-top:0">🖼️ ' + esc(A('صور البانر الرئيسي', 'Hero banner images')) + '</h3>' +
-      '<p class="sec-intro">' + esc(A('ارفع حتى 6 صور تتناوب في خلفية البانر — أو فيديو hero.mp4. (في النسخة الحقيقية تُحفظ الصور وتظهر فوراً)', 'Upload up to 6 rotating hero images — or a hero.mp4 video. (In the real app they save and appear instantly)')) + '</p>' +
-      '<div class="hero-thumbs">' + [4, 2, 3, 0].map(function (gi) {
-        return '<div class="hero-thumb"><img src="' + GALLERY[gi].src + '" alt="">' +
-          '<button class="btn sm danger" onclick="toast(A(\'حُذفت الصورة (تجريبي)\',\'Image deleted (demo)\'))">🗑</button></div>';
+      '<div class="panel"><h3 style="margin-top:0">🖼️ ' + esc(A('خلفية البانر الرئيسي (الهيرو)', 'Hero landing background')) + '</h3>' +
+      '<p class="sec-intro">' + esc(A('حتى 6 صور تتناوب في خلفية الصفحة الرئيسية — ارفع أو احذف وشاهد النتيجة فوراً في الرئيسية. (يدعم أيضاً فيديو hero.mp4 في النسخة الحقيقية)', 'Up to 6 rotating homepage background images — upload or delete and see it instantly on the homepage. (The real app also supports a hero.mp4 video)')) + '</p>' +
+      '<div class="hero-thumbs">' + heroImgs().map(function (src, i) {
+        return '<div class="hero-thumb"><img src="' + src + '" alt="">' +
+          '<button class="btn sm danger" onclick="heroDelete(' + i + ')">🗑</button></div>';
       }).join('') + '</div>' +
-      '<div class="btn-row"><input type="file" accept=".jpg,.png,.webp" style="max-width:240px">' +
-      '<button class="btn primary" onclick="toast(A(\'تم رفع الصورة ✔ (تجريبي)\',\'Image uploaded ✔ (demo)\'))">⬆️ ' + esc(A('رفع صورة', 'Upload')) + '</button></div></div>' +
+      '<div class="btn-row"><input type="file" accept=".jpg,.jpeg,.png,.webp" style="max-width:240px" onchange="heroUpload(this)"></div></div>' +
 
       '<div class="panel"><h3 style="margin-top:0">🤖 ' + esc(A('مساعد الزوار — مزود الذكاء الاصطناعي', 'Visitor assistant — AI provider')) + '</h3>' +
       '<p class="sec-intro">' + esc(A('بدون مزود يجيب المساعد من القاعدة المدمجة، ومع ChatGPT أو Gemini يجيب الذكاء الاصطناعي ويعود للقاعدة تلقائياً عند أي خلل.', 'Without a provider the bot uses built-in rules; with ChatGPT or Gemini the AI answers, falling back to rules on failure.')) + '</p>' +
@@ -1623,13 +1622,39 @@ var VENUE = [
 ];
 var VENUE_KINDS = [['', 'الكل', 'All'], ['fields', '⚽ الملاعب', '⚽ Fields'], ['registration', '📝 التسجيل', '📝 Registration'], ['aid', '⛑️ الإسعاف', '⛑️ First aid'], ['parking', '🅿️ المواقف', '🅿️ Parking'], ['activities', '🤸 الأنشطة', '🤸 Activities'], ['awards', '🏅 التتويج', '🏅 Awards']];
 
+/* Hero background images — editable from the mock CMS (admin → settings). */
+var HERO_IMGS = null;
+function heroImgs() {
+  if (!HERO_IMGS) HERO_IMGS = [GALLERY[4].src, GALLERY[2].src, GALLERY[3].src, GALLERY[0].src];
+  return HERO_IMGS;
+}
 function heroMediaHtml() {
-  var order = [4, 2, 3, 0];
+  var imgs = heroImgs();
+  var cycle = imgs.length * 6;
   return '<div class="hero-media" aria-hidden="true">' +
-    order.map(function (gi, i) {
-      return '<div class="hm-slide" style="background-image:url(' + GALLERY[gi].src + ');animation-delay:' + (i * 6) + 's"></div>';
+    imgs.map(function (src, i) {
+      if (imgs.length === 1) return '<div class="hm-slide" style="background-image:url(' + src + ');opacity:1;animation:none"></div>';
+      return '<div class="hm-slide" style="background-image:url(' + src + ');animation-delay:' + (i * 6) + 's;animation-duration:' + cycle + 's"></div>';
     }).join('') + '<div class="hero-overlay"></div></div>';
 }
+window.heroUpload = function (input) {
+  var f = input.files && input.files[0];
+  if (!f) return;
+  if (heroImgs().length >= 6) { toast(A('الحد الأقصى 6 صور — احذف صورة أولاً', 'Maximum 6 images — delete one first')); return; }
+  var rd = new FileReader();
+  rd.onload = function () {
+    heroImgs().push(rd.result);
+    toast(A('تمت إضافة صورة البانر ✔ — افتح الرئيسية لتراها', 'Hero image added ✔ — open the homepage to see it'));
+    go('admin');
+  };
+  rd.readAsDataURL(f);
+};
+window.heroDelete = function (i) {
+  if (heroImgs().length <= 1) { toast(A('يجب إبقاء صورة واحدة على الأقل', 'Keep at least one image')); return; }
+  heroImgs().splice(i, 1);
+  toast(A('حُذفت الصورة', 'Image deleted'));
+  go('admin');
+};
 function winnersHtml() {
   var cards = CHAMPIONS.map(function (ch) {
     var c = CHAMPS[ch.c];
