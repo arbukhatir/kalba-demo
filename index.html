@@ -70,6 +70,13 @@
   .card { background: #fff; border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); border: 1px solid var(--line); }
   .portal-card { padding-top: 0; overflow: hidden; }
   .portal-card .card-img { display: block; width: calc(100% + 36px); margin: 0 -18px 12px; aspect-ratio: 16 / 10; object-fit: cover; }
+  .cardimg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+  .cardimg-item { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: #fff; }
+  .cardimg-item img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 8px; display: block; }
+  .cardimg-icon { display: grid; place-items: center; aspect-ratio: 16 / 10; font-size: 2.2rem; background: var(--sand); border-radius: 8px; }
+  .cardimg-name { font-weight: 700; font-size: .85rem; margin: 8px 0 6px; }
+  .cardimg-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .cardimg-actions input[type=file] { max-width: 150px; font-size: .75rem; }
   .card.link { cursor: pointer; transition: transform .12s, box-shadow .12s; }
   .card.link:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(15,23,42,.13); }
   .card .ic { font-size: 1.8rem; }
@@ -1013,13 +1020,32 @@ function validateFields(root) {
 /* ============ views ============ */
 var R = {};
 
+/* Card image overrides — set from the mock CMS (admin → settings). In the real app they persist on the server. */
+var CARD_IMG = { portals: {}, champs: {} };
+function portalImgSrc(k) { return CARD_IMG.portals[k] || ('portals/' + k + '.svg'); }
 function portalsGrid() {
   return Object.keys(FORMS).map(function (k) {
     var f = FORMS[k];
     var target = k === 'sports' ? "go('champs')" : "go('form','" + k + "')";
-    return '<div class="card link portal-card" onclick="' + target + '"><img class="card-img" src="portals/' + k + '.svg" alt="' + esc(tx(f.t)) + '"><div class="tt">' + esc(tx(f.t)) + '</div><div class="dd">' + esc(tx(f.d)) + '</div></div>';
+    return '<div class="card link portal-card" onclick="' + target + '"><img class="card-img" src="' + portalImgSrc(k) + '" alt="' + esc(tx(f.t)) + '"><div class="tt">' + esc(tx(f.t)) + '</div><div class="dd">' + esc(tx(f.d)) + '</div></div>';
   }).join('');
 }
+window.setCardImg = function (g, k, input) {
+  var f = input.files && input.files[0];
+  if (!f) return;
+  var rd = new FileReader();
+  rd.onload = function () {
+    CARD_IMG[g][k] = rd.result;
+    toast(A('تم تحديث صورة البطاقة ✔ — افتح الصفحة لتراها', 'Card image updated ✔ — open the page to see it'));
+    go('admin');
+  };
+  rd.readAsDataURL(f);
+};
+window.resetCardImg = function (g, k) {
+  delete CARD_IMG[g][k];
+  toast(A('أُعيدت الصورة الافتراضية', 'Default image restored'));
+  go('admin');
+};
 function surveysGrid() {
   return Object.keys(SURVEYS).map(function (k) {
     var s = SURVEYS[k];
@@ -1066,7 +1092,7 @@ R.home = function () {
   }).join('');
   var featPanel = [0, 5, 4].map(function (ci, i) {
     var c = CHAMPS[ci];
-    return '<a class="feat-card" onclick="go(\'champ\',' + ci + ')"><img src="' + GALLERY[(i + 2) % 5].src + '" alt="">' +
+    return '<a class="feat-card" onclick="go(\'champ\',' + ci + ')"><img src="' + (CARD_IMG.champs[ci] || GALLERY[(i + 2) % 5].src) + '" alt="">' +
       '<strong>' + c.ic + ' ' + esc(champName(c)) + '</strong><small dir="ltr">🗓️ 10–17/12/2026</small></a>';
   }).join('');
 
@@ -1426,7 +1452,28 @@ R.admin = function () {
           '<button class="btn sm primary" onclick="toast(A(\'تم حفظ النتيجة — تظهر الآن في الرئيسية ✔\',\'Score saved — now on the homepage ✔\'))">💾</button></div>';
       }).join('') + '</div>';
   } else if (adminTab === 'settings') {
-    body = '<div class="panel"><h3 style="margin-top:0">🖼️ ' + esc(A('صور البانر الرئيسي', 'Hero banner images')) + '</h3>' +
+    var portalRows = Object.keys(FORMS).map(function (k) {
+      var f = FORMS[k];
+      return '<div class="cardimg-item"><img src="' + portalImgSrc(k) + '" alt="">' +
+        '<div class="cardimg-name">' + f.ic + ' ' + esc(tx(f.t)) + (CARD_IMG.portals[k] ? ' <span class="badge accepted">' + esc(A('مخصصة', 'Custom')) + '</span>' : '') + '</div>' +
+        '<div class="cardimg-actions"><input type="file" accept=".jpg,.jpeg,.png,.webp" onchange="setCardImg(\'portals\',\'' + k + '\',this)">' +
+        (CARD_IMG.portals[k] ? '<button class="btn sm ghost" onclick="resetCardImg(\'portals\',\'' + k + '\')">↺</button>' : '') + '</div></div>';
+    }).join('');
+    var champRows = CHAMPS.map(function (c, i) {
+      return '<div class="cardimg-item">' +
+        (CARD_IMG.champs[i] ? '<img src="' + CARD_IMG.champs[i] + '" alt="">' : '<div class="cardimg-icon">' + c.ic + '</div>') +
+        '<div class="cardimg-name">' + esc(champName(c)) + (CARD_IMG.champs[i] ? ' <span class="badge accepted">' + esc(A('مخصصة', 'Custom')) + '</span>' : '') + '</div>' +
+        '<div class="cardimg-actions"><input type="file" accept=".jpg,.jpeg,.png,.webp" onchange="setCardImg(\'champs\',' + i + ',this)">' +
+        (CARD_IMG.champs[i] ? '<button class="btn sm ghost" onclick="resetCardImg(\'champs\',' + i + ')">↺</button>' : '') + '</div></div>';
+    }).join('');
+    body = '<div class="panel"><h3 style="margin-top:0">🖼️ ' + esc(A('صور البطاقات — بوابات التسجيل', 'Card images — registration portals')) + '</h3>' +
+      '<p class="sec-intro">' + esc(A('ارفع صورة لأي بطاقة لتحل مكان الرسم الافتراضي فوراً (JPG/PNG/WEBP). في هذه النسخة التجريبية تبقى الصورة حتى إعادة تحميل الصفحة.', 'Upload an image for any card to replace its default artwork instantly (JPG/PNG/WEBP). In this demo it lasts until the page reloads.')) + '</p>' +
+      '<div class="cardimg-grid">' + portalRows + '</div></div>' +
+      '<div class="panel"><h3 style="margin-top:0">🏆 ' + esc(A('صور البطاقات — البطولات الـ13 المعتمدة', 'Card images — the 13 championships')) + '</h3>' +
+      '<p class="sec-intro">' + esc(A('تظهر الصورة على بطاقة البطولة وفي «البطولات المميزة» بالرئيسية.', 'The image appears on the championship card and the homepage featured cards.')) + '</p>' +
+      '<div class="cardimg-grid">' + champRows + '</div></div>' +
+
+      '<div class="panel"><h3 style="margin-top:0">🖼️ ' + esc(A('صور البانر الرئيسي', 'Hero banner images')) + '</h3>' +
       '<p class="sec-intro">' + esc(A('ارفع حتى 6 صور تتناوب في خلفية البانر — أو فيديو hero.mp4. (في النسخة الحقيقية تُحفظ الصور وتظهر فوراً)', 'Upload up to 6 rotating hero images — or a hero.mp4 video. (In the real app they save and appear instantly)')) + '</p>' +
       '<div class="hero-thumbs">' + [4, 2, 3, 0].map(function (gi) {
         return '<div class="hero-thumb"><img src="' + GALLERY[gi].src + '" alt="">' +
@@ -1637,7 +1684,10 @@ R.champs = function () {
   return '<section class="container section"><h2 class="sec-title">🏆 ' + esc(A('البطولات الـ13 المعتمدة', 'The 13 Approved Championships')) + '</h2>' +
     '<p class="sec-intro">' + esc(A('منافسات رسمية معتمدة — اضغط أي بطولة للتفاصيل والتسجيل.', 'Official competitions — tap any championship for details & registration.')) + '</p><div class="grid g4">' +
     CHAMPS.map(function (c, i) {
-      return '<div class="card link" style="text-align:center" onclick="go(\'champ\',' + i + ')"><div class="ic">' + c.ic + '</div><div class="tt">' + esc(champName(c)) + '</div></div>';
+      var art = CARD_IMG.champs[i]
+        ? '<img class="card-img" src="' + CARD_IMG.champs[i] + '" alt="">'
+        : '<div class="ic">' + c.ic + '</div>';
+      return '<div class="card link' + (CARD_IMG.champs[i] ? ' portal-card' : '') + '" style="text-align:center" onclick="go(\'champ\',' + i + ')">' + art + '<div class="tt">' + esc(champName(c)) + '</div></div>';
     }).join('') + '</div></section>';
 };
 
