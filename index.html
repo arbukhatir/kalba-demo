@@ -255,6 +255,8 @@
   .win-wrap .car-btn { background: rgba(24,50,84,.75); }
   .win-wrap .car-btn:hover { background: var(--deep); }
   .win-row { display: flex; gap: 12px; overflow-x: auto; padding: 2px 4px 6px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .win-row > :first-child { margin-inline-start: auto; }
+  .win-row > :last-child { margin-inline-end: auto; }
   .win-row::-webkit-scrollbar { display: none; }
   .win-row .win-card { flex: 0 0 248px; scroll-snap-align: start; }
   .win-card { text-align: center; }
@@ -409,6 +411,7 @@
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-rotate@0.2.8/dist/leaflet-rotate.js"></script>
 <script>var Leaflet = window.L; /* the demo reuses `L` for its i18n table */</script>
 </head>
 <body>
@@ -647,7 +650,7 @@ var QR = (function () {
 
 /* ============ i18n ============ */
 var lang = 'ar';
-var L = {
+var I18N = {
   ar: {
     site: 'مهرجان كلباء الرياضي 2026',
     loc: 'مدينة كلباء — إمارة الشارقة، الإمارات العربية المتحدة',
@@ -723,7 +726,7 @@ var L = {
     blocks: [['⛅','05:30','Dawn: mangrove kayaking, hiking, farm tours'],['🏟️','16:00','Main zone: competitions, strength challenge, kids zone'],['🎭','18:00','Public shows + kiosks & food'],['🏆','20:00','Evening competitions & daily leaders announcement']]
   }
 };
-function T(k) { return L[lang][k] !== undefined ? L[lang][k] : (L.ar[k] || k); }
+function T(k) { return I18N[lang][k] !== undefined ? I18N[lang][k] : (I18N.ar[k] || k); }
 function tx(o) { return o[lang] || o.ar; }
 
 /* ============ Demo data ============ */
@@ -1045,7 +1048,6 @@ R.home = function () {
 
   var services = [
     ['👤', A('سجّل الآن', 'Register'), 'register'],
-    ['🏆', A('تسجيل المشاركين', 'Participants'), 'register'],
     ['🗓️', A('الجدول', 'Schedule'), 'sched'],
     ['📍', A('الخريطة', 'Map'), 'venue'],
     ['🏆', A('النتائج', 'Results'), 'res']
@@ -1073,8 +1075,7 @@ R.home = function () {
     '<h1>' + esc(T('site')) + '</h1>' +
     '<p class="hero-sub">' + esc(A('احتفال بالرياضة والمجتمع وروح المنافسة', 'A celebration of sport, community and competition')) + '</p>' +
     '<p class="hero-meta"><span>🗓️ ' + esc(T('dates')) + '</span><span>📍 ' + esc(A('كلباء، الشارقة – دولة الإمارات', 'Kalba, Sharjah – UAE')) + '</span></p>' +
-    '<div class="ctas"><button class="btn gold" onclick="go(\'register\')">👤 ' + esc(A('سجّل الآن', 'Register Now')) + '</button>' +
-    '<button class="btn ghost" onclick="go(\'register\')">🏆 ' + esc(A('تسجيل المشاركين', 'Participant Registration')) + '</button></div></div>' +
+    '<div class="ctas"><button class="btn gold" onclick="go(\'register\')">👤 ' + esc(A('سجّل الآن', 'Register Now')) + '</button></div></div>' +
     '<div class="cd-card"><div class="cd-title">' + esc(A('العد التنازلي لافتتاح المهرجان', 'Countdown to the opening')) + '</div>' +
     '<div class="countdown"><div class="cd-cell"><span class="cd-num" id="cdD">--</span><span class="cd-lbl">' + esc(A('يوم', 'days')) + '</span></div>' +
     '<div class="cd-cell"><span class="cd-num" id="cdH">--</span><span class="cd-lbl">' + esc(A('ساعة', 'hours')) + '</span></div>' +
@@ -1796,7 +1797,8 @@ function realMapHtml(h) {
     var el2 = document.getElementById(id);
     if (!el2 || el2.dataset.done || typeof Leaflet === 'undefined' || !Leaflet) return;
     el2.dataset.done = '1';
-    var map = Leaflet.map(id, { scrollWheelZoom: false }).setView(KALBA, 16);
+    /* bearing -105° turns the N–S shoreline horizontal with the sea at the top */
+    var map = Leaflet.map(id, { scrollWheelZoom: false, rotate: true, bearing: -105, rotateControl: false, touchRotate: false, shiftKeyRotate: false }).setView(KALBA, 16);
     Leaflet.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Tiles &copy; Esri' }).addTo(map);
     map.on('click', function () { map.scrollWheelZoom.enable(); });
     MAP_PINS.forEach(function (p) {
