@@ -393,8 +393,23 @@
   .kbot-typing { color: var(--muted); letter-spacing: 3px; }
   .realmap { position: relative; }
   .realmap iframe { width: 100%; border: 0; border-radius: 10px; display: block; background: #e8e6e0; }
-  .realmap-open { position: absolute; bottom: 12px; inset-inline-start: 12px; background: #fff; box-shadow: 0 4px 14px rgba(15,23,42,.25); }
+  .realmap-open { position: absolute; bottom: 12px; inset-inline-start: 12px; background: #fff; box-shadow: 0 4px 14px rgba(15,23,42,.25); z-index: 500; }
+  .kmap { width: 100%; border-radius: 10px; background: #e8e6e0; z-index: 0; }
+  .kmap-pin { display: grid; place-items: center; }
+  .kmap-pin span { display: grid; place-items: center; width: 34px; height: 34px; font-size: 17px; background: #fff; border: 2px solid var(--gold); border-radius: 50%; box-shadow: 0 3px 10px rgba(15,23,42,.35); cursor: pointer; transition: transform .12s; }
+  .kmap-pin span:hover { transform: scale(1.15); }
+  .kmap-pop { font-family: var(--font); font-size: .95rem; line-height: 1.5; }
+  .kmap-pop .kmap-more { display: inline-block; margin-top: 4px; color: var(--sea-dark); font-weight: 700; cursor: pointer; }
+  .pts-table { width: 100%; border-collapse: collapse; }
+  .pts-table th, .pts-table td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: center; }
+  .pts-table th:nth-child(2), .pts-table td:nth-child(2) { text-align: start; }
+  .pts-table tr.t1 { background: rgba(207,167,98,.16); }
+  .pts-table tr.t2 { background: rgba(207,167,98,.09); }
+  .pts-table tr.t3 { background: rgba(207,167,98,.05); }
 </style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>var Leaflet = window.L; /* the demo reuses `L` for its i18n table */</script>
 </head>
 <body>
 
@@ -1030,7 +1045,7 @@ R.home = function () {
 
   var services = [
     ['👤', A('سجّل الآن', 'Register'), 'register'],
-    ['🎫', A('تصريح الزائر', 'Visitor pass'), 'join'],
+    ['🏆', A('تسجيل المشاركين', 'Participants'), 'register'],
     ['🗓️', A('الجدول', 'Schedule'), 'sched'],
     ['📍', A('الخريطة', 'Map'), 'venue'],
     ['🏆', A('النتائج', 'Results'), 'res']
@@ -1059,7 +1074,7 @@ R.home = function () {
     '<p class="hero-sub">' + esc(A('احتفال بالرياضة والمجتمع وروح المنافسة', 'A celebration of sport, community and competition')) + '</p>' +
     '<p class="hero-meta"><span>🗓️ ' + esc(T('dates')) + '</span><span>📍 ' + esc(A('كلباء، الشارقة – دولة الإمارات', 'Kalba, Sharjah – UAE')) + '</span></p>' +
     '<div class="ctas"><button class="btn gold" onclick="go(\'register\')">👤 ' + esc(A('سجّل الآن', 'Register Now')) + '</button>' +
-    '<button class="btn ghost" onclick="go(\'join\')">🎫 ' + esc(A('تصريح الزائر', 'Visitor Pass')) + '</button></div></div>' +
+    '<button class="btn ghost" onclick="go(\'register\')">🏆 ' + esc(A('تسجيل المشاركين', 'Participant Registration')) + '</button></div></div>' +
     '<div class="cd-card"><div class="cd-title">' + esc(A('العد التنازلي لافتتاح المهرجان', 'Countdown to the opening')) + '</div>' +
     '<div class="countdown"><div class="cd-cell"><span class="cd-num" id="cdD">--</span><span class="cd-lbl">' + esc(A('يوم', 'days')) + '</span></div>' +
     '<div class="cd-cell"><span class="cd-num" id="cdH">--</span><span class="cd-lbl">' + esc(A('ساعة', 'hours')) + '</span></div>' +
@@ -1520,8 +1535,33 @@ var MATCHES = [
   { c: 2, ar: 'ثنائي المانغروف', en: 'Mangrove Duo', ar2: 'أمواج الخليج', en2: 'Gulf Waves', a: 21, b: 18, st: 'live' },
   { c: 5, ar: 'سباق الفئة العامة — 21 كم', en: 'Open category — 21 km', ar2: '', en2: '', a: null, b: null, st: 'upcoming' },
   { c: 7, ar: 'صقور الشارقة', en: 'Sharjah Falcons', ar2: 'عمالقة كلباء', en2: 'Kalba Giants', a: 64, b: 71, st: 'finished' },
-  { c: 12, ar: 'نزال الوزن المتوسط — النهائي', en: 'Middleweight final', ar2: '', en2: '', a: null, b: null, st: 'upcoming' }
+  { c: 12, ar: 'نزال الوزن المتوسط — النهائي', en: 'Middleweight final', ar2: '', en2: '', a: null, b: null, st: 'upcoming' },
+  { c: 0, ar: 'فريق الساحل', en: 'Coast Team', ar2: 'صقور الخليج', en2: 'Gulf Falcons', a: 2, b: 1, st: 'finished' },
+  { c: 0, ar: 'نوارس كلباء', en: 'Kalba Gulls', ar2: 'صقور الخليج', en2: 'Gulf Falcons', a: 3, b: 3, st: 'finished' },
+  { c: 2, ar: 'ثنائي المانغروف', en: 'Mangrove Duo', ar2: 'رمال كلباء', en2: 'Kalba Sands', a: 21, b: 15, st: 'finished' }
 ];
+/* Match points system — computed live from finished matches (win 3 / draw 1 / loss 0, configurable in the CMS) */
+var PTS_CFG = { win: 3, draw: 1, loss: 0 };
+function pointsTables() {
+  var byChamp = {};
+  MATCHES.forEach(function (m) {
+    if (m.st !== 'finished' || !m.ar2 || m.a === null || m.b === null) return;
+    var t = byChamp[m.c] = byChamp[m.c] || {};
+    var A2 = A(m.ar, m.en), B2 = A(m.ar2, m.en2);
+    [A2, B2].forEach(function (n) { t[n] = t[n] || { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0 }; });
+    t[A2].p++; t[B2].p++;
+    t[A2].gf += m.a; t[A2].ga += m.b; t[B2].gf += m.b; t[B2].ga += m.a;
+    if (m.a > m.b) { t[A2].w++; t[B2].l++; } else if (m.a < m.b) { t[B2].w++; t[A2].l++; } else { t[A2].d++; t[B2].d++; }
+  });
+  return Object.keys(byChamp).map(function (ci) {
+    var rows = Object.keys(byChamp[ci]).map(function (n) {
+      var r = byChamp[ci][n];
+      return { n: n, p: r.p, w: r.w, d: r.d, l: r.l, gd: r.gf - r.ga, gf: r.gf, pts: r.w * PTS_CFG.win + r.d * PTS_CFG.draw + r.l * PTS_CFG.loss };
+    });
+    rows.sort(function (x, y) { return y.pts - x.pts || y.gd - x.gd || y.gf - x.gf; });
+    return { c: +ci, rows: rows };
+  });
+}
 var STANDINGS = [
   { c: 5, rows: [['أحمد المنصوري', '1:12:44'], ['سالم الكتبي', '1:14:02'], ['خالد النقبي', '1:15:37']] },
   { c: 8, rows: [['فريق المد البحري', '3 انتصارات'], ['كاياك الشرقية', '2'], ['مجداف كلباء', '1']] }
@@ -1683,7 +1723,7 @@ R.sched = function () {
 
 var resTab = 'live';
 R.res = function () {
-  var tabs = [['live', '⚡ ' + A('نتائج فورية', 'Instant results')], ['standings', '🏆 ' + A('ترتيب البطولات', 'Standings')], ['overall', '👑 ' + A('الترتيب الكلي والأبطال', 'Overall & champions')]];
+  var tabs = [['live', '⚡ ' + A('نتائج فورية', 'Instant results')], ['points', '🎯 ' + A('جدول النقاط', 'Points table')], ['standings', '🏆 ' + A('ترتيب البطولات', 'Standings')], ['overall', '👑 ' + A('الترتيب الكلي والأبطال', 'Overall & champions')]];
   var body = '';
   if (resTab === 'live') {
     timers.push(setInterval(function () {
@@ -1691,6 +1731,19 @@ R.res = function () {
       if (m.st === 'live') { Math.random() > .5 ? m.a++ : m.b++; var el = document.getElementById('resBody'); if (el) el.innerHTML = liveMatchesHtml(); }
     }, 5000));
     body = '<div class="panel" id="resBody">' + liveMatchesHtml() + '</div><p class="hint center">' + esc(A('محاكاة تحديث مباشر أثناء اللعب', 'Simulating live in-play updates')) + '</p>';
+  } else if (resTab === 'points') {
+    var heads = [['#', '#'], ['الفريق / اللاعب', 'Team / player'], ['لعب', 'P'], ['فوز', 'W'], ['تعادل', 'D'], ['خسارة', 'L'], ['الفارق', 'GD'], ['النقاط', 'Pts']];
+    body = pointsTables().map(function (pt) {
+      var c = CHAMPS[pt.c];
+      return '<div class="panel"><h3 style="margin-top:0">' + c.ic + ' ' + esc(champName(c)) + '</h3>' +
+        '<table class="pts-table"><tr>' + heads.map(function (h2) { return '<th>' + esc(A(h2[0], h2[1])) + '</th>'; }).join('') + '</tr>' +
+        pt.rows.map(function (r, i) {
+          return '<tr class="' + (i < 3 ? 't' + (i + 1) : '') + '"><td>' + (i + 1) + ' ' + (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '') + '</td>' +
+            '<td><strong>' + esc(r.n) + '</strong></td><td>' + r.p + '</td><td>' + r.w + '</td><td>' + r.d + '</td><td>' + r.l + '</td>' +
+            '<td dir="ltr">' + (r.gd > 0 ? '+' + r.gd : r.gd) + '</td><td><strong>' + r.pts + '</strong></td></tr>';
+        }).join('') + '</table></div>';
+    }).join('') +
+    '<p class="hint center">' + esc(A('يُحتسب الجدول تلقائياً من المباريات المنتهية — الفوز ' + PTS_CFG.win + ' نقاط، التعادل ' + PTS_CFG.draw + '، الخسارة ' + PTS_CFG.loss + ' (قابلة للتعديل من لوحة التحكم).', 'Computed automatically from finished matches — win ' + PTS_CFG.win + ' pts, draw ' + PTS_CFG.draw + ', loss ' + PTS_CFG.loss + ' (configurable in the CMS).')) + '</p>';
   } else if (resTab === 'standings') {
     body = STANDINGS.map(function (s) {
       var c = CHAMPS[s.c];
@@ -1726,10 +1779,39 @@ function liveMatchesHtml() {
   }).join('');
 }
 
+var KALBA = [25.086991093169747, 56.35894497300927];
+/* CMS-managed map buttons (mock of admin → Map Pins) */
+var MAP_PINS = [
+  { lat: 25.086991, lng: 56.358945, ic: '⭐', ar: 'قلب المهرجان — المسرح الرئيسي', en: 'Festival heart — main stage', dAr: 'حفلات الافتتاح والتتويج', dEn: 'Opening & crowning ceremonies', v: 'venue' },
+  { lat: 25.088300, lng: 56.357600, ic: '⚽', ar: 'ملعب كرة القدم الشاطئية', en: 'Beach football pitch', dAr: 'مباريات البطولة يومياً 16:00–22:00', dEn: 'Championship matches daily 16:00–22:00', v: 'champs' },
+  { lat: 25.086200, lng: 56.359900, ic: '📝', ar: 'نقطة التسجيل والاعتماد', en: 'Registration & accreditation', dAr: 'استلام البطاقات وتسجيل المشاركين', dEn: 'Badge pickup & participant registration', v: 'register' },
+  { lat: 25.087600, lng: 56.358300, ic: '⛑️', ar: 'الإسعاف والمياه', en: 'First aid & water', dAr: '', dEn: '', v: '' },
+  { lat: 25.085400, lng: 56.360400, ic: '🅿️', ar: 'المواقف والمدخل الرئيسي', en: 'Parking & main entrance', dAr: '', dEn: '', v: '' }
+];
+var kmapN = 0;
 function realMapHtml(h) {
-  var src = 'https://maps.google.com/maps?q=25.0795,56.3630&z=15&t=k&hl=' + (lang === 'ar' ? 'ar' : 'en') + '&output=embed';
-  return '<div class="realmap"><iframe src="' + src + '" height="' + (h || 400) + '" loading="lazy" allowfullscreen title="Kalba"></iframe>' +
-    '<a class="btn sm realmap-open" href="https://www.google.com/maps/search/?api=1&query=25.0795,56.3630" target="_blank" rel="noopener">🧭 ' +
+  kmapN++;
+  var id = 'kmap' + kmapN;
+  setTimeout(function () {
+    var el2 = document.getElementById(id);
+    if (!el2 || el2.dataset.done || typeof Leaflet === 'undefined' || !Leaflet) return;
+    el2.dataset.done = '1';
+    var map = Leaflet.map(id, { scrollWheelZoom: false }).setView(KALBA, 16);
+    Leaflet.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Tiles &copy; Esri' }).addTo(map);
+    map.on('click', function () { map.scrollWheelZoom.enable(); });
+    MAP_PINS.forEach(function (p) {
+      var m = Leaflet.marker([p.lat, p.lng], {
+        icon: Leaflet.divIcon({ className: 'kmap-pin', html: '<span>' + p.ic + '</span>', iconSize: [34, 34], iconAnchor: [17, 17] }),
+        title: A(p.ar, p.en)
+      }).addTo(map);
+      var html = '<strong>' + p.ic + ' ' + esc(A(p.ar, p.en)) + '</strong>';
+      if (p.dAr || p.dEn) html += '<br>' + esc(A(p.dAr, p.dEn));
+      if (p.v) html += '<br><span class="kmap-more" onclick="go(\'' + p.v + '\')">' + esc(A('المزيد ‹', 'More ›')) + '</span>';
+      m.bindPopup('<div class="kmap-pop" dir="' + (lang === 'ar' ? 'rtl' : 'ltr') + '">' + html + '</div>');
+    });
+  }, 60);
+  return '<div class="realmap"><div id="' + id + '" class="kmap" style="height:' + (h || 400) + 'px" dir="ltr"></div>' +
+    '<a class="btn sm realmap-open" href="https://www.google.com/maps/search/?api=1&query=' + KALBA[0] + ',' + KALBA[1] + '" target="_blank" rel="noopener">🧭 ' +
     esc(A('افتح في خرائط Google', 'Open in Google Maps')) + '</a></div>';
 }
 
