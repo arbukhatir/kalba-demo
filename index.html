@@ -270,20 +270,20 @@
   .menu-btn:hover, .menu.open .menu-btn { background: rgba(255,255,255,.12); color: #fff; }
   .caret { font-size: .68rem; transition: transform .15s; }
   .menu.open .caret { transform: rotate(180deg); }
-  .dropdown { display: none; position: absolute; top: 100%; inset-inline-start: 0; min-width: 215px; background: var(--deep); border-radius: 12px; box-shadow: 0 14px 38px rgba(15,23,42,.35); padding: 8px; z-index: 70; border: 1px solid rgba(207,167,98,.45); }
+  .dropdown { display: none; position: absolute; top: 100%; inset-inline-start: 0; min-width: 215px; background: #fff; border-radius: 12px; box-shadow: 0 14px 38px rgba(15,23,42,.22); padding: 8px; z-index: 70; border: 1px solid var(--line); }
   .menu.open .dropdown { display: block; }
   @media (hover: hover) and (min-width: 861px) {
     .menu:hover .dropdown { display: block; }
     .menu:hover .menu-btn { background: rgba(255,255,255,.12); color: #fff; }
   }
-  .dropdown a, nav.main .dropdown a { display: block; color: var(--gold); padding: 9px 12px; border-radius: 8px; font-size: .89rem; cursor: pointer; transition: background .15s ease, color .15s ease; }
-  .dropdown a:hover, nav.main .dropdown a:hover { background: var(--gold); color: var(--deep); }
+  .dropdown a, nav.main .dropdown a { display: block; color: var(--gold); font-weight: 700; padding: 9px 12px; border-radius: 8px; font-size: .89rem; cursor: pointer; transition: background .15s ease, color .15s ease; }
+  .dropdown a:hover, nav.main .dropdown a:hover { background: var(--sea-dark); color: var(--gold-soft); }
   @media (max-width: 860px) {
     .menu { width: 100%; }
     .menu-btn { width: 100%; justify-content: space-between; }
-    .dropdown { position: static; box-shadow: none; background: rgba(255,255,255,.06); border: 0; }
+    .dropdown { position: static; box-shadow: none; background: #fff; border: 0; border-radius: 10px; }
     .dropdown a, nav.main .dropdown a { color: var(--gold); }
-    .dropdown a:hover, nav.main .dropdown a:hover { background: var(--gold); color: var(--deep); }
+    .dropdown a:hover, nav.main .dropdown a:hover { background: var(--sea-dark); color: var(--gold-soft); }
   }
   /* v3: about / faq / gallery / policies / sponsors / footer links */
   .faq-item { background: #fff; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; box-shadow: var(--shadow); }
