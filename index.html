@@ -70,6 +70,9 @@
   .card { background: #fff; border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); border: 1px solid var(--line); }
   .portal-card { padding-top: 0; overflow: hidden; }
   .portal-card .card-img { display: block; width: calc(100% + 36px); margin: 0 -18px 12px; aspect-ratio: 16 / 10; object-fit: cover; }
+  .champ-card .card-media { height: 88px; margin-bottom: 10px; border-radius: 10px; overflow: hidden; display: grid; place-items: center; background: var(--sand); }
+  .champ-card .card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .champ-card .card-media span { font-size: 1.9rem; }
   .cardimg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
   .cardimg-item { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: #fff; }
   .cardimg-item img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 8px; display: block; }
@@ -1710,9 +1713,9 @@ R.champs = function () {
     '<p class="sec-intro">' + esc(A('منافسات رسمية معتمدة — اضغط أي بطولة للتفاصيل والتسجيل.', 'Official competitions — tap any championship for details & registration.')) + '</p><div class="grid g4">' +
     CHAMPS.map(function (c, i) {
       var art = CARD_IMG.champs[i]
-        ? '<img class="card-img" src="' + CARD_IMG.champs[i] + '" alt="">'
-        : '<div class="ic">' + c.ic + '</div>';
-      return '<div class="card link' + (CARD_IMG.champs[i] ? ' portal-card' : '') + '" style="text-align:center" onclick="go(\'champ\',' + i + ')">' + art + '<div class="tt">' + esc(champName(c)) + '</div></div>';
+        ? '<img src="' + CARD_IMG.champs[i] + '" alt="">'
+        : '<span>' + c.ic + '</span>';
+      return '<div class="card link champ-card" style="text-align:center" onclick="go(\'champ\',' + i + ')"><div class="card-media">' + art + '</div><div class="tt">' + esc(champName(c)) + '</div></div>';
     }).join('') + '</div></section>';
 };
 
