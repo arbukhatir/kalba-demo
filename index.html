@@ -808,11 +808,12 @@ var FORMS = {
       { n:'avail', t:'days', r:1, l:{ar:'جدول التوفر',en:'Availability schedule'} },
       { n:'port', t:'file', r:0, l:{ar:'مرفقات الأعمال',en:'Portfolio'} }
     ]},
-  sports: { ic: '🏅', t: {ar:'المسابقات الرياضية',en:'Sports Competitions'}, d: {ar:'النشاط والفئة العمرية والفريق',en:'Activity, age category & team'},
+  sports: { ic: '🏅', t: {ar:'المسابقات الرياضية',en:'Sports Competitions'}, d: {ar:'يُنشأ حسابك تلقائياً بعد التسجيل — يصلك الرقم السري PIN ورمز QR على بريدك ويُمسح الرمز عند كل مباراة',en:'Your account is created automatically — PIN + QR arrive by email; the QR is scanned at each game'},
     fields: [
       { n:'act', t:'select', r:1, l:{ar:'المسابقة',en:'Competition'}, o:[{ar:'تحدي القوة',en:'Strength'},{ar:'الكاياك',en:'Kayak'},{ar:'الجري',en:'Running'},{ar:'السباحة',en:'Swimming'},{ar:'كرة القدم الشاطئية',en:'Beach football'}] },
       { n:'acat', t:'select', r:1, l:{ar:'الفئة العمرية',en:'Age category'}, o:[{ar:'أطفال',en:'Children'},{ar:'ناشئون',en:'Teens'},{ar:'كبار',en:'Adults'}] },
-      { n:'team', t:'text', r:0, l:{ar:'اسم الفريق',en:'Team name'} }
+      { n:'team', t:'text', r:0, l:{ar:'اسم الفريق',en:'Team name'} },
+      { n:'iban', t:'text', r:1, l:{ar:'رقم الحساب المصرفي IBAN (لصرف الجوائز)',en:'IBAN (for prize payouts)'} }
     ]},
   media: { ic: '📸', t: {ar:'الإعلام والصحافة',en:'Media & Press'}, d: {ar:'الجهة ونوع التغطية وتواريخ الحضور',en:'Outlet, coverage type & dates'},
     fields: [
@@ -925,7 +926,7 @@ function renderChrome() {
     [A('المنافسات', 'Competitions'), [['champs', '🏆 ' + T('champsT')], ['res', '📊 ' + T('resT')], ['leaderboard', '👑 ' + T('leaderboard')]]],
     [A('الفعاليات', 'Programme'), [['sched', '🗓️ ' + T('schedT')], ['community', '🤸 ' + T('communityT')], ['agenda', '📆 ' + T('agenda')]]],
     [A('التسجيل', 'Register'), [['champs', '🏆 ' + A('تسجيل المشاركين', 'Participants')], ['register', '📝 ' + T('register')], ['join', '🎫 ' + A('تصريح الزيارة', 'Visitor Pass')], ['surveys', '💬 ' + T('surveys')]]],
-    [A('استكشف', 'Explore'), [['about', 'ℹ️ ' + A('عن المهرجان', 'About')], ['venue', '📍 ' + T('venueT')], ['map', '🌟 ' + T('map')], ['gallery', '🖼️ ' + A('المعرض الإعلامي', 'Gallery')], ['news', '📰 ' + T('newsT')], ['faq', '❓ ' + A('الأسئلة الشائعة', 'FAQ')], ['contact', '✉️ ' + A('تواصل معنا', 'Contact')]]],
+    [A('استكشف', 'Explore'), [['about', 'ℹ️ ' + A('عن المهرجان', 'About')], ['venue', '📍 ' + T('venueT')], ['gallery', '🖼️ ' + A('المعرض الإعلامي', 'Gallery')], ['news', '📰 ' + T('newsT')], ['faq', '❓ ' + A('الأسئلة الشائعة', 'FAQ')], ['contact', '✉️ ' + A('تواصل معنا', 'Contact')]]],
   ];
   var ROLE_MENUS = {
     admin: [['admin', '🛡️ ' + T('admin')], ['ops:scores', A('⚡ إدخال النتائج', '⚡ Results Entry')], ['award', '🎯 ' + T('award')], ['screen', '📺 ' + T('screen')]],
@@ -1047,7 +1048,7 @@ R.home = function () {
   }, 1000));
 
   var services = [
-    ['👤', A('سجّل الآن', 'Register'), 'register'],
+    ['ℹ️', A('عن المهرجان', 'About the Festival'), 'about'],
     ['🗓️', A('الجدول', 'Schedule'), 'sched'],
     ['📍', A('الخريطة', 'Map'), 'venue'],
     ['🏆', A('النتائج', 'Results'), 'res']
@@ -1114,6 +1115,8 @@ R.home = function () {
 R.form = function () {
   var k = viewArg, f = FORMS[k];
   if (!f) { go('home'); return ''; }
+  /* sports registration: email is required — the account PIN + QR are sent to it */
+  var emailReq = k === 'sports';
   return '<section class="container section" style="max-width:660px">' +
     '<a class="backlink" onclick="go(\'home\')">&larr; ' + esc(T('regTitle')) + '</a>' +
     '<div class="panel"><div style="display:flex;gap:12px;align-items:flex-start"><span class="ic" style="font-size:1.8rem">' + f.ic + '</span>' +
@@ -1121,7 +1124,9 @@ R.form = function () {
     '<div id="formErr"></div><div id="formFields">' +
     '<div class="field" data-n="_name" data-t="text" data-r="1"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" maxlength="150"></div>' +
     '<div class="frow"><div class="field" data-n="_phone" data-t="text" data-r="1"><label class="flabel">' + esc(T('phone')) + ' <span class="req">*</span></label><input type="tel" dir="ltr" maxlength="30"></div>' +
-    '<div class="field" data-n="_email" data-t="text" data-r="0"><label class="flabel">' + esc(T('email')) + ' <span class="opt">(' + esc(T('optional')) + ')</span></label><input type="email" dir="ltr" maxlength="150"></div></div>' +
+    '<div class="field" data-n="_email" data-t="text" data-r="' + (emailReq ? 1 : 0) + '"><label class="flabel">' + esc(T('email')) +
+    (emailReq ? ' <span class="req">*</span>' : ' <span class="opt">(' + esc(T('optional')) + ')</span>') + '</label><input type="email" dir="ltr" maxlength="150">' +
+    (emailReq ? '<div class="hint">' + esc(A('يُرسل إليه حسابك (الرقم السري PIN) ورمز QR', 'Your account (PIN) and QR code are sent here')) + '</div>' : '') + '</div></div>' +
     f.fields.map(fieldHtml).join('') +
     '</div><button class="btn primary block" onclick="submitForm(\'' + k + '\')">' + esc(T('send')) + '</button></div></section>';
 };
@@ -1137,10 +1142,17 @@ window.submitForm = function (k) {
   var ref = k + '-' + String(APPS[0].id + 1).padStart(5, '0');
   var nameFld = root.querySelector('[data-n="_name"] input');
   APPS.unshift({ id: APPS[0].id + 1, type: k, name: nameFld.value.trim(), status: 'pending' });
+  var acct = '';
+  if (k === 'sports') {
+    var emailFld = root.querySelector('[data-n="_email"] input');
+    acct = '<p>🔑 ' + esc(A('تم إنشاء حسابك تلقائياً — أرسلنا الرقم السري (PIN) ورمز QR إلى', 'Your account was created automatically — we emailed your PIN and QR code to')) +
+      ' <b dir="ltr">' + esc(emailFld ? emailFld.value.trim() : '') + '</b><br>' +
+      esc(A('يُمسح رمز QR عند كل مباراة.', 'The QR code is scanned at each game.')) + '</p>';
+  }
   document.getElementById('app').innerHTML =
     '<section class="container section" style="max-width:600px"><div class="panel success-panel">' +
     '<div class="be">✅</div><h2>' + esc(T('okTitle')) + '</h2>' +
-    '<p>' + esc(T('okRef')) + ': <b dir="ltr">' + esc(ref) + '</b></p><p class="muted">' + esc(T('okNote')) + '</p>' +
+    '<p>' + esc(T('okRef')) + ': <b dir="ltr">' + esc(ref) + '</b></p>' + acct + '<p class="muted">' + esc(T('okNote')) + '</p>' +
     '<div class="btn-row" style="justify-content:center"><button class="btn primary" onclick="go(\'home\')">' + esc(T('home')) + '</button>' +
     '<button class="btn ghost" onclick="go(\'admin\')">' + esc(T('admin')) + ' ←</button></div></div></section>';
 };
@@ -1337,37 +1349,6 @@ window.doAward = function (aid) {
   document.getElementById('awPts').textContent = v.pts;
   msg.innerHTML = '<div class="flash ok">✅ ' + esc(T('awardOk')) + ' — ' + esc(lang === 'ar' ? a.ar : a.en) + ' (+' + a.pts + ')</div>';
   toast('+' + a.pts + ' ' + T('pts'));
-};
-
-R.map = function () {
-  var panel = Object.keys(ZONES).map(function (z) {
-    var acts = ACTIVITIES.filter(function (a) { return a.zone === z; });
-    return '<div class="zinfo" data-z="' + z + '" hidden><h3>' + ZONES[z].e + ' ' + esc(tx(ZONES[z])) + '</h3>' +
-      '<p class="muted" style="font-size:.85rem">' + esc(T('zoneActs')) + '</p><ul class="zone-acts">' +
-      (acts.map(function (a) { return '<li><span>' + esc(lang === 'ar' ? a.ar : a.en) + '</span><span class="pbadge">+' + a.pts + ' ' + esc(T('pts')) + '</span></li>'; }).join('') || '<li class="muted">—</li>') +
-      '</ul></div>';
-  }).join('');
-  setTimeout(function () {
-    document.querySelectorAll('.star-map .zone').forEach(function (g) {
-      g.onclick = function () {
-        document.querySelectorAll('.star-map .zone').forEach(function (x) { x.classList.remove('active'); });
-        g.classList.add('active');
-        document.querySelectorAll('.zinfo').forEach(function (p) { p.hidden = p.dataset.z !== g.dataset.zone; });
-        document.getElementById('zHint').hidden = true;
-      };
-    });
-  }, 0);
-  return '<section class="container section"><h2 class="sec-title">' + esc(T('mapTitle')) + '</h2>' +
-    '<p class="sec-intro">' + esc(T('mapIntro')) + '</p><div class="map-wrap">' +
-    '<svg viewBox="0 0 600 600" class="star-map"><defs><radialGradient id="sg" cx="50%" cy="50%" r="70%">' +
-    '<stop offset="0%" stop-color="#1f3a5f"/><stop offset="100%" stop-color="#183254"/></radialGradient></defs>' +
-    '<rect width="600" height="600" rx="24" fill="url(#sg)"/>' +
-    '<g class="zone" data-zone="mountains"><polygon points="300,40 355,245 300,300 245,245"/><text x="300" y="120" text-anchor="middle">⛰️</text><text x="300" y="155" text-anchor="middle" class="zl">' + esc(tx(ZONES.mountains)) + '</text></g>' +
-    '<g class="zone" data-zone="sea"><polygon points="560,300 355,355 300,300 355,245"/><text x="470" y="292" text-anchor="middle">🌊</text><text x="470" y="327" text-anchor="middle" class="zl">' + esc(tx(ZONES.sea)) + '</text></g>' +
-    '<g class="zone" data-zone="farms"><polygon points="300,560 245,355 300,300 355,355"/><text x="300" y="480" text-anchor="middle">🌾</text><text x="300" y="515" text-anchor="middle" class="zl">' + esc(tx(ZONES.farms)) + '</text></g>' +
-    '<g class="zone" data-zone="mangrove"><polygon points="40,300 245,245 300,300 245,355"/><text x="130" y="292" text-anchor="middle">🌿</text><text x="130" y="327" text-anchor="middle" class="zl">' + esc(tx(ZONES.mangrove)) + '</text></g>' +
-    '<g class="zone" data-zone="corniche"><circle cx="300" cy="300" r="62"/><text x="300" y="292" text-anchor="middle">🌟</text><text x="300" y="325" text-anchor="middle" class="zl">' + esc(tx(ZONES.corniche)) + '</text></g>' +
-    '</svg><div><p class="muted" id="zHint">👆 ' + esc(lang === 'ar' ? 'اضغط على الخريطة لاستكشاف كل امتداد' : 'Tap the map to explore each zone') + '</p>' + panel + '</div></div></section>';
 };
 
 R.agenda = function () {
