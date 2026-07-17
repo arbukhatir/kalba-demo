@@ -936,7 +936,7 @@ function renderChrome() {
   ].map(function (l) { return '<a onclick="go(\'' + l[0] + '\')">' + esc(l[1]) + '</a>'; }).join(' · ');
   var MENUS = [
     [A('المنافسات', 'Competitions'), [['champs', '🏆 ' + T('champsT')], ['res', '📊 ' + T('resT')], ['leaderboard', '👑 ' + T('leaderboard')]]],
-    [A('الفعاليات', 'Programme'), [['sched', '🗓️ ' + T('schedT')], ['community', '🤸 ' + T('communityT')], ['agenda', '📆 ' + T('agenda')]]],
+    [A('الفعاليات', 'Programme'), [['sched', '🗓️ ' + T('schedT')], ['community', '🤸 ' + T('communityT')], ['schools', '🎒 ' + A('تحدي مدارس كلباء', 'Schools Challenge')], ['agenda', '📆 ' + T('agenda')]]],
     [A('التسجيل', 'Register'), [['champs', '🏆 ' + A('تسجيل المشاركين', 'Participants')], ['register', '📝 ' + T('register')], ['join', '🎫 ' + A('تصريح الزيارة', 'Visitor Pass')], ['surveys', '💬 ' + T('surveys')]]],
     [A('استكشف', 'Explore'), [['about', 'ℹ️ ' + A('عن المهرجان', 'About')], ['venue', '📍 ' + T('venueT')], ['gallery', '🖼️ ' + A('المعرض الإعلامي', 'Gallery')], ['news', '📰 ' + T('newsT')], ['faq', '❓ ' + A('الأسئلة الشائعة', 'FAQ')], ['contact', '✉️ ' + A('تواصل معنا', 'Contact')]]],
   ];
@@ -1903,6 +1903,87 @@ function venueSvgHtml(filter) {
     '<rect y="465" width="700" height="35" fill="#e6e3dc"/><text x="350" y="488" text-anchor="middle" fill="#74808f" font-size="13">' + esc(A('شارع الكورنيش', 'Corniche road')) + '</text>' +
     pins + '</svg>';
 }
+/* ============ تحدي مدارس كلباء (Schools Challenge) ============ */
+var SC_TYPES = { knowledge: '🧠', sport: '⚽', photo: '📸', enviro: '🌿', family: '👨‍👩‍👧‍👦', creative: '🎨' };
+var SC_CH = [
+  { t: 'knowledge', ar: 'ما اسم المحمية الطبيعية الشهيرة في مدينة كلباء؟', en: 'Name the famous nature reserve in Kalba?', ans: ['القرم', 'محمية القرم', 'al qurm', 'qurm'], pts: 10, done: false },
+  { t: 'sport', ar: 'نفّذ 20 قفزة jumping jacks وارفع فيديو قصيراً', en: 'Do 20 jumping jacks and upload a short video', pts: 20, file: 1, done: false },
+  { t: 'photo', ar: 'التقط صورة مع أحد معالم كلباء أو شعار المهرجان', en: 'Photo with a Kalba landmark or the festival logo', pts: 20, file: 1, done: false },
+  { t: 'creative', ar: 'صمّم عبارة تشجيعية لفريق مدرستك', en: 'Design a cheer slogan for your school team', pts: 25, done: false }
+];
+var SC_ME = { pts: 0 };
+var SC_BOARDS = {
+  boys: [['خالد الحوسني', 'مدرسة كلباء للتعليم الأساسي', 185], ['سيف النقبي', 'مدرسة الاتحاد الخاصة', 170], ['راشد الزحمي', 'مدرسة كلباء للتعليم الأساسي', 160], ['محمد العبدولي', 'أكاديمية كلباء', 145], ['عبدالله اليماحي', 'مدرسة الغيل', 130]],
+  girls: [['مريم الحمادي', 'مدرسة زبيدة للتعليم الأساسي', 195], ['شما النقبي', 'مدرسة كلباء للبنات', 180], ['فاطمة اليماحي', 'مدرسة زبيدة للتعليم الأساسي', 165], ['علياء الكندي', 'أكاديمية كلباء', 150], ['حصة الزحمي', 'مدرسة كلباء للبنات', 135]],
+  schools: [['مدرسة زبيدة للتعليم الأساسي', 42, 38, 1240], ['مدرسة كلباء للتعليم الأساسي', 39, 33, 1105], ['مدرسة كلباء للبنات', 31, 28, 960], ['مدرسة الاتحاد الخاصة', 26, 20, 720], ['أكاديمية كلباء', 18, 15, 540]],
+  teachers: [['أ. سالم الكعبي', 'مدرسة كلباء للتعليم الأساسي', 24], ['أ. موزة الشحي', 'مدرسة زبيدة للتعليم الأساسي', 21], ['أ. أحمد النقبي', 'مدرسة الاتحاد الخاصة', 16]],
+  families: [['أسرة الحوسني', 5, 320], ['أسرة النقبي', 4, 275], ['أسرة اليماحي', 6, 240]]
+};
+var scBoard = 'boys';
+window.scSetBoard = function (b) { scBoard = b; go('schools'); };
+window.scAnswer = function (i, input) {
+  var ch = SC_CH[i], v = (input.value || '').trim().toLowerCase().replace(/\s+/g, '');
+  if (!v) return;
+  var ok = ch.ans.some(function (a) { return a.toLowerCase().replace(/\s+/g, '') === v; });
+  ch.done = true;
+  if (ok) { SC_ME.pts += ch.pts + 5; toast(A('إجابة صحيحة! +' + (ch.pts + 5) + ' نقطة (⚡ مكافأة السرعة) 🎉', 'Correct! +' + (ch.pts + 5) + ' pts (⚡ speed bonus) 🎉')); }
+  else toast(A('إجابة غير صحيحة — حاول في تحدي الغد!', 'Not quite — try tomorrow!'));
+  go('schools');
+};
+window.scUpload = function (i) {
+  SC_CH[i].done = true;
+  SC_ME.pts += 0;
+  toast(A('تم استلام مشاركتك — تُعتمد النقاط بعد مراجعة اللجنة ⏳', 'Entry received — points awarded after review ⏳'));
+  go('schools');
+};
+window.scRegister = function () {
+  var code = 'S' + Math.random().toString(36).slice(2, 9).toUpperCase();
+  var pin = ('' + Math.floor(100000 + Math.random() * 900000));
+  toast(A('تم إنشاء حساب الطالب ✔ الرمز: ' + code + ' — PIN: ' + pin + ' (أُرسلا مع رمز QR للبريد)', 'Student account created ✔ Code: ' + code + ' — PIN: ' + pin + ' (emailed with the QR)'));
+};
+R.schools = function () {
+  var chCards = SC_CH.map(function (c, i) {
+    var body;
+    if (c.done) body = '<span class="badge pending">⏳ ' + esc(A('قيد المراجعة / مُرسلة', 'Submitted / under review')) + '</span>';
+    else if (c.t === 'knowledge') body = '<div class="field"><input type="text" id="scA' + i + '" placeholder="' + esc(A('إجابتك...', 'Your answer...')) + '"></div>' +
+      '<button class="btn sm gold" onclick="scAnswer(' + i + ',document.getElementById(\'scA' + i + '\'))">' + esc(A('إرسال', 'Submit')) + '</button>';
+    else body = '<div class="field"><input type="file" accept=".jpg,.png,.webp,.mp4"></div>' +
+      '<button class="btn sm gold" onclick="scUpload(' + i + ')">' + esc(A('إرسال المشاركة', 'Submit entry')) + '</button>';
+    return '<div class="card"><div class="ic">' + SC_TYPES[c.t] + '</div><div class="tt" style="font-size:.95rem">' + esc(A(c.ar, c.en)) + '</div>' +
+      '<div class="dd"><b>+' + c.pts + ' ' + esc(T('pts')) + '</b> · ⚡ +5 ' + esc(A('لأول 10 مشاركين', 'first 10')) + '</div>' + body + '</div>';
+  }).join('');
+  var tabs = [['boys', A('🧑 أفضل 10 طلاب', '🧑 Top boys')], ['girls', A('👧 أفضل 10 طالبات', '👧 Top girls')], ['schools', A('🏫 المدارس', '🏫 Schools')], ['teachers', A('🧑‍🏫 المعلمون', '🧑‍🏫 Teachers')], ['families', A('👨‍👩‍👧‍👦 الأسر', '👨‍👩‍👧‍👦 Families')]];
+  var lb;
+  if (scBoard === 'schools') {
+    lb = '<table class="pts-table"><tr><th>#</th><th>' + esc(A('المدرسة', 'School')) + '</th><th>' + esc(A('مسجلون', 'Reg.')) + '</th><th>' + esc(A('مشاركون', 'Part.')) + '</th><th>' + esc(A('النقاط', 'Pts')) + '</th></tr>' +
+      SC_BOARDS.schools.map(function (r, i) { return '<tr class="' + (i < 3 ? 't' + (i + 1) : '') + '"><td>' + (i + 1) + (i === 0 ? ' 🏆' : '') + '</td><td><strong>' + esc(r[0]) + '</strong></td><td>' + r[1] + '</td><td>' + r[2] + '</td><td><strong>' + r[3] + '</strong></td></tr>'; }).join('') + '</table>' +
+      '<p class="hint">🏆 ' + esc(A('كأس مدارس كلباء: يُمنح للمدرسة الأعلى نقاطاً في ختام المهرجان، مع تكريم المدير والمنسق والمعلمين.', 'The Kalba Schools Cup goes to the top-scoring school at the closing ceremony.')) + '</p>';
+  } else if (scBoard === 'teachers') {
+    lb = SC_BOARDS.teachers.map(function (r, i) { return '<div class="lb-row ' + (i < 3 ? 't' + (i + 1) : '') + '"><span class="lb-rank">' + (i + 1) + '</span><span class="lb-name">' + esc(r[0]) + ' <small class="muted">' + esc(r[1]) + '</small></span><span class="lb-pts">' + r[2] + ' ' + esc(A('طالباً مشاركاً', 'students')) + '</span></div>'; }).join('');
+  } else if (scBoard === 'families') {
+    lb = SC_BOARDS.families.map(function (r, i) { return '<div class="lb-row ' + (i < 3 ? 't' + (i + 1) : '') + '"><span class="lb-rank">' + (i + 1) + '</span><span class="lb-name">' + esc(r[0]) + ' <small class="muted">' + r[1] + ' ' + esc(A('أفراد', 'members')) + '</small></span><span class="lb-pts">' + r[2] + ' ' + esc(T('pts')) + '</span></div>'; }).join('');
+  } else {
+    lb = SC_BOARDS[scBoard].map(function (r, i) { return '<div class="lb-row ' + (i < 3 ? 't' + (i + 1) : '') + '"><span class="lb-rank">' + (i + 1) + '</span><span class="lb-name">' + esc(r[0]) + ' <small class="muted">' + esc(r[1]) + '</small></span><span class="lb-pts">' + r[2] + ' ' + esc(T('pts')) + '</span></div>'; }).join('');
+  }
+  return '<section class="container section"><h2 class="sec-title">🎒 ' + esc(A('تحدي مدارس كلباء', 'Kalba Schools Challenge')) + ' <span class="live-dot"></span></h2>' +
+    '<p class="sec-intro">' + esc(A('تحدَّ، شارك، واربح مع مهرجان كلباء الرياضي — 5 أيام من التحديات المعرفية والرياضية والإبداعية لطلبة المدارس وأسرهم. التحديات تُنشر 5:00 مساءً ويُغلق الاستقبال 9:00 مساءً والنتائج 10:00 مساءً.', 'Challenge, participate and win — 5 days of knowledge, sports and creative challenges for school students and their families. Published 5:00 pm, closes 9:00 pm, results 10:00 pm.')) + '</p>' +
+    '<div class="btn-row"><button class="btn gold" onclick="scRegister()">📝 ' + esc(A('سجّل الآن — يُنشأ حساب الطالب تلقائياً', 'Register — student account auto-created')) + '</button>' +
+    (SC_ME.pts ? '<span class="badge accepted" style="font-size:1rem">⭐ ' + esc(A('نقاطك: ', 'Your points: ')) + SC_ME.pts + '</span>' : '') + '</div>' +
+    '<h3 style="margin:22px 0 10px">⚡ ' + esc(A('تحديات اليوم', "Today's challenges")) + ' <small class="muted" id="scCd"></small></h3>' +
+    '<div class="grid g4">' + chCards + '</div>' +
+    '<h3 style="margin:24px 0 10px">👑 ' + esc(A('لوحة المتصدرين', 'Leaderboards')) + '</h3>' +
+    '<div class="lb-tabs">' + tabs.map(function (t2) { return '<span class="lb-tab ' + (scBoard === t2[0] ? 'active' : '') + '" onclick="scSetBoard(\'' + t2[0] + '\')">' + esc(t2[1]) + '</span>'; }).join('') + '</div>' +
+    '<div class="panel">' + lb + '</div>' +
+    '<div class="grid g2" style="margin-top:14px"><div class="panel"><h3 style="margin-top:0">📏 ' + esc(A('النقاط', 'Points')) + '</h3>' +
+    '<div class="lb-row"><span class="lb-name">🧠 ' + esc(A('إجابة صحيحة', 'Correct answer')) + '</span><span class="pbadge">+10</span></div>' +
+    '<div class="lb-row"><span class="lb-name">📸 ' + esc(A('تحدي تصوير / رياضي / بيئي / عائلي', 'Photo / sport / enviro / family')) + '</span><span class="pbadge">+20</span></div>' +
+    '<div class="lb-row"><span class="lb-name">🎨 ' + esc(A('التحدي الإبداعي', 'Creative')) + '</span><span class="pbadge">+25</span></div>' +
+    '<div class="lb-row"><span class="lb-name">⚡ ' + esc(A('سرعة الإجابة (أول 10)', 'Speed (first 10)')) + '</span><span class="pbadge">+5</span></div>' +
+    '<div class="lb-row"><span class="lb-name">✅ ' + esc(A('المشاركة اليومية الكاملة', 'Full daily participation')) + '</span><span class="pbadge">+10</span></div></div>' +
+    '<div class="panel"><h3 style="margin-top:0">🎁 ' + esc(A('الجوائز', 'Prizes')) + '</h3><p class="dd" style="font-size:.9rem">' +
+    esc(A('المراكز الثلاثة الأولى + جوائز خاصة: أفضل مدرسة، أفضل معلم محفز، أفضل أسرة، أصغر مشارك، أفضل صورة لمعالم كلباء، أفضل فيديو رياضي، أفضل فكرة إبداعية، جائزة الالتزام اليومي، وجائزة الروح الرياضية.', 'Top three + special awards: best school, most encouraging teacher, best family, youngest participant, best landmark photo, best sports video, best creative idea, daily commitment and sportsmanship awards.')) + '</p></div></div></section>';
+};
+
 R.venue = function () {
   var groups = {};
   VENUE.forEach(function (p) { (groups[p.f] = groups[p.f] || []).push(p); });
