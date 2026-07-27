@@ -953,12 +953,14 @@ function renderChrome() {
     ['about', A('عن المهرجان', 'About')], ['gallery', A('المعرض', 'Gallery')], ['faq', A('الأسئلة الشائعة', 'FAQ')],
     ['contact', A('تواصل معنا', 'Contact')], ['privacy', A('الخصوصية', 'Privacy')], ['terms', A('الشروط', 'Terms')]
   ].map(function (l) { return '<a onclick="go(\'' + l[0] + '\')">' + esc(l[1]) + '</a>'; }).join(' · ');
-  var MENUS = [
-    [A('المنافسات', 'Competitions'), [['champs', '🏆 ' + T('champsT')], ['res', '📊 ' + T('resT')], ['leaderboard', '👑 ' + T('leaderboard')]]],
-    [A('الفعاليات', 'Programme'), [['sched', '🗓️ ' + T('schedT')], ['community', '🤸 ' + T('communityT')], ['schools', '🎒 ' + A('تحدي مدارس كلباء', 'Schools Challenge')], ['agenda', '📆 ' + T('agenda')]]],
-    [A('التسجيل', 'Register'), [['champs', '🏆 ' + A('تسجيل المشاركين', 'Participants')], ['register', '📝 ' + T('register')], ['join', '🎫 ' + A('تصريح الزيارة', 'Visitor Pass')], ['surveys', '💬 ' + T('surveys')]]],
-    [A('استكشف', 'Explore'), [['about', 'ℹ️ ' + A('عن المهرجان', 'About')], ['venue', '📍 ' + T('venueT')], ['gallery', '🖼️ ' + A('المعرض الإعلامي', 'Gallery')], ['news', '📰 ' + T('newsT')], ['faq', '❓ ' + A('الأسئلة الشائعة', 'FAQ')], ['contact', '✉️ ' + A('تواصل معنا', 'Contact')]]],
-  ];
+  
+  var MENUS = [[A('المنافسات', 'Competitions'),[['champs', T('champsT')],['res', T('resT')],['leaderboard', T('leaderboard')]]],
+  [A('الفعاليات', 'Programme'),[['sched', T('schedT')],['community', T('communityT')],['schools', A('تحدي مدارس كلباء', 'Schools Challenge')],['agenda', T('agenda')]]],
+  [A('التسجيل', 'Register'),[['champs', A('تسجيل المشاركين', 'Participants')],['register', T('register')],['join', A('تصريح الزيارة', 'Visitor Pass')],['surveys', T('surveys')]]],
+  [A('استكشف', 'Explore'),[['about', A('عن المهرجان', 'About')],['venue', T('venueT')],['gallery', A('المعرض الإعلامي', 'Gallery')],
+  ['news', T('newsT')],['faq', A('الأسئلة الشائعة', 'FAQ')],['contact', A('تواصل معنا', 'Contact')]]]];
+  
+
   var ROLE_MENUS = {
     admin: [['admin', '🛡️ ' + T('admin')], ['ops:scores', A('⚡ إدخال النتائج', '⚡ Results Entry')], ['award', '🎯 ' + T('award')], ['screen', '📺 ' + T('screen')]],
     organizer: [['award', '🎯 ' + T('award')], ['screen', '📺 ' + T('screen')]],
@@ -973,8 +975,8 @@ function renderChrome() {
         '</div></div>';
     }).join('') +
     (!window.opsRole
-      ? '<a class="nav-login" data-v="gate">👤 ' + esc(A('تسجيل الدخول', 'Log in')) + '</a>'
-      : '<div class="menu"><button type="button" class="menu-btn nav-login">👤 ' + esc(ROLE_NAMES[window.opsRole]) + ' <span class="caret">▾</span></button><div class="dropdown">' +
+      ? '<a class="nav-login" data-v="gate"> ' + esc(A('تسجيل الدخول', 'Log in')) + '</a>'
+      : '<div class="menu"><button type="button" class="menu-btn nav-login"> ' + esc(ROLE_NAMES[window.opsRole]) + ' <span class="caret">▾</span></button><div class="dropdown">' +
         ROLE_MENUS[window.opsRole].map(function (it) { return '<a data-v="' + it[0] + '">' + esc(it[1]) + '</a>'; }).join('') +
         '<a data-v="logout">🚪 ' + esc(A('تسجيل الخروج', 'Log out')) + '</a></div></div>') +
     '<a class="lang" data-lang="1">' + esc(T('langBtn')) + '</a>';
@@ -1124,7 +1126,7 @@ R.home = function () {
     '<h1>' + esc(T('site')) + '</h1>' +
     '<p class="hero-sub festival-subtitle">' + esc(A('احتفال بالرياضة والمجتمع وروح المنافسة', 'A celebration of sport, community and competition')) + '</p>' +
     '<p class="hero-meta"><span>🗓️ ' + esc(T('dates')) + '</span><span>📍 ' + esc(A('كلباء، الشارقة – دولة الإمارات', 'Kalba, Sharjah – UAE')) + '</span></p>' +
-    '<div class="ctas"><button class="btn gold" onclick="go(\'register\')">👤 ' + esc(A('سجّل الآن', 'Register Now')) + '</button></div></div>' +
+    '<div class="ctas"><button class="btn gold" onclick="go(\'register\')"> ' + esc(A('سجّل الآن', 'Register Now')) + '</button></div></div>' +
     '<div class="cd-card"><div class="cd-title">' + esc(A('العد التنازلي لافتتاح المهرجان', 'Countdown to the opening')) + '</div>' +
     '<div class="countdown"><div class="cd-cell"><span class="cd-num" id="cdD">--</span><span class="cd-lbl">' + esc(A('يوم', 'days')) + '</span></div>' +
     '<div class="cd-cell"><span class="cd-num" id="cdH">--</span><span class="cd-lbl">' + esc(A('ساعة', 'hours')) + '</span></div>' +
