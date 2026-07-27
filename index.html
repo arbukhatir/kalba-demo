@@ -13,6 +13,7 @@
     --radius: 14px; --shadow: 0 4px 18px rgba(15,23,42,.08);
     --font: "Sakkal Majalla", "Segoe UI", Tahoma, "Noto Sans Arabic", "Geeza Pro", Arial, sans-serif;
   }
+ 
   /* Product demo: committed single look (the festival's own identity) in both viewer themes */
   html, body { background: var(--sand); }
   body { margin: 0; font-family: var(--font); color: var(--ink); line-height: 1.6; font-size: 17px; }
@@ -25,11 +26,7 @@
   .muted { color: var(--muted); }
   .center { text-align: center; }
 
-  .demo-banner {
-    background: var(--gold); color: var(--deep); text-align: center; font-size: .85rem;
-    font-weight: 700; padding: 7px 12px; position: sticky; top: 0; z-index: 60;
-  }
-  .topbar { background: var(--deep); color: #fff; position: sticky; top: 34px; z-index: 50; }
+  .topbar { background: var(--deep); color: #fff; position: sticky;  z-index: 50; }
   .topbar-in { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 56px; flex-wrap: wrap; padding: 4px clamp(16px, 3vw, 44px); margin: 0 auto; }
   .brand { color: #fff; font-weight: 800; display: flex; align-items: center; gap: 8px; font-size: 1rem; cursor: pointer; }
   .brand .star { color: var(--gold); }
@@ -40,17 +37,39 @@
   nav.main a.cta { background: var(--gold); color: var(--deep); font-weight: 700; }
   nav.main a.lang { border: 1px solid #475569; }
 
-  .hero { background: radial-gradient(1000px 460px at 50% -60px, var(--deep2), var(--deep)); color: #fff; text-align: center; padding: 48px 16px 42px; }
-  .hero .star-big { font-size: 3rem; color: var(--gold); text-shadow: 0 0 34px rgba(207,167,98,.55); }
-  .hero-logo { width: 168px; height: auto; background: #fff; border-radius: 18px; padding: 16px 20px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
-  .hero h1 { font-size: clamp(1.5rem, 4.5vw, 2.4rem); margin: 8px 0; text-wrap: balance; }
-  .hero .slogan { color: var(--gold-soft); font-size: 1.1rem; margin: 0 0 10px; }
-  .hero .dates { color: #cbd5e1; margin: 0; }
-  .hero .phil { color: #94a3b8; font-style: italic; }
-  .hero .ctas { margin-top: 18px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  /* Background image */
+  .hero {background:url("pic/MainB.png") center 45%/cover no-repeat;color: #fff; text-align: 
+  center; padding: 48px 16px 42px;min-height: 650px;}
+  /* HERO SECTION */
+  .hero-split{text-align:center;padding:80px 20px 90px;}
+  .hero-grid{max-width:900px;margin:0 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:30px;text-align:center;}
+  /* Hero Content */
+  .hero-info{width:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
+  /* Welcome */
+  .hero-welcome{color:#D2A24A;font-size:1.08rem;font-weight:700;margin-bottom:8px;}
+  /* Main Title */
+  .hero-split h1{color:#163B67;font-size:clamp(2.4rem,5vw,4rem);font-weight:800;line-height:1.2;margin:0 0 12px;text-align:center;}
+  /* Subtitle */
+  .hero-sub.festival-subtitle{ color:#163B67; font-size:1.18rem;font-weight:600;line-height:1.7;max-width:760px;margin:0 auto 18px;text-align:center;}
+  /* Date & Location */
+  .hero-meta{display:flex; justify-content:center; align-items:center;gap:18px;flex-wrap:wrap;color:#163B67; font-size:1rem;font-weight:600;margin:0 auto 18px; text-align:center;}
+  /* Buttons */
+  .hero-split .ctas{display:flex;justify-content:center; align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px;}
+  /* Countdown */
+  .cd-card{background:rgba(24,49,79,.78);border:1px solid rgba(212,169,79,.45);border-radius:20px;padding:20px 24px;max-width:470px;margin:0 auto; box-shadow:0 12px 30px rgba(0,0,0,.18);backdrop-filter:blur(6px);}
+  .cd-title{color:#FFFFFF;font-size:1.15rem;font-weight:700;text-align:center;margin-bottom:18px;}
+  .countdowndisplay{display:flex;justify-content:center; align-items:center;gap:12px;flex-wrap:nowrap;}
+  .cd-cell{width:88px;padding:14px 10px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(212,169,79,.45);text-align:center;}
+  .cd-num{display:block;color:#E6BF70;font-size:2rem;font-weight:800;margin-bottom:8px;}
+  .cd-lbl{color:#F3F5F8;font-size:.82rem;font-weight:600;}
+  /* Responsive */
+  @media (max-width:768px){.hero-split{padding:60px 18px 70px;}.hero-grid{gap:24px;}.hero-split h1{font-size:2.2rem;}
+  .hero-sub.festival-subtitle{font-size:1rem;}.hero-meta{flex-direction:column; gap:8px;}.cd-card{max-width:100%;}
+  .cd-cell{width:70px;}.cd-num{font-size:1.5rem;}}
+
 
   .btn { display: inline-block; padding: 10px 20px; border-radius: 10px; border: 0; background: #e2e8f0;
-         color: var(--ink); font-size: .93rem; cursor: pointer; font-family: inherit; transition: filter .15s, transform .06s; }
+    color: var(--ink); font-size: .93rem; cursor: pointer; font-family: inherit; transition: filter .15s, transform .06s; }
   .btn:hover { filter: brightness(1.07); }
   .btn:active { transform: scale(.98); }
   .btn:focus-visible, a:focus-visible, .award-btn:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
@@ -228,13 +247,6 @@
   .success-panel { text-align: center; padding: 40px 20px; }
   .success-panel .be { font-size: 3rem; }
 
-  /* SSC brand theme additions */
-  .hero { position: relative; overflow: hidden; }
-  .hero::before {
-    content: ''; position: absolute; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='60'%3E%3Cpath d='M10 52 V30 Q10 16 26 16 T42 30 V52' fill='none' stroke='%23CFA762' stroke-width='1'/%3E%3C/svg%3E");
-    background-size: 52px 60px; opacity: .12; pointer-events: none;
-  }
   .hero > * { position: relative; }
   .hero-bookmark { position: absolute; top: 0; inset-inline-start: 9%; width: 42px; height: 66px; z-index: 1; }
   @media (max-width: 640px) { .hero-bookmark { inset-inline-start: 16px; } }
@@ -364,7 +376,7 @@
   .hero-welcome { color: var(--gold-soft); font-weight: 700; margin: 0 0 2px; font-size: 1.02rem; }
   .hero-split h1 { margin: 0 0 8px; font-size: clamp(1.5rem, 4vw, 2.3rem); }
   .hero-sub { color: #dfe7f0; font-size: 1.08rem; margin: 0 0 13px; }
-  .hero-meta { display: flex; gap: 20px; flex-wrap: wrap; color: #c9d3e0; font-size: .92rem; margin: 0 0 16px; }
+  .hero-meta { display: flex; gap: 20px; flex-wrap: wrap; color: #4A78A5; font-size: .92rem; margin: 0 0 16px; }
   .hero-split .ctas { justify-content: flex-start; margin-top: 4px; }
   .cd-card { background: rgba(13,26,46,.72); border: 1px solid rgba(207,167,98,.35); border-radius: 16px; padding: 16px 18px; justify-self: end; max-width: 370px; }
   @media (max-width: 860px) { .cd-card { justify-self: stretch; max-width: none; } }
@@ -420,6 +432,16 @@
   .pts-table tr.t1 { background: rgba(207,167,98,.16); }
   .pts-table tr.t2 { background: rgba(207,167,98,.09); }
   .pts-table tr.t3 { background: rgba(207,167,98,.05); }
+
+
+
+  /* Final date and location color */
+.hero.hero-live .hero-meta,
+.hero.hero-live .hero-meta span{
+    color:#163B67 !important;
+}
+
+
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -428,10 +450,10 @@
 </head>
 <body>
 
-<div class="demo-banner" id="demoBanner"></div>
 <header class="topbar">
   <div class="topbar-in">
-    <span class="brand" onclick="go('home')"><img class="brand-logo" id="brandLogo" alt=""> <span id="brandName"></span></span>
+    <span class="brand" onclick="go('home')"><img class="brand-logo" id="brandLogo" alt=""> 
+    <span id="brandName"></span></span>
     <nav class="main" id="mainNav"></nav>
   </div>
 </header>
@@ -668,7 +690,6 @@ var I18N = {
     loc: 'مدينة كلباء — إمارة الشارقة، الإمارات العربية المتحدة',
     galleryTitle: 'من أجواء كلباء الرياضية',
     champsT: 'البطولات', schedT: 'الجدول', resT: 'النتائج', communityT: 'المجتمع', venueT: 'الموقع', newsT: 'الأخبار',
-    demo: '🔍 نسخة تجريبية للعرض — البيانات وهمية ولا يتم حفظ أي شيء | Demo preview',
     home: 'الرئيسية', register: 'التسجيل', surveys: 'الاستبيانات', leaderboard: 'المتصدرون',
     map: 'الخريطة', agenda: 'الأجندة', screen: 'الشاشة', admin: 'لوحة التحكم', award: 'واجهة المنظم',
     join: 'انضم لنظام النقاط', langBtn: 'English',
@@ -705,7 +726,6 @@ var I18N = {
     loc: 'City of Kalba — Emirate of Sharjah, United Arab Emirates',
     galleryTitle: 'Kalba sports in action',
     champsT: 'Championships', schedT: 'Schedule', resT: 'Results', communityT: 'Community', venueT: 'Venue', newsT: 'News',
-    demo: '🔍 Interactive demo — sample data only, nothing is saved',
     home: 'Home', register: 'Register', surveys: 'Surveys', leaderboard: 'Leaderboard',
     map: 'Map', agenda: 'Agenda', screen: 'Screen', admin: 'Admin', award: 'Organizer',
     join: 'Join the Points Program', langBtn: 'العربية',
@@ -918,7 +938,7 @@ function setLang(l) {
   renderChrome(); render();
 }
 function renderChrome() {
-  document.getElementById('demoBanner').textContent = T('demo');
+  /*document.getElementById('demoBanner').textContent = T('demo');*/
   document.getElementById('brandName').textContent = T('site');
   document.getElementById('brandLogo').src = LOGO;
   document.getElementById('footName').textContent = T('site');
@@ -1100,11 +1120,10 @@ R.home = function () {
   }).join('');
 
   return '<section class="hero hero-live hero-split">' + heroMediaHtml() +
-    '<div class="hero-bookmark" aria-hidden="true"><svg viewBox="0 0 44 70" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 H44 V46 Q44 62 22 70 Q0 62 0 46 Z" fill="#CFA762"/></svg></div>' +
-    '<div class="container hero-grid"><div class="hero-text">' +
+    '<div class="container hero-grid">' +'<div class="hero-info">'  +
     '<p class="hero-welcome">' + esc(A('أهلاً بك في', 'Welcome to')) + '</p>' +
     '<h1>' + esc(T('site')) + '</h1>' +
-    '<p class="hero-sub">' + esc(A('احتفال بالرياضة والمجتمع وروح المنافسة', 'A celebration of sport, community and competition')) + '</p>' +
+    '<p class="hero-sub festival-subtitle">' + esc(A('احتفال بالرياضة والمجتمع وروح المنافسة', 'A celebration of sport, community and competition')) + '</p>' +
     '<p class="hero-meta"><span>🗓️ ' + esc(T('dates')) + '</span><span>📍 ' + esc(A('كلباء، الشارقة – دولة الإمارات', 'Kalba, Sharjah – UAE')) + '</span></p>' +
     '<div class="ctas"><button class="btn gold" onclick="go(\'register\')">👤 ' + esc(A('سجّل الآن', 'Register Now')) + '</button></div></div>' +
     '<div class="cd-card"><div class="cd-title">' + esc(A('العد التنازلي لافتتاح المهرجان', 'Countdown to the opening')) + '</div>' +
