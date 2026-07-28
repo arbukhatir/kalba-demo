@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<head>
 <html>
 <head>
 <!-- Artifact source for the shareable interactive demo of the Kalba 2026 platform.
@@ -12,6 +11,9 @@
     --deep: #183254; --deep2: #1f3a5f; --sea: #24466e; --sea-dark: #183254;
     --gold: #cfa762; --gold-soft: #ddbe8a; --gold-ink: #8a6a33; --surf: #1d9bb0; --sand: #fbfaf7; --ink: #2a3442;
     --muted: #6b7280; --line: #e6e3dc; --ok: #16a34a; --warn: #d97706; --bad: #dc2626;
+    /* Darker variants for text and small filled controls. The base --ok/--warn are tuned
+       for large fills and only reach ~3.2:1 on white, under the 4.5:1 needed for text. */
+    --ok-ink: #15803d; --warn-ink: #b45309; --bad-ink: #b91c1c;
     --radius: 14px; --shadow: 0 4px 18px rgba(15,23,42,.08);
     --font: "Sakkal Majalla", "Segoe UI", Tahoma, "Noto Sans Arabic", "Geeza Pro", Arial, sans-serif;
   }
@@ -72,7 +74,8 @@
   .cd-cell{width:70px;}.cd-num{font-size:1.5rem;}}
 
 
-  .btn { display: inline-block; padding: 11px 20px; border-radius: 10px; border: 0; background: #e2e8f0;
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px;
+    padding: 11px 20px; border-radius: 10px; border: 0; background: #e2e8f0;
     color: var(--ink); font-size: .93rem; cursor: pointer; font-family: inherit; transition: filter .15s, transform .06s; }
   .btn:hover { filter: brightness(1.07); }
   .btn:active { transform: scale(.98); }
@@ -83,9 +86,11 @@
   .btn.gold:hover { transform: translateY(-1px); box-shadow: 0 7px 18px rgba(207,167,98,.45); }
   .btn.ghost { background: transparent; border: 1px solid var(--sea); color: var(--sea-dark); }
   .hero .btn.ghost { border-color: #64748b; color: #e2e8f0; }
-  .btn.ok { background: var(--ok); color: #fff; } .btn.warn { background: var(--warn); color: #fff; } .btn.danger { background: var(--bad); color: #fff; }
+  .btn.ok { background: var(--ok-ink); color: #fff; } .btn.warn { background: var(--warn-ink); color: #fff; } .btn.danger { background: var(--bad-ink); color: #fff; }
   .btn.block { width: 100%; margin-top: 10px; }
-  .btn.sm { padding: 4px 11px; font-size: .8rem; border-radius: 7px; }
+  /* 44px minimum touch target. Keeps the compact look via padding while the box stays
+     tappable — these are the primary actions on the community and schools pages. */
+  .btn.sm { padding: 4px 11px; font-size: .8rem; border-radius: 7px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
   .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 
   .grid { display: grid; gap: 13px; }
@@ -95,9 +100,12 @@
   .card { background: #fff; border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); border: 1px solid var(--line); }
   .portal-card { padding-top: 0; overflow: hidden; }
   .portal-card .card-img { display: block; width: calc(100% + 36px); margin: 0 -18px 12px; aspect-ratio: 16 / 10; object-fit: cover; }
-  .champ-card .card-media { height: 88px; margin-bottom: 10px; border-radius: 10px; overflow: hidden; display: grid; place-items: center; background: var(--sand); }
-  .champ-card .card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .champ-card .card-media span { font-size: 1.9rem; }
+  .champ-card { padding: 0; overflow: hidden; }
+  .champ-card .card-media { height: 148px; margin: 0 0 12px; border-radius: 0; overflow: hidden; display: grid; place-items: center; background: linear-gradient(150deg, #eef2f7, #e2e9f1); position: relative; }
+  .champ-card .card-media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s cubic-bezier(.22,.61,.36,1); }
+  .champ-card:hover .card-media img { transform: scale(1.06); }
+  .champ-card .card-media span { font-size: 2.6rem; }
+  .champ-card .tt { padding: 0 14px 16px; margin: 0; }
   .cardimg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
   .cardimg-item { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: #fff; }
   .cardimg-item img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 8px; display: block; }
@@ -105,8 +113,15 @@
   .cardimg-name { font-weight: 700; font-size: .85rem; margin: 8px 0 6px; }
   .cardimg-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
   .cardimg-actions input[type=file] { max-width: 150px; font-size: .75rem; }
-  .card.link { cursor: pointer; transition: transform .12s, box-shadow .12s; }
-  .card.link:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(15,23,42,.13); border-color: var(--surf); }
+  /* .card.link renders as a <button>; reset the UA styling and make it fill the grid cell. */
+  .card.link { cursor: pointer; position: relative; width: 100%; display: block; text-align: inherit; font: inherit; color: inherit; transition: transform .22s cubic-bezier(.22,.61,.36,1), box-shadow .22s, border-color .22s; }
+  .card.link:focus-visible { outline: 3px solid var(--sea); outline-offset: 3px; }
+  .card.link:hover { transform: translateY(-4px); box-shadow: 0 14px 32px rgba(15,23,42,.15); border-color: var(--gold); }
+  /* gold rule that wipes in on hover — ties the cards to the header's accent */
+  .card.link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: linear-gradient(90deg, var(--gold), var(--surf)); transform: scaleX(0); transform-origin: var(--wipe-from, left); transition: transform .28s cubic-bezier(.22,.61,.36,1); }
+  [dir=rtl] .card.link::after { --wipe-from: right; }
+  .card.link:hover::after { transform: scaleX(1); }
+  @media (prefers-reduced-motion: reduce) { .card.link, .card.link::after, .champ-card .card-media img { transition: none; } .card.link:hover { transform: none; } }
   .card .ic { font-size: 1.8rem; }
   .card .tt { font-weight: 700; margin: 7px 0 3px; }
   .card .dd { color: var(--muted); font-size: .85rem; }
@@ -120,6 +135,7 @@
   input[type=text], input[type=email], input[type=tel], input[type=number], select, textarea, input[type=file] {
     width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 10px;
     font-family: inherit; font-size: .93rem; background: #fff; color: var(--ink);
+    min-height: 44px;   /* was 42px — under the touch-target minimum */
   }
   input:focus, select:focus, textarea:focus { outline: 2px solid var(--sea); border-color: var(--sea); }
   .frow { display: flex; gap: 13px; flex-wrap: wrap; }
@@ -148,9 +164,11 @@
   .vstat .l { font-size: .75rem; color: #cbd5e1; }
 
   .lb-tabs { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
-  .lb-tab { padding: 10px 16px; background: #fff; border: 1px solid var(--line); border-radius: 999px; font-size: .84rem; cursor: pointer; display: inline-block; transition: border-color .15s, background .15s; }
+  /* Real <button>s now, so they need the font reset browsers don't inherit. */
+  .lb-tab { padding: 10px 16px; background: #fff; border: 1px solid var(--line); border-radius: 999px; font-size: .84rem; font-family: inherit; color: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; min-height: 44px; transition: border-color .15s, background .15s; }
   .lb-tab:hover { border-color: var(--surf); }
   .lb-tab.active { background: var(--sea); color: #fff; border-color: var(--sea); }
+  .lb-tab:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
   .lb-grp { color: var(--muted); font-size: .78rem; margin-inline-start: 6px; }
   .lb-row { display: flex; align-items: center; gap: 13px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 11px 15px; margin-bottom: 7px; box-shadow: var(--shadow); transition: transform .5s, opacity .5s; }
   .lb-rank { width: 34px; height: 34px; border-radius: 50%; background: #e2e8f0; display: grid; place-items: center; font-weight: 800; flex-shrink: 0; }
@@ -197,8 +215,12 @@
   .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 11px; margin-bottom: 18px; }
   .stat { background: #fff; border-radius: 12px; border: 1px solid var(--line); padding: 14px; text-align: center; box-shadow: var(--shadow); }
   .stat .n { font-size: 1.6rem; font-weight: 800; color: var(--sea-dark); font-variant-numeric: tabular-nums; }
-  .stat.w .n { color: var(--warn); } .stat.k .n { color: var(--ok); } .stat.g .n { color: var(--gold); }
-  .stat .l { font-size: .74rem; color: var(--muted); }
+  .stat.w .n { color: var(--warn-ink); } .stat.k .n { color: var(--ok-ink); } .stat.g .n { color: var(--gold-ink); }
+  .stat .l { font-size: .8rem; color: var(--muted); }  /* was .74rem = 11.84px, under the 12px floor */
+  .stat.lead { border-color: var(--warn-ink); box-shadow: 0 4px 18px rgba(180,83,9,.14); }
+  .stat.lead .n { font-size: 2.4rem; }
+  .stat-cta { display: inline-flex; align-items: center; min-height: 44px; margin-top: 4px; background: none; border: 0; padding: 6px 0; font-family: inherit; font-size: .8rem; font-weight: 700; color: var(--warn-ink); cursor: pointer; text-decoration: underline; }
+  .stat-cta:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
   .bars { display: grid; gap: 6px; }
   .brow { display: grid; grid-template-columns: 150px 1fr 70px; gap: 9px; align-items: center; font-size: .85rem; }
   @media (max-width: 540px) { .brow { grid-template-columns: 100px 1fr 60px; } }
@@ -300,6 +322,30 @@
   .sec-title::after { content: ''; display: block; width: 54px; height: 3px; background: linear-gradient(90deg, var(--gold), var(--surf)); border-radius: 2px; margin-top: 7px; }
   .sec-title.center::after { margin-inline: auto; }
 
+  /* ---- shared page header ----
+     Carries the homepage's navy + gold identity onto every inner page, then hands off
+     to the light sand background (via the same wave divider .defdark uses) so dense
+     tables, forms and leaderboards keep their contrast. */
+  .pagehead { position: relative; background: linear-gradient(150deg, #0a1b33, #1b3a63); color: #fff; padding: 52px 16px 60px; text-align: center; overflow: hidden; margin-bottom: 28px; }
+  .pagehead::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 26px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 26' preserveAspectRatio='none'%3E%3Cpath d='M0 16 Q15 4 30 14 T60 14 T90 14 T120 14 V26 H0 Z' fill='%23fdfcf8'/%3E%3C/svg%3E") repeat-x bottom; background-size: 120px 26px; pointer-events: none; z-index: 3; }
+  .ph-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: .55; z-index: 0; }
+  /* Scrim between the photo and the copy. Without it a bright background image (sand,
+     white kit) lifts the effective background luminance and the AA contrast measured
+     against the flat gradient stops holding. */
+  .pagehead::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,27,51,.74), rgba(10,27,51,.88)); z-index: 1; pointer-events: none; }
+  .pagehead-in { position: relative; z-index: 2; max-width: 860px; margin: 0 auto; }
+  .ph-kicker { color: var(--gold); font-weight: 800; letter-spacing: 3px; font-size: .8rem; margin-bottom: 10px; }
+  .pagehead h1 { color: #fff; font-size: clamp(1.85rem, 4.4vw, 2.9rem); font-weight: 900; line-height: 1.2; margin: 0 0 12px; text-shadow: 0 3px 22px rgba(0,0,0,.35); }
+  .pagehead h1::after { content: ''; display: block; width: 62px; height: 3px; background: linear-gradient(90deg, var(--gold), var(--surf)); border-radius: 2px; margin: 14px auto 0; }
+  .pagehead p.ph-sub { color: #c2d0e2; max-width: 640px; margin: 14px auto 0; line-height: 1.85; font-size: 1.02rem; }
+  .pagehead .ph-back { color: var(--gold-soft); display: inline-block; margin-bottom: 14px; font-size: .88rem; font-weight: 600; }
+  .pagehead .ph-back:hover { color: #fff; }
+  .ph-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+  .ph-chips { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+  .ph-chip { background: rgba(255,255,255,.08); border: 1px solid rgba(207,167,98,.4); color: #e7eef7; border-radius: 999px; padding: 7px 15px; font-size: .85rem; font-weight: 600; }
+  .ph-chip b { color: var(--gold); font-variant-numeric: tabular-nums; }
+  @media (max-width: 760px) { .pagehead { padding: 38px 16px 50px; } }
+
   /* v2 modules */
   .countdown { display: flex; gap: 10px; justify-content: center; margin: 16px 0 4px; direction: ltr; }
   .cd-cell { background: rgba(255,255,255,.08); border: 1px solid rgba(207,167,98,.4); border-radius: 12px; padding: 9px 13px; min-width: 72px; text-align: center; }
@@ -317,6 +363,8 @@
   @keyframes liveGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } 50% { box-shadow: 0 0 0 4px rgba(239,68,68,.12); } }
   @media (prefers-reduced-motion: reduce) { .match-row.live { animation: none; } }
   .m-champ { flex-basis: 100%; color: var(--muted); font-size: .78rem; }
+  /* A nested <small> here compounded to ~10.4px; hold it at the parent size. */
+  .m-champ small { font-size: 1em; }
   .m-side { flex: 1; font-weight: 700; min-width: 80px; }
   .m-side:last-of-type { text-align: end; }
   /* scoreboard chip */
@@ -324,7 +372,7 @@
   .match-row.live .m-score { background: linear-gradient(135deg, var(--gold-soft), var(--gold)); color: var(--deep); }
   .sched-row { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; border-top: 1px dashed var(--line); font-size: .92rem; flex-wrap: wrap; }
   .sched-time { color: var(--sea-dark); font-weight: 700; font-size: .8rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .ok-text { color: var(--ok); } .bad-text { color: var(--bad); }
+  .ok-text { color: var(--ok-ink); } .bad-text { color: var(--bad-ink); }
   .win-wrap { position: relative; }
   .win-wrap .car-btn { background: rgba(24,50,84,.75); }
   .win-wrap .car-btn:hover { background: var(--deep); }
@@ -374,13 +422,17 @@
   .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   @media (max-width: 760px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 480px) { .gallery-grid { grid-template-columns: 1fr; } }
-  .gallery-item { margin: 0; border-radius: 12px; overflow: hidden; cursor: pointer; position: relative; background: var(--deep); box-shadow: var(--shadow); }
+  .gallery-item { margin: 0; padding: 0; border: 0; width: 100%; font-family: inherit; text-align: start; border-radius: 12px; overflow: hidden; cursor: pointer; position: relative; background: var(--deep); box-shadow: var(--shadow); }
   .gallery-item img { width: 100%; height: 200px; object-fit: cover; display: block; transition: transform .2s; }
   .gallery-item:hover img { transform: scale(1.04); opacity: .92; }
-  .gallery-item figcaption { position: absolute; bottom: 0; inset-inline: 0; background: linear-gradient(transparent, rgba(15,23,42,.85)); color: #fff; font-size: .8rem; padding: 20px 11px 8px; }
+  .gallery-item:focus-visible { outline: 3px solid var(--sea); outline-offset: 3px; }
+  .gallery-cap { position: absolute; bottom: 0; inset-inline: 0; background: linear-gradient(transparent, rgba(15,23,42,.85)); color: #fff; font-size: .8rem; padding: 20px 11px 8px; }
   .lightbox { position: fixed; inset: 0; background: rgba(10,18,32,.92); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4vh 4vw; cursor: pointer; }
   .lightbox img { max-width: 92vw; max-height: 80vh; border-radius: 10px; }
   .lb-cap { color: #e2e8f0; margin-top: 10px; }
+  .lb-close { position: absolute; top: 16px; inset-inline-end: 16px; width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.1); color: #fff; font-size: 1.7rem; line-height: 1; cursor: pointer; display: grid; place-items: center; }
+  .lb-close:hover { background: rgba(255,255,255,.2); }
+  .lb-close:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
   .sponsor-marquee { overflow: hidden; position: relative; padding: 6px 0; }
   .sponsor-track { display: flex; gap: 54px; width: max-content; align-items: center; direction: ltr; animation: spScroll 26s linear infinite; }
   .sponsor-marquee:hover .sponsor-track { animation-play-state: paused; }
@@ -393,6 +445,7 @@
   /* feedback: hero motion bg, chatbot, agenda timeline */
   .hero-media { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
   .hm-slide { position: absolute; inset: -7%; background-size: cover; background-position: center; opacity: 0; animation: heroKB 24s linear infinite; }
+  .hm-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   @keyframes heroKB { 0% { opacity: 0; transform: scale(1); } 5% { opacity: 1; } 25% { opacity: 1; } 33% { opacity: 0; transform: scale(1.14); } 100% { opacity: 0; transform: scale(1); } }
   @media (prefers-reduced-motion: reduce) { .hm-slide { animation: none; } .hm-slide:first-child { opacity: 1; } }
   .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(16,32,56,.78), rgba(24,50,84,.88)); }
@@ -421,7 +474,7 @@
   .agenda-blocks li::before { content: ''; position: absolute; inset-inline-start: -18px; top: 18px; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 3px rgba(207,167,98,.25); }
   .agenda-time { color: var(--sea-dark); font-weight: 800; white-space: nowrap; font-size: .9rem; background: var(--sand); border: 1px solid var(--line); padding: 2px 9px; border-radius: 8px; font-variant-numeric: tabular-nums; }
   .agenda-desc { font-size: .98rem; }
-  .mini-cd { font-weight: 800; color: var(--gold); font-size: 1.1rem; margin: 8px 0; font-variant-numeric: tabular-nums; }
+  .mini-cd { font-weight: 800; color: var(--gold-ink); font-size: 1.1rem; margin: 8px 0; font-variant-numeric: tabular-nums; }
   .nav-login { border: 1px solid var(--gold); color: var(--gold-soft) !important; border-radius: 999px; cursor: pointer; }
   .menu-btn.nav-login { padding: 7px 14px; }
   .hero-split { text-align: start; padding: 56px 16px 70px; }
@@ -470,6 +523,26 @@
   .hero-thumb { position: relative; }
   .hero-thumb img { width: 126px; height: 76px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); display: block; }
   .hero-thumb button { position: absolute; top: 4px; inset-inline-end: 4px; }
+  /* segmented control — hero background type */
+  .seg { display: inline-flex; background: #eef1f5; border: 1px solid var(--line); border-radius: 12px; padding: 4px; gap: 4px; margin-bottom: 6px; }
+  .seg-btn { border: 0; background: transparent; font-family: inherit; font-size: .9rem; font-weight: 600; color: var(--muted); padding: 10px 18px; min-height: 44px; border-radius: 9px; cursor: pointer; transition: background .16s, color .16s; }
+  .seg-btn:hover { color: var(--ink); }
+  .seg-btn.on { background: var(--deep); color: #fff; box-shadow: 0 2px 8px rgba(15,23,42,.16); }
+  .seg-btn:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
+  .sub-block { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .sub-block h4 { margin: 0 0 10px; font-size: .95rem; }
+
+  /* ---- schedule grouped by day ---- */
+  .day-jump { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 18px; }
+  .day-chip { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 9px 14px; min-height: 44px; font-family: inherit; font-size: .85rem; color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; gap: 7px; transition: border-color .15s, background .15s; }
+  .day-chip:hover { border-color: var(--gold); background: #fffdf8; }
+  .day-chip:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
+  .day-chip b { background: var(--deep); color: #fff; border-radius: 999px; font-size: .8rem; min-width: 22px; height: 22px; display: inline-grid; place-items: center; padding: 0 6px; font-variant-numeric: tabular-nums; }
+  .day-group { margin-bottom: 22px; }
+  .day-head { position: sticky; top: 0; z-index: 4; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 8px; padding: 10px 14px; background: var(--deep); color: #fff; border-radius: 10px; }
+  .day-name { font-size: 1.02rem; font-weight: 800; }
+  .day-name::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); margin-inline-end: 9px; vertical-align: middle; }
+  .day-count { font-size: .8rem; color: #b9c8db; font-weight: 600; }
   .kbot-typing { color: var(--muted); letter-spacing: 3px; }
   .realmap { position: relative; }
   .realmap iframe { width: 100%; border: 0; border-radius: 10px; display: block; background: #e8e6e0; }
@@ -1333,25 +1406,54 @@ nav.querySelectorAll('.menu-btn').forEach(function (btn) {
 
 /* ============ field rendering (shared by forms & surveys) ============ */
 function fieldHtml(f) {
-  var lab = '<label class="flabel">' + esc(tx(f.l)) + (f.r ? ' <span class="req">*</span>' : ' <span class="opt">(' + esc(T('optional')) + ')</span>') + '</label>';
+  /* Labels used to be visual-only (no `for`, inputs had no id), so screen readers
+     announced every field as "edit text, blank". Single controls get a real
+     label/for pair; groups of checkboxes/radios are labelled via aria-labelledby. */
+  var fid = 'f_' + String(f.n).replace(/[^A-Za-z0-9_-]/g, '');
+  var single = (f.t === 'text' || f.t === 'number' || f.t === 'textarea' || f.t === 'select' || f.t === 'file');
+  var reqMark = f.r ? ' <span class="req">*</span>' : ' <span class="opt">(' + esc(T('optional')) + ')</span>';
+  var lab = single
+    ? '<label class="flabel" for="' + fid + '">' + esc(tx(f.l)) + reqMark + '</label>'
+    : '<span class="flabel" id="' + fid + '_lbl">' + esc(tx(f.l)) + reqMark + '</span>';
+  var req = f.r ? ' required aria-required="true"' : '';
+  var grp = ' role="group" aria-labelledby="' + fid + '_lbl"' + (f.r ? ' aria-required="true"' : '');
   var h = '<div class="field" data-n="' + f.n + '" data-t="' + f.t + '" data-r="' + (f.r ? 1 : 0) + '">' + lab;
-  if (f.t === 'text') h += '<input type="text" maxlength="200">';
-  else if (f.t === 'number') h += '<input type="number" min="0" max="99999">';
-  else if (f.t === 'textarea') h += '<textarea rows="3" maxlength="1000"></textarea>';
+  if (f.t === 'text') h += '<input type="text" id="' + fid + '" maxlength="200"' + req + '>';
+  else if (f.t === 'number') h += '<input type="number" id="' + fid + '" min="0" max="99999"' + req + '>';
+  else if (f.t === 'textarea') h += '<textarea rows="3" id="' + fid + '" maxlength="1000"' + req + '></textarea>';
   else if (f.t === 'select') {
-    h += '<select><option value="">' + esc(T('choose')) + '</option>' + f.o.map(function (o, i) { return '<option value="' + i + '">' + esc(tx(o)) + '</option>'; }).join('') + '</select>';
+    h += '<select id="' + fid + '"' + req + '><option value="">' + esc(T('choose')) + '</option>' + f.o.map(function (o, i) { return '<option value="' + i + '">' + esc(tx(o)) + '</option>'; }).join('') + '</select>';
   } else if (f.t === 'checks') {
-    h += '<div class="checks">' + f.o.map(function (o, i) { return '<label class="check"><input type="checkbox" value="' + i + '"> <span>' + esc(tx(o)) + '</span></label>'; }).join('') + '</div>';
+    h += '<div class="checks"' + grp + '>' + f.o.map(function (o, i) { return '<label class="check"><input type="checkbox" value="' + i + '"> <span>' + esc(tx(o)) + '</span></label>'; }).join('') + '</div>';
   } else if (f.t === 'days') {
-    h += '<div class="checks">' + T('days').map(function (d, i) { return '<label class="check"><input type="checkbox" value="' + i + '"> <span>' + esc(d) + '</span></label>'; }).join('') + '</div>';
+    h += '<div class="checks"' + grp + '>' + T('days').map(function (d, i) { return '<label class="check"><input type="checkbox" value="' + i + '"> <span>' + esc(d) + '</span></label>'; }).join('') + '</div>';
   } else if (f.t === 'rating') {
-    h += '<div class="chiprow">' + [1,2,3,4,5].map(function (i) { return '<label class="chip"><input type="radio" name="rt_' + f.n + '" value="' + i + '"><span>' + i + ' ★</span></label>'; }).join('') + '</div>';
+    h += '<div class="chiprow"' + grp + '>' + [1,2,3,4,5].map(function (i) { return '<label class="chip"><input type="radio" name="rt_' + f.n + '" value="' + i + '"><span>' + i + ' ★</span></label>'; }).join('') + '</div>';
   } else if (f.t === 'scale') {
-    h += '<div class="chiprow">' + Array.from({length:11},function(_,i){ return '<label class="chip"><input type="radio" name="sc_' + f.n + '" value="' + i + '"><span>' + i + '</span></label>'; }).join('') + '</div><div class="hint">' + esc(T('npsHint')) + '</div>';
+    h += '<div class="chiprow"' + grp + '>' + Array.from({length:11},function(_,i){ return '<label class="chip"><input type="radio" name="sc_' + f.n + '" value="' + i + '"><span>' + i + '</span></label>'; }).join('') + '</div><div class="hint">' + esc(T('npsHint')) + '</div>';
   } else if (f.t === 'file') {
-    h += '<input type="file" accept=".pdf,.jpg,.png"><div class="hint">PDF / JPG / PNG — 8 MB</div>';
+    h += '<input type="file" id="' + fid + '" accept=".pdf,.jpg,.png"' + req + '><div class="hint">PDF / JPG / PNG — 8 MB</div>';
   }
   return h + '</div>';
+}
+/* Several forms are hand-written and their <label class="flabel"> carries no `for`,
+   while the input carries no id — so screen readers announced them as unlabelled.
+   Pairing them here covers every call site at once, including any added later. */
+var _lblSeq = 0;
+function associateLabels(root) {
+  root.querySelectorAll('label.flabel:not([for])').forEach(function (lab) {
+    var field = lab.closest('.field');
+    if (!field) return;
+    var ctrl = field.querySelector('input:not([type="checkbox"]):not([type="radio"]), select, textarea');
+    if (!ctrl) return;
+    if (!ctrl.id) ctrl.id = 'af' + (++_lblSeq);
+    lab.setAttribute('for', ctrl.id);
+    /* mirror the visual * onto the accessibility tree */
+    if (field.dataset.r === '1' && !ctrl.hasAttribute('aria-required')) {
+      ctrl.setAttribute('required', '');
+      ctrl.setAttribute('aria-required', 'true');
+    }
+  });
 }
 function validateFields(root) {
   var missing = [];
@@ -1370,45 +1472,166 @@ function validateFields(root) {
 /* ============ views ============ */
 var R = {};
 
-/* Card image overrides — set from the mock CMS (admin → settings). In the real app they persist on the server. */
+/* Shared dark page header — the homepage's identity, reused on every inner page.
+   opts: {back, backLbl, bg, chips, actions} — all optional. */
+function pageHead(kicker, title, sub, opts) {
+  opts = opts || {};
+  return '<header class="pagehead">' +
+    (opts.bg ? '<div class="ph-bg" style="background-image:url(' + opts.bg + ')"></div>' : '') +
+    '<div class="pagehead-in">' +
+    (opts.back ? '<a class="ph-back" onclick="go(\'' + opts.back + '\')">&larr; ' + esc(opts.backLbl || '') + '</a>' : '') +
+    (kicker ? '<div class="ph-kicker">' + esc(kicker) + '</div>' : '') +
+    '<h1>' + esc(title) + '</h1>' +
+    (sub ? '<p class="ph-sub">' + esc(sub) + '</p>' : '') +
+    (opts.chips ? '<div class="ph-chips">' + opts.chips + '</div>' : '') +
+    (opts.actions ? '<div class="ph-actions">' + opts.actions + '</div>' : '') +
+    '</div></header>';
+}
+/* Filter tabs used to be <span onclick> — unreachable by keyboard and not announced as
+   controls. They render as real buttons in a tablist now. */
+function tabBtn(active, onclickAttr, inner) {
+  return '<button type="button" role="tab" aria-selected="' + (active ? 'true' : 'false') +
+    '" class="lb-tab' + (active ? ' active' : '') + '" onclick="' + onclickAttr + '">' + inner + '</button>';
+}
+function phChip(label, value) {
+  return '<span class="ph-chip">' + (value !== undefined && value !== null ? '<b>' + esc(String(value)) + '</b> ' : '') + esc(label) + '</span>';
+}
+
+/* ============ persistent media store ============
+   Uploaded artwork used to live only in memory, so every refresh wiped it. It now
+   sits in IndexedDB (not localStorage — hero videos blow past the ~5MB quota) and is
+   hydrated back into CARD_IMG / HERO_MEDIA at boot, before the first render. */
+var MEDIA_DB = (function () {
+  var NAME = 'kalba-media', STORE = 'media', KEY = 'state', dbp = null;
+  function open() {
+    if (dbp) return dbp;
+    dbp = new Promise(function (res, rej) {
+      if (!window.indexedDB) { rej(new Error('IndexedDB unavailable')); return; }
+      var rq = indexedDB.open(NAME, 1);
+      rq.onupgradeneeded = function () { rq.result.createObjectStore(STORE); };
+      rq.onsuccess = function () { res(rq.result); };
+      rq.onerror = function () { rej(rq.error); };
+    });
+    return dbp;
+  }
+  function run(mode, fn) {
+    return open().then(function (db) {
+      return new Promise(function (res, rej) {
+        var t = db.transaction(STORE, mode), rq = fn(t.objectStore(STORE));
+        t.oncomplete = function () { res(rq ? rq.result : undefined); };
+        t.onerror = function () { rej(t.error); };
+        t.onabort = function () { rej(t.error); };
+      });
+    });
+  }
+  return {
+    load: function () { return run('readonly', function (s) { return s.get(KEY); }); },
+    save: function (v) { return run('readwrite', function (s) { return s.put(v, KEY); }); },
+    clear: function () { return run('readwrite', function (s) { return s.delete(KEY); }); }
+  };
+})();
+
+/* Shrink an upload before storing it. A 4000px phone photo is ~8MB of base64 and makes
+   both the DB write and every repaint crawl; 1600px wide is more than the hero needs. */
+function shrinkImage(file, maxW, quality) {
+  return new Promise(function (res, rej) {
+    var url = URL.createObjectURL(file), img = new Image();
+    img.onload = function () {
+      var w = img.naturalWidth || 1, h = img.naturalHeight || 1;
+      if (w > maxW) { h = Math.round(h * (maxW / w)); w = maxW; }
+      var cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      try { res(cv.toDataURL('image/jpeg', quality || 0.82)); }
+      catch (e) { rej(e); }
+    };
+    img.onerror = function () { URL.revokeObjectURL(url); rej(new Error('decode failed')); };
+    img.src = url;
+  });
+}
+
+/* Card image overrides — set from the mock CMS (admin → settings), persisted in IndexedDB. */
 var CARD_IMG = { portals: {}, champs: {} };
+
+/* Hero background: a rotating image carousel or a single looping video. */
+var HERO_MEDIA = { mode: 'carousel', images: null, videoUrl: '', videoBlob: null };
+var HERO_VIDEO_OBJURL = null;
+
+function mediaSnapshot() {
+  return {
+    cards: CARD_IMG,
+    hero: { mode: HERO_MEDIA.mode, images: HERO_MEDIA.images, videoUrl: HERO_MEDIA.videoUrl, videoBlob: HERO_MEDIA.videoBlob }
+  };
+}
+function mediaPersist() {
+  return MEDIA_DB.save(mediaSnapshot())['catch'](function (e) {
+    console.warn('media save failed', e);
+    toast(A('تعذّر حفظ الوسائط — قد تكون مساحة المتصفح ممتلئة', 'Could not save media — browser storage may be full'));
+  });
+}
+function mediaHydrate() {
+  return MEDIA_DB.load().then(function (s) {
+    if (!s) return;
+    if (s.cards) CARD_IMG = { portals: s.cards.portals || {}, champs: s.cards.champs || {} };
+    if (s.hero) {
+      HERO_MEDIA.mode = s.hero.mode === 'video' ? 'video' : 'carousel';
+      HERO_MEDIA.images = s.hero.images || null;
+      HERO_MEDIA.videoUrl = s.hero.videoUrl || '';
+      HERO_MEDIA.videoBlob = s.hero.videoBlob || null;
+    }
+  })['catch'](function (e) { console.warn('media load failed', e); });
+}
+window.mediaResetAll = function () {
+  CARD_IMG = { portals: {}, champs: {} };
+  HERO_MEDIA = { mode: 'carousel', images: null, videoUrl: '', videoBlob: null };
+  if (HERO_VIDEO_OBJURL) { URL.revokeObjectURL(HERO_VIDEO_OBJURL); HERO_VIDEO_OBJURL = null; }
+  MEDIA_DB.clear()['catch'](function () {});
+  toast(A('أُعيدت كل الوسائط للوضع الافتراضي', 'All media reset to defaults'));
+  go('admin', 'settings');
+};
 function portalImgSrc(k) { return CARD_IMG.portals[k] || ('portals/' + k + '.svg'); }
 function portalsGrid() {
   return Object.keys(FORMS).map(function (k) {
     var f = FORMS[k];
     var target = k === 'sports' ? "go('champs')" : "go('form','" + k + "')";
-    return '<div class="card link portal-card" onclick="' + target + '"><img class="card-img" src="' + portalImgSrc(k) + '" alt="' + esc(tx(f.t)) + '"><div class="tt">' + esc(tx(f.t)) + '</div><div class="dd">' + esc(tx(f.d)) + '</div></div>';
+    return '<button type="button" class="card link portal-card" onclick="' + target + '"><img class="card-img" src="' + portalImgSrc(k) + '" alt=""><div class="tt">' + esc(tx(f.t)) + '</div><div class="dd">' + esc(tx(f.d)) + '</div></button>';
   }).join('');
 }
 window.setCardImg = function (g, k, input) {
   var f = input.files && input.files[0];
   if (!f) return;
-  var rd = new FileReader();
-  rd.onload = function () {
-    CARD_IMG[g][k] = rd.result;
-    toast(A('تم تحديث صورة البطاقة ✔ — افتح الصفحة لتراها', 'Card image updated ✔ — open the page to see it'));
-    go('admin');
-  };
-  rd.readAsDataURL(f);
+  shrinkImage(f, 1200, 0.82).then(function (dataUrl) {
+    CARD_IMG[g][k] = dataUrl;
+    return mediaPersist();
+  }).then(function () {
+    toast(A('تم تحديث صورة البطاقة ✔ — محفوظة بعد إعادة التحميل', 'Card image updated ✔ — saved across reloads'));
+    go('admin', 'settings');
+  })['catch'](function () {
+    toast(A('تعذّر قراءة الصورة', 'Could not read that image'));
+  });
 };
 window.resetCardImg = function (g, k) {
   delete CARD_IMG[g][k];
+  mediaPersist();
   toast(A('أُعيدت الصورة الافتراضية', 'Default image restored'));
-  go('admin');
+  go('admin', 'settings');
 };
 function surveysGrid() {
   return Object.keys(SURVEYS).map(function (k) {
     var s = SURVEYS[k];
-    return '<div class="card link" onclick="go(\'survey\',\'' + k + '\')"><div class="ic">' + s.ic + '</div><div class="tt">' + esc(tx(s.t)) + '</div><div class="dd">' + esc(tx(s.d)) + '</div></div>';
+    return '<button type="button" class="card link" onclick="go(\'survey\',\'' + k + '\')"><div class="ic" aria-hidden="true">' + s.ic + '</div><div class="tt">' + esc(tx(s.t)) + '</div><div class="dd">' + esc(tx(s.d)) + '</div></button>';
   }).join('');
 }
 R.register = function () {
-  return '<section class="container section"><h2 class="sec-title">' + esc(T('regTitle')) + '</h2><p class="sec-intro">' + esc(T('regIntro')) + '</p><div class="grid g4">' + portalsGrid() + '</div>' +
+  return pageHead(A('انضم إلينا', 'JOIN US'), T('regTitle'), T('regIntro'), { bg: GALLERY[4].src }) +
+    '<section class="container section"><div class="grid g4">' + portalsGrid() + '</div>' +
     '<div class="panel" style="margin-top:14px"><strong>🏆 ' + esc(A('مشارك في البطولات؟', 'Competing in a championship?')) + '</strong> ' +
     '<button class="btn sm gold" onclick="go(\'champs\')">' + esc(A('التسجيل من صفحة البطولة مباشرة', 'Register from the championship page')) + '</button></div></section>';
 };
 R.surveys = function () {
-  return '<section class="container section"><h2 class="sec-title">' + esc(T('svTitle')) + '</h2><p class="sec-intro">' + esc(T('svIntro')) + '</p><div class="grid g3">' + surveysGrid() + '</div></section>';
+  return pageHead(A('رأيك يهمنا', 'YOUR VOICE'), T('svTitle'), T('svIntro'), { bg: GALLERY[3].src }) +
+    '<section class="container section"><div class="grid g3">' + surveysGrid() + '</div></section>';
 };
 
 R.home = function () {
@@ -1495,10 +1718,10 @@ R.form = function () {
   if (!f) { go('home'); return ''; }
   /* sports registration: email is required — the account PIN + QR are sent to it */
   var emailReq = k === 'sports';
-  return '<section class="container section" style="max-width:660px">' +
-    '<a class="backlink" onclick="go(\'home\')">&larr; ' + esc(T('regTitle')) + '</a>' +
-    '<div class="panel"><div style="display:flex;gap:12px;align-items:flex-start"><span class="ic" style="font-size:1.8rem">' + f.ic + '</span>' +
-    '<div><h2 style="margin:0 0 4px">' + esc(tx(f.t)) + '</h2><p class="sec-intro">' + esc(tx(f.d)) + '</p></div></div>' +
+  return pageHead(A('التسجيل', 'REGISTRATION'), tx(f.t), tx(f.d),
+    { back: 'register', backLbl: T('regTitle'), bg: CARD_IMG.portals[k] || '' }) +
+    '<section class="container section" style="max-width:660px">' +
+    '<div class="panel">' +
     '<div id="formErr"></div><div id="formFields">' +
     '<div class="field" data-n="_name" data-t="text" data-r="1"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" maxlength="150"></div>' +
     '<div class="frow"><div class="field" data-n="_phone" data-t="text" data-r="1"><label class="flabel">' + esc(T('phone')) + ' <span class="req">*</span></label><input type="tel" dir="ltr" maxlength="30"></div>' +
@@ -1538,10 +1761,9 @@ window.submitForm = function (k) {
 R.survey = function () {
   var k = viewArg, s = SURVEYS[k];
   if (!s) { go('home'); return ''; }
-  return '<section class="container section" style="max-width:660px">' +
-    '<a class="backlink" onclick="go(\'home\')">&larr; ' + esc(T('svTitle')) + '</a>' +
-    '<div class="panel"><div style="display:flex;gap:12px;align-items:flex-start"><span style="font-size:1.8rem">' + s.ic + '</span>' +
-    '<div><h2 style="margin:0 0 4px">' + esc(tx(s.t)) + '</h2><p class="sec-intro">' + esc(tx(s.d)) + '</p></div></div>' +
+  return pageHead(A('استبيان', 'SURVEY'), tx(s.t), tx(s.d), { back: 'surveys', backLbl: T('svTitle') }) +
+    '<section class="container section" style="max-width:660px">' +
+    '<div class="panel">' +
     '<div id="formErr"></div><div id="formFields">' + s.fields.map(fieldHtml).join('') + '</div>' +
     '<button class="btn primary block" onclick="submitSurvey()">' + esc(T('submit')) + '</button></div></section>';
 };
@@ -1564,8 +1786,8 @@ window.submitSurvey = function () {
 R.join = function () {
   if (me) return R.my();
   var ageOpts = Object.keys(AGES).map(function (k) { return '<option value="' + k + '">' + esc(tx(AGES[k])) + '</option>'; }).join('');
-  return '<section class="container section" style="max-width:600px"><div class="panel">' +
-    '<h2>🎯 ' + esc(T('joinTitle')) + '</h2><p class="sec-intro">' + esc(T('joinIntro')) + '</p>' +
+  return pageHead(A('بطاقة الزائر', 'VISITOR CARD'), T('joinTitle'), T('joinIntro'), { bg: GALLERY[4].src }) +
+    '<section class="container section" style="max-width:600px"><div class="panel">' +
     '<div id="formErr"></div>' +
     '<div class="field"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" id="jName" maxlength="100"></div>' +
     '<div class="field"><label class="flabel">' + esc(T('ageGroup')) + ' <span class="req">*</span></label><select id="jAge"><option value="">' + esc(T('choose')) + '</option>' + ageOpts + '</select></div>' +
@@ -1587,6 +1809,14 @@ window.doJoin = function () {
 
 R.my = function () {
   var v = me;
+  /* Reachable with no session via browser back/forward after a reload — without this
+     guard the page throws on v.pts and renders nothing at all. */
+  if (!v) {
+    return pageHead(A('بطاقتي', 'MY CARD'), A('لا توجد بطاقة بعد', 'No card yet'),
+      A('أنشئ بطاقة الزائر أولاً لعرض رمز QR ونقاطك.', 'Create your visitor card first to see your QR code and points.'), {}) +
+      '<section class="container section" style="max-width:560px"><div class="btn-row" style="justify-content:center">' +
+      '<button class="btn gold" onclick="go(\'join\')">' + esc(T('joinBtn')) + '</button></div></section>';
+  }
   var rank = VISITORS.filter(function (x) { return x.pts > v.pts; }).length + 1;
   setTimeout(function () {
     var box = document.getElementById('qrBox');
@@ -1638,14 +1868,20 @@ function lbListHtml() {
   }).join('') || '<p class="muted center">—</p>';
 }
 R.leaderboard = function () {
-  var tabs = '<span class="lb-tab ' + (lbBoard === 'overall' ? 'active' : '') + '" onclick="setBoard(\'overall\')">' + esc(T('overall')) + '</span>' +
+  var tabs = tabBtn(lbBoard === 'overall', 'setBoard(\'overall\')', esc(T('overall'))) +
     '<span class="lb-grp">' + esc(T('byZone')) + ':</span>' +
-    ACTIVITIES.map(function (a) { return '<span class="lb-tab ' + (lbBoard === 'sport:' + a.id ? 'active' : '') + '" onclick="setBoard(\'sport:' + a.id + '\')">' + esc(lang === 'ar' ? a.ar : a.en) + '</span>'; }).join('') +
+    ACTIVITIES.map(function (a) { return tabBtn(lbBoard === 'sport:' + a.id, 'setBoard(\'sport:' + a.id + '\')', esc(lang === 'ar' ? a.ar : a.en)); }).join('') +
     '<span class="lb-grp">' + esc(T('byAge')) + ':</span>' +
-    Object.keys(AGES).map(function (g) { return '<span class="lb-tab ' + (lbBoard === 'age:' + g ? 'active' : '') + '" onclick="setBoard(\'age:' + g + '\')">' + esc(tx(AGES[g])) + '</span>'; }).join('');
+    Object.keys(AGES).map(function (g) { return tabBtn(lbBoard === 'age:' + g, 'setBoard(\'age:' + g + '\')', esc(tx(AGES[g]))); }).join('');
   timers.push(setInterval(simulateAward, 3500));
-  return '<section class="container section"><h2 class="sec-title">🏆 ' + esc(T('leaderboard')) + ' <span class="live-dot"></span></h2>' +
-    '<div class="lb-tabs">' + tabs + '</div><div id="lbList">' + lbListHtml() + '</div>' +
+  return pageHead(
+    A('الترتيب المباشر', 'LIVE STANDINGS'),
+    T('leaderboard'),
+    A('النقاط تُحدَّث فور اعتماد النتائج من غرفة التحكم.', 'Points update the moment results are approved from the control room.'),
+    { bg: GALLERY[0].src }
+  ) +
+    '<section class="container section">' +
+    '<div class="lb-tabs" role="tablist">' + tabs + '</div><div id="lbList">' + lbListHtml() + '</div>' +
     '<p class="hint center">' + esc(T('lbAuto')) + '</p></section>';
 };
 window.setBoard = function (b) { lbBoard = b; go('leaderboard'); };
@@ -1702,8 +1938,8 @@ R.award = function () {
       if (!v.code) v.code = newCode();
       return '<button class="btn ghost" onclick="go(\'award\',\'' + v.code + '\')">' + esc(v.name) + '</button>';
     }).join(' ');
-    return '<section class="container section" style="max-width:640px"><div class="panel">' +
-      '<h2>🎯 ' + esc(T('award')) + '</h2><p class="sec-intro">' + esc(T('scanHint')) + '</p>' +
+    return pageHead(A('واجهة المنظم', 'ORGANIZER VIEW'), T('award'), T('scanHint'), {}) +
+      '<section class="container section" style="max-width:640px"><div class="panel">' +
       '<p><b>' + esc(T('scanSim')) + ':</b></p><div class="btn-row">' + opts + '</div>' +
       (me ? '<div class="btn-row"><button class="btn gold" onclick="go(\'award\',me.code)">' + esc(me.name) + ' (' + esc(lang === 'ar' ? 'بطاقتك' : 'your card') + ')</button></div>' : '') +
       '</div></section>';
@@ -1761,7 +1997,8 @@ R.agenda = function () {
       T('blocks').map(function (b) { return '<li><span>' + b[0] + '</span><span class="agenda-time" dir="ltr">' + b[1] + '</span><span class="agenda-desc">' + esc(b[2]) + '</span></li>'; }).join('') +
       '</ul></div>';
   }).join('');
-  return '<section class="container section"><h2 class="sec-title">🗓️ ' + esc(T('agTitle')) + '</h2>' +
+  return pageHead(A('البرنامج', 'PROGRAMME'), T('agTitle'), T('agIntro') || '', { bg: GALLERY[2].src }) +
+    '<section class="container section">' +
     '<p class="sec-intro">' + esc(T('agIntro')) + '</p>' + msHtml + '<div class="agenda-days">' + days + '</div></section>';
 };
 
@@ -1769,8 +2006,8 @@ var adminTab = 'dash';
 R.admin = function () {
   if (viewArg) { adminTab = viewArg; viewArg = null; }
   var tabs = [['dash', T('dash'), '📊'], ['apps', T('apps'), '📥'], ['scores', A('إدخال النتائج', 'Results Entry'), '⚡'], ['surveys', T('svRes'), '📈'], ['matrix', T('matrix'), '🎯'], ['settings', A('الإعدادات', 'Settings'), '⚙️']];
-  var tabBar = '<div class="lb-tabs">' + tabs.map(function (t) {
-    return '<span class="lb-tab ' + (adminTab === t[0] ? 'active' : '') + '" onclick="setAdminTab(\'' + t[0] + '\')">' + t[2] + ' ' + esc(t[1]) + '</span>';
+  var tabBar = '<div class="lb-tabs" role="tablist">' + tabs.map(function (t) {
+    return tabBtn(adminTab === t[0], 'setAdminTab(\'' + t[0] + '\')', '<span aria-hidden="true">' + t[2] + '</span> ' + esc(t[1]));
   }).join('') + '</div>';
   var body = '';
   if (adminTab === 'dash') {
@@ -1779,7 +2016,10 @@ R.admin = function () {
     var totPts = VISITORS.reduce(function (s, v) { return s + v.pts; }, 0);
     body = '<div class="stat-grid">' +
       '<div class="stat"><div class="n">' + APPS.length + '</div><div class="l">' + esc(T('apps')) + '</div></div>' +
-      '<div class="stat w"><div class="n">' + pend + '</div><div class="l">' + esc(T('pending')) + '</div></div>' +
+      /* the one number that demands action gets the visual lead — the six tiles were
+         previously identical, so nothing read as primary */
+      '<div class="stat w lead"><div class="n">' + pend + '</div><div class="l">' + esc(T('pending')) + '</div>' +
+      (pend ? '<button type="button" class="stat-cta" onclick="setAdminTab(\'apps\')">' + esc(A('مراجعة الطلبات', 'Review applications')) + ' &larr;</button>' : '') + '</div>' +
       '<div class="stat k"><div class="n">' + acc + '</div><div class="l">' + esc(T('accepted')) + '</div></div>' +
       '<div class="stat"><div class="n">' + VISITORS.length + '</div><div class="l">' + esc(lang === 'ar' ? 'الزوار المسجلون' : 'Visitors') + '</div></div>' +
       '<div class="stat g"><div class="n">' + totPts + '</div><div class="l">' + esc(lang === 'ar' ? 'نقاط ممنوحة' : 'Points awarded') + '</div></div>' +
@@ -1818,19 +2058,40 @@ R.admin = function () {
         (CARD_IMG.champs[i] ? '<button class="btn sm ghost" onclick="resetCardImg(\'champs\',' + i + ')">↺</button>' : '') + '</div></div>';
     }).join('');
     body = '<div class="panel"><h3 style="margin-top:0">🖼️ ' + esc(A('صور البطاقات — بوابات التسجيل', 'Card images — registration portals')) + '</h3>' +
-      '<p class="sec-intro">' + esc(A('ارفع صورة لأي بطاقة لتحل مكان الرسم الافتراضي فوراً (JPG/PNG/WEBP). في هذه النسخة التجريبية تبقى الصورة حتى إعادة تحميل الصفحة.', 'Upload an image for any card to replace its default artwork instantly (JPG/PNG/WEBP). In this demo it lasts until the page reloads.')) + '</p>' +
+      '<p class="sec-intro">' + esc(A('ارفع صورة لأي بطاقة لتحل مكان الرسم الافتراضي فوراً (JPG/PNG/WEBP). تُحفظ الصور في هذا المتصفح وتبقى بعد إعادة تحميل الصفحة.', 'Upload an image for any card to replace its default artwork instantly (JPG/PNG/WEBP). Images are saved in this browser and survive a reload.')) + '</p>' +
       '<div class="cardimg-grid">' + portalRows + '</div></div>' +
       '<div class="panel"><h3 style="margin-top:0">🏆 ' + esc(A('صور البطاقات — البطولات الـ13 المعتمدة', 'Card images — the 13 championships')) + '</h3>' +
       '<p class="sec-intro">' + esc(A('تظهر الصورة على بطاقة البطولة وفي «البطولات المميزة» بالرئيسية.', 'The image appears on the championship card and the homepage featured cards.')) + '</p>' +
       '<div class="cardimg-grid">' + champRows + '</div></div>' +
 
       '<div class="panel"><h3 style="margin-top:0">🖼️ ' + esc(A('خلفية البانر الرئيسي (الهيرو)', 'Hero landing background')) + '</h3>' +
-      '<p class="sec-intro">' + esc(A('حتى 6 صور تتناوب في خلفية الصفحة الرئيسية — ارفع أو احذف وشاهد النتيجة فوراً في الرئيسية. (يدعم أيضاً فيديو hero.mp4 في النسخة الحقيقية)', 'Up to 6 rotating homepage background images — upload or delete and see it instantly on the homepage. (The real app also supports a hero.mp4 video)')) + '</p>' +
+      '<p class="sec-intro">' + esc(A('اختر خلفية الصفحة الرئيسية: معرض صور متناوب أو فيديو يعمل تلقائياً. يُحفظ الاختيار في هذا المتصفح.', 'Choose the homepage background: a rotating image carousel or an auto-playing video. Your choice is saved in this browser.')) + '</p>' +
+
+      '<div class="seg" role="group" aria-label="' + esc(A('نوع الخلفية', 'Background type')) + '">' +
+      '<button type="button" class="seg-btn' + (HERO_MEDIA.mode === 'carousel' ? ' on' : '') + '" aria-pressed="' + (HERO_MEDIA.mode === 'carousel') + '" onclick="heroSetMode(\'carousel\')">' +
+      esc(A('معرض صور', 'Image carousel')) + '</button>' +
+      '<button type="button" class="seg-btn' + (HERO_MEDIA.mode === 'video' ? ' on' : '') + '" aria-pressed="' + (HERO_MEDIA.mode === 'video') + '" onclick="heroSetMode(\'video\')">' +
+      esc(A('فيديو', 'Video')) + '</button></div>' +
+
+      '<div class="sub-block"><h4>' + esc(A('صور المعرض', 'Carousel images')) + ' <span class="muted">' + esc(A('حتى 6', 'up to 6')) + '</span></h4>' +
       '<div class="hero-thumbs">' + heroImgs().map(function (src, i) {
         return '<div class="hero-thumb"><img src="' + src + '" alt="">' +
-          '<button class="btn sm danger" onclick="heroDelete(' + i + ')">🗑</button></div>';
+          '<button class="btn sm danger" onclick="heroDelete(' + i + ')" aria-label="' + esc(A('حذف الصورة', 'Delete image')) + '">🗑</button></div>';
       }).join('') + '</div>' +
-      '<div class="btn-row"><input type="file" accept=".jpg,.jpeg,.png,.webp" style="max-width:240px" onchange="heroUpload(this)"></div></div>' +
+      '<div class="btn-row"><input type="file" accept=".jpg,.jpeg,.png,.webp" style="max-width:240px" onchange="heroUpload(this)" aria-label="' + esc(A('إضافة صورة', 'Add image')) + '"></div></div>' +
+
+      '<div class="sub-block"><h4>' + esc(A('الفيديو', 'Video')) + '</h4>' +
+      (heroHasVideo()
+        ? '<p class="hint">✅ ' + esc(HERO_MEDIA.videoBlob
+            ? A('فيديو مرفوع (' + Math.round(HERO_MEDIA.videoBlob.size / 1048576) + ' ميجابايت)', 'Uploaded video (' + Math.round(HERO_MEDIA.videoBlob.size / 1048576) + ' MB)')
+            : A('رابط: ' + HERO_MEDIA.videoUrl, 'URL: ' + HERO_MEDIA.videoUrl)) + '</p>'
+        : '<p class="hint muted">' + esc(A('لا يوجد فيديو بعد — ارفع ملفاً أو الصق رابطاً.', 'No video yet — upload a file or paste a URL.')) + '</p>') +
+      '<div class="field" style="max-width:340px"><label class="flabel" for="heroVidFile">' + esc(A('رفع ملف (حتى 40 ميجابايت)', 'Upload a file (up to 40 MB)')) + '</label>' +
+      '<input type="file" id="heroVidFile" accept="video/mp4,video/webm" onchange="heroVideoUpload(this)"></div>' +
+      '<div class="field" style="max-width:340px"><label class="flabel" for="heroVidUrl">' + esc(A('أو رابط الفيديو', 'Or a video URL')) + '</label>' +
+      '<input type="text" id="heroVidUrl" dir="ltr" placeholder="hero.mp4" value="' + esc(HERO_MEDIA.videoUrl) + '" onchange="heroVideoUrl(this)"></div>' +
+      (heroHasVideo() ? '<button class="btn sm danger" onclick="heroVideoClear()">' + esc(A('حذف الفيديو', 'Remove video')) + '</button>' : '') +
+      '</div></div>' +
 
       '<div class="panel"><h3 style="margin-top:0">🤖 ' + esc(A('مساعد الزوار — مزود الذكاء الاصطناعي', 'Visitor assistant — AI provider')) + '</h3>' +
       '<p class="sec-intro">' + esc(A('بدون مزود يجيب المساعد من القاعدة المدمجة، ومع ChatGPT أو Gemini يجيب الذكاء الاصطناعي ويعود للقاعدة تلقائياً عند أي خلل.', 'Without a provider the bot uses built-in rules; with ChatGPT or Gemini the AI answers, falling back to rules on failure.')) + '</p>' +
@@ -1858,7 +2119,8 @@ R.admin = function () {
       }).join('') + '</table>' +
       '<p class="hint">' + esc(lang === 'ar' ? 'جرّب تعديل النقاط — سيظهر التغيير فوراً في واجهة المنظم واللوحة. في النسخة الحقيقية يمكن إضافة/تعطيل الأنشطة وتعديل يدوي لنقاط أي زائر.' : 'Try changing points — it applies instantly in the organizer view and boards. The real version adds/disables activities and supports manual visitor adjustments.') + '</p></div>';
   }
-  return '<section class="container section"><h2 class="sec-title">🛡️ ' + esc(T('admin')) + '</h2>' + tabBar + body + '</section>';
+  return pageHead(A('غرفة التحكم', 'CONTROL ROOM'), T('admin'), '', {}) +
+    '<section class="container section">' + tabBar + body + '</section>';
 };
 window.setAdminTab = function (t) { adminTab = t; go('admin'); };
 window.setPts = function (id, v) {
@@ -1870,16 +2132,21 @@ function appsTable(rows) {
   return '<div style="overflow-x:auto"><table class="t"><tr><th>#</th><th>' + esc(T('portal')) + '</th><th>' + esc(T('name')) + '</th><th>' + esc(T('status')) + '</th><th></th></tr>' +
     rows.map(function (a) {
       var f = FORMS[a.type];
-      return '<tr><td>' + a.id + '</td><td>' + f.ic + ' ' + esc(tx(f.t)) + '</td><td>' + esc(a.name) + '</td>' +
+      /* Text beside each icon: meaning was carried by colour + emoji alone, which
+         fails for colour-blind users and reads as nothing to a screen reader. */
+      return '<tr><td>' + a.id + '</td><td><span aria-hidden="true">' + f.ic + '</span> ' + esc(tx(f.t)) + '</td><td>' + esc(a.name) + '</td>' +
         '<td>' + statusBadge(a.status) + '</td><td class="btn-row" style="margin:0">' +
-        '<button class="btn sm ok" onclick="setStatus(' + a.id + ',\'accepted\')">✓</button>' +
-        '<button class="btn sm warn" onclick="setStatus(' + a.id + ',\'pending\')">⏳</button>' +
-        '<button class="btn sm danger" onclick="setStatus(' + a.id + ',\'rejected\')">✗</button></td></tr>';
+        '<button class="btn sm ok" onclick="setStatus(' + a.id + ',\'accepted\')"><span aria-hidden="true">✓</span> ' + esc(A('قبول', 'Accept')) + '</button>' +
+        '<button class="btn sm warn" onclick="setStatus(' + a.id + ',\'pending\')"><span aria-hidden="true">⏳</span> ' + esc(A('تعليق', 'Hold')) + '</button>' +
+        '<button class="btn sm danger" onclick="setStatus(' + a.id + ',\'rejected\')"><span aria-hidden="true">✗</span> ' + esc(A('رفض', 'Reject')) + '</button></td></tr>';
     }).join('') + '</table></div>';
 }
 window.setStatus = function (id, s) {
   var a = APPS.find(function (x) { return x.id === id; });
-  if (a) { a.status = s; render(); toast(T(s)); }
+  if (!a) return;
+  /* Reject sits next to Accept and isn't obviously undoable — confirm it. */
+  if (s === 'rejected' && !confirm(A('رفض طلب «' + a.name + '»؟', 'Reject the application from "' + a.name + '"?'))) return;
+  a.status = s; render(); toast(T(s));
 };
 
 /* ============ v2: championships / schedule / results / venue / community / news ============ */
@@ -1974,12 +2241,35 @@ var VENUE = [
 var VENUE_KINDS = [['', 'الكل', 'All'], ['fields', '⚽ الملاعب', '⚽ Fields'], ['registration', '📝 التسجيل', '📝 Registration'], ['aid', '⛑️ الإسعاف', '⛑️ First aid'], ['parking', '🅿️ المواقف', '🅿️ Parking'], ['activities', '🤸 الأنشطة', '🤸 Activities'], ['awards', '🏅 التتويج', '🏅 Awards']];
 
 /* Hero background images — editable from the mock CMS (admin → settings). */
-var HERO_IMGS = null;
 function heroImgs() {
-  if (!HERO_IMGS) HERO_IMGS = [GALLERY[4].src, GALLERY[2].src, GALLERY[3].src, GALLERY[0].src];
-  return HERO_IMGS;
+  if (!HERO_MEDIA.images) HERO_MEDIA.images = [GALLERY[4].src, GALLERY[2].src, GALLERY[3].src, GALLERY[0].src];
+  return HERO_MEDIA.images;
 }
+/* Resolve the video source: an uploaded blob wins over a pasted URL. */
+function heroVideoSrc() {
+  if (HERO_MEDIA.videoBlob) {
+    if (!HERO_VIDEO_OBJURL) HERO_VIDEO_OBJURL = URL.createObjectURL(HERO_MEDIA.videoBlob);
+    return HERO_VIDEO_OBJURL;
+  }
+  return HERO_MEDIA.videoUrl || '';
+}
+function heroHasVideo() { return !!(HERO_MEDIA.videoBlob || HERO_MEDIA.videoUrl); }
 function heroMediaHtml() {
+  if (HERO_MEDIA.mode === 'video' && heroHasVideo()) {
+    var poster = heroImgs()[0] || '';
+    /* muted+playsinline are what let autoplay through on iOS/Chrome; the poster covers
+       the gap before the first frame decodes. Falls back to the carousel if it errors.
+       Under prefers-reduced-motion we hold the poster frame instead of autoplaying —
+       CSS can't pause a video, so it has to be decided here. */
+    var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    /* src goes on the element, NOT a <source> child: an error on a <source> does not
+       bubble to the <video>, so onerror would never fire and the fallback would be dead. */
+    return '<div class="hero-media" aria-hidden="true">' +
+      '<video class="hm-video"' + (calm ? '' : ' autoplay loop') + ' muted playsinline preload="' + (calm ? 'metadata' : 'auto') + '"' +
+      (poster ? ' poster="' + poster + '"' : '') +
+      ' src="' + esc(heroVideoSrc()) + '" onerror="heroVideoFailed()"></video>' +
+      '<div class="hero-overlay"></div></div>';
+  }
   var imgs = heroImgs();
   var cycle = imgs.length * 6;
   return '<div class="hero-media" aria-hidden="true">' +
@@ -1988,23 +2278,77 @@ function heroMediaHtml() {
       return '<div class="hm-slide" style="background-image:url(' + src + ');animation-delay:' + (i * 6) + 's;animation-duration:' + cycle + 's"></div>';
     }).join('') + '<div class="hero-overlay"></div></div>';
 }
+window.heroVideoFailed = function () {
+  toast(A('تعذّر تشغيل الفيديو — عُرض معرض الصور بدلاً منه', 'Video could not play — showing the image carousel instead'));
+  HERO_MEDIA.mode = 'carousel';
+  mediaPersist();
+  render();
+};
+window.heroSetMode = function (mode) {
+  if (mode === 'video' && !heroHasVideo()) {
+    toast(A('أضف فيديو أولاً (رفع ملف أو رابط)', 'Add a video first (upload a file or paste a URL)'));
+    return;
+  }
+  HERO_MEDIA.mode = mode === 'video' ? 'video' : 'carousel';
+  mediaPersist();
+  toast(mode === 'video'
+    ? A('خلفية الهيرو: فيديو ✔', 'Hero background: video ✔')
+    : A('خلفية الهيرو: معرض صور ✔', 'Hero background: image carousel ✔'));
+  go('admin', 'settings');
+};
 window.heroUpload = function (input) {
   var f = input.files && input.files[0];
   if (!f) return;
   if (heroImgs().length >= 6) { toast(A('الحد الأقصى 6 صور — احذف صورة أولاً', 'Maximum 6 images — delete one first')); return; }
-  var rd = new FileReader();
-  rd.onload = function () {
-    heroImgs().push(rd.result);
-    toast(A('تمت إضافة صورة البانر ✔ — افتح الرئيسية لتراها', 'Hero image added ✔ — open the homepage to see it'));
-    go('admin');
-  };
-  rd.readAsDataURL(f);
+  shrinkImage(f, 1600, 0.82).then(function (dataUrl) {
+    heroImgs().push(dataUrl);
+    return mediaPersist();
+  }).then(function () {
+    toast(A('تمت إضافة صورة البانر ✔ — محفوظة بعد إعادة التحميل', 'Hero image added ✔ — saved across reloads'));
+    go('admin', 'settings');
+  })['catch'](function () {
+    toast(A('تعذّر قراءة الصورة', 'Could not read that image'));
+  });
 };
 window.heroDelete = function (i) {
   if (heroImgs().length <= 1) { toast(A('يجب إبقاء صورة واحدة على الأقل', 'Keep at least one image')); return; }
   heroImgs().splice(i, 1);
+  mediaPersist();
   toast(A('حُذفت الصورة', 'Image deleted'));
-  go('admin');
+  go('admin', 'settings');
+};
+window.heroVideoUpload = function (input) {
+  var f = input.files && input.files[0];
+  if (!f) return;
+  if (f.size > 40 * 1024 * 1024) {
+    toast(A('الفيديو أكبر من 40 ميجابايت — استخدم رابطاً بدلاً من الرفع', 'Video is over 40 MB — use a URL instead of uploading'));
+    input.value = '';
+    return;
+  }
+  if (HERO_VIDEO_OBJURL) { URL.revokeObjectURL(HERO_VIDEO_OBJURL); HERO_VIDEO_OBJURL = null; }
+  HERO_MEDIA.videoBlob = f;
+  HERO_MEDIA.mode = 'video';
+  mediaPersist().then(function () {
+    toast(A('تم رفع الفيديو ✔ — محفوظ بعد إعادة التحميل', 'Video uploaded ✔ — saved across reloads'));
+    go('admin', 'settings');
+  });
+};
+window.heroVideoUrl = function (input) {
+  var v = (input.value || '').trim();
+  HERO_MEDIA.videoUrl = v;
+  if (v && !HERO_MEDIA.videoBlob) HERO_MEDIA.mode = 'video';
+  mediaPersist();
+  toast(v ? A('تم حفظ رابط الفيديو ✔', 'Video URL saved ✔') : A('أُزيل رابط الفيديو', 'Video URL cleared'));
+  go('admin', 'settings');
+};
+window.heroVideoClear = function () {
+  if (HERO_VIDEO_OBJURL) { URL.revokeObjectURL(HERO_VIDEO_OBJURL); HERO_VIDEO_OBJURL = null; }
+  HERO_MEDIA.videoBlob = null;
+  HERO_MEDIA.videoUrl = '';
+  HERO_MEDIA.mode = 'carousel';
+  mediaPersist();
+  toast(A('حُذف الفيديو — عاد معرض الصور', 'Video removed — back to the image carousel'));
+  go('admin', 'settings');
 };
 function winnersHtml() {
   var cards = CHAMPIONS.map(function (ch) {
@@ -2051,19 +2395,24 @@ function featuredHtml() {
   return '<section class="container section"><h2 class="sec-title">' + esc(A('🏆 أبرز البطولات', '🏆 Featured Championships')) + '</h2><div class="grid g4">' +
     [0, 2, 4, 5].map(function (i) {
       var c = CHAMPS[i];
-      return '<div class="card link" onclick="go(\'champ\',' + i + ')"><div class="ic">' + c.ic + '</div><div class="tt">' + esc(champName(c)) + '</div><div class="dd">' + esc(A('التفاصيل والتسجيل المباشر', 'Details & registration')) + '</div></div>';
+      return '<button type="button" class="card link" onclick="go(\'champ\',' + i + ')"><div class="ic" aria-hidden="true">' + c.ic + '</div><div class="tt">' + esc(champName(c)) + '</div><div class="dd">' + esc(A('التفاصيل والتسجيل المباشر', 'Details & registration')) + '</div></button>';
     }).join('') +
     '</div><div class="btn-row" style="justify-content:center"><button class="btn ghost" onclick="go(\'champs\')">' + esc(A('كل البطولات الـ13', 'All 13 championships')) + '</button></div></section>';
 }
 
 R.champs = function () {
-  return '<section class="container section"><h2 class="sec-title">🏆 ' + esc(A('البطولات الـ13 المعتمدة', 'The 13 Approved Championships')) + '</h2>' +
-    '<p class="sec-intro">' + esc(A('منافسات رسمية معتمدة — اضغط أي بطولة للتفاصيل والتسجيل.', 'Official competitions — tap any championship for details & registration.')) + '</p><div class="grid g4">' +
+  return pageHead(
+    A('المنافسات', 'COMPETITIONS'),
+    A('البطولات الـ13 المعتمدة', 'The 13 Official Championships'),
+    A('منافسات رسمية معتمدة على كورنيش كلباء — اضغط أي بطولة للتفاصيل والتسجيل.', 'Official accredited competitions on the Kalba Corniche — tap any championship for details and registration.'),
+    { bg: CARD_IMG.champs[0] || GALLERY[3].src, chips: phChip(A('بطولة', 'championships'), CHAMPS.length) + phChip(A('أيام', 'days'), 8) }
+  ) +
+    '<section class="container section"><div class="grid g4">' +
     CHAMPS.map(function (c, i) {
       var art = CARD_IMG.champs[i]
         ? '<img src="' + CARD_IMG.champs[i] + '" alt="">'
         : '<span>' + c.ic + '</span>';
-      return '<div class="card link champ-card" style="text-align:center" onclick="go(\'champ\',' + i + ')"><div class="card-media">' + art + '</div><div class="tt">' + esc(champName(c)) + '</div></div>';
+      return '<button type="button" class="card link champ-card" style="text-align:center" onclick="go(\'champ\',' + i + ')"><div class="card-media">' + art + '</div><div class="tt">' + esc(champName(c)) + '</div></button>';
     }).join('') + '</div></section>';
 };
 
@@ -2075,10 +2424,17 @@ R.champ = function () {
     ['🗓️', A('الجدول والمواعيد', 'Schedule'), A('تُعرض مواعيد هذه البطولة في الجدول التفاعلي.', 'Fixtures appear in the interactive schedule.')],
     ['🏅', A('الجوائز والتكريم', 'Prizes'), A('كأس وميداليات للمراكز الثلاثة الأولى وشهادات للجميع.', 'Cup & medals for the top three, certificates for all.')]
   ];
-  return '<section class="container section"><a class="backlink" onclick="go(\'champs\')">&larr; ' + esc(T('champsT')) + '</a>' +
-    '<div class="champ-hero"><div style="font-size:3rem">' + c.ic + '</div><div style="flex:1"><h2 style="margin:0 0 4px">' + esc(champName(c)) + '</h2>' +
-    '<p style="margin:0;color:#c9d3e0">' + esc(A('منافسة رسمية معتمدة ضمن مهرجان كلباء الرياضي 2026.', 'An official accredited competition at Kalba Sports Festival 2026.')) + '</p></div>' +
-    '<button class="btn gold" onclick="go(\'pform\',' + (viewArg || 0) + ')">📝 ' + esc(A('سجّل الآن', 'Register Now')) + '</button></div>' +
+  return pageHead(
+    A('بطولة معتمدة', 'OFFICIAL CHAMPIONSHIP'),
+    champName(c),
+    A('منافسة رسمية معتمدة ضمن مهرجان كلباء الرياضي 2026.', 'An official accredited competition at Kalba Sports Festival 2026.'),
+    {
+      back: 'champs', backLbl: T('champsT'),
+      bg: CARD_IMG.champs[viewArg || 0] || GALLERY[3].src,
+      actions: '<button class="btn gold def" onclick="go(\'pform\',' + (viewArg || 0) + ')">' + esc(A('سجّل الآن', 'REGISTER NOW')) + '</button>'
+    }
+  ) +
+    '<section class="container section">' +
     '<div class="grid g2">' + blocks.map(function (b) {
       return '<div class="panel"><h3 style="margin-top:0">' + b[0] + ' ' + esc(b[1]) + '</h3><p class="muted">' + esc(b[2]) + '</p></div>';
     }).join('') + '</div></section>';
@@ -2086,9 +2442,14 @@ R.champ = function () {
 
 R.pform = function () {
   var c = CHAMPS[viewArg || 0];
-  return '<section class="container section" style="max-width:620px"><a class="backlink" onclick="go(\'champ\',' + (viewArg || 0) + ')">&larr; ' + esc(champName(c)) + '</a>' +
-    '<div class="panel"><h2>🏆 ' + esc(A('تسجيل مشارك — ', 'Participant registration — ')) + esc(champName(c)) + '</h2>' +
-    '<p class="sec-intro">' + esc(A('ستحصل على رقم تسجيل فريد ورمز QR للاعتماد الميداني.', 'You will get a unique reg number and a QR code for field accreditation.')) + '</p>' +
+  return pageHead(
+    A('تسجيل مشارك', 'PARTICIPANT REGISTRATION'),
+    champName(c),
+    A('ستحصل على رقم تسجيل فريد ورمز QR للاعتماد الميداني.', 'You will get a unique registration number and a QR code for field accreditation.'),
+    { back: 'champs', backLbl: T('champsT') }
+  ) +
+    '<section class="container section" style="max-width:620px">' +
+    '<div class="panel">' +
     '<div id="formErr"></div><div id="formFields">' +
     '<div class="field" data-n="_n" data-t="text" data-r="1"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" id="pfName"></div>' +
     '<div class="frow"><div class="field" data-n="_p" data-t="text" data-r="1"><label class="flabel">' + esc(T('phone')) + ' <span class="req">*</span></label><input type="tel" dir="ltr"></div>' +
@@ -2129,18 +2490,63 @@ var schedFilter = '';
 R.sched = function () {
   var kinds = [['', A('الكل', 'All')], ['🏆', A('البطولات', 'Fixtures')], ['🤸', A('مجتمعية', 'Community')], ['🩺', A('الورش', 'Workshops')], ['🏅', A('التتويج', 'Ceremonies')], ['📝', A('التسجيل', 'Registration')]];
   var rows = SCHED.filter(function (r) { return !schedFilter || r.k === schedFilter; });
-  return '<section class="container section"><h2 class="sec-title">🗓️ ' + esc(A('الجدول الزمني التفاعلي', 'Interactive Schedule')) + '</h2>' +
+  return pageHead(
+    A('المواعيد', 'FIXTURES'),
+    A('الجدول الزمني التفاعلي', 'Interactive Schedule'),
+    A('كل المباريات والفعاليات عبر أيام المهرجان الثمانية — رشّح حسب اليوم أو البطولة.', 'Every match and event across the eight festival days — filter by day or championship.'),
+    { bg: GALLERY[2].src }
+  ) +
+    '<section class="container section">' +
     '<p class="sec-intro">' + esc(A('صفِّ حسب النوع وأضف أي فعالية لتقويمك مع تنبيه قبل 30 دقيقة.', 'Filter by type; add events to your calendar with a 30-min reminder.')) + '</p>' +
-    '<div class="lb-tabs">' + kinds.map(function (k) {
-      return '<span class="lb-tab ' + (schedFilter === k[0] ? 'active' : '') + '" onclick="schedFilter=\'' + k[0] + '\';go(\'sched\')">' + (k[0] || '📋') + ' ' + esc(k[1]) + '</span>';
-    }).join('') + '</div><div class="panel">' +
-    rows.map(function (r) {
-      return '<div class="sched-row"><span>' + r.k + '</span><span class="sched-time" dir="ltr">' + r.d + ' · ' + r.t + '</span>' +
-        '<span style="flex:1">' + esc(A(r.ar, r.en)) + ' <small class="muted">📍 ' + esc(r.v) + '</small>' +
-        (r.ws ? ' <small class="' + (r.left > 0 ? 'ok-text' : 'bad-text') + '">' + esc(A('مقاعد متبقية: ', 'Seats left: ')) + r.left + '/' + r.cap + '</small>' : '') + '</span>' +
-        '<button class="btn sm" onclick="toast(A(\'أُضيفت للتقويم مع تنبيه قبل 30 دقيقة 🔔\',\'Added to calendar with a 30-min reminder 🔔\'))">🔔 +</button></div>';
-    }).join('') + '</div></section>';
+    '<div class="lb-tabs" role="tablist">' + kinds.map(function (k) {
+      return tabBtn(schedFilter === k[0], 'schedFilter=\'' + k[0] + '\';go(\'sched\')', '<span aria-hidden="true">' + (k[0] || '📋') + '</span> ' + esc(k[1]));
+    }).join('') + '</div>' +
+    schedDayJump(rows) +
+    (rows.length ? schedByDay(rows)
+      : '<div class="panel center muted">' + esc(A('لا توجد فعاليات بهذا التصنيف.', 'No events match this filter.')) + '</div>') +
+    '</section>';
 };
+/* An 8-day festival rendered as one flat list forced the reader to parse dates to answer
+   "what's on today?". Group under day headings and give each a jump target. */
+var SCHED_MONTHS = { '12': ['ديسمبر', 'Dec'], '11': ['نوفمبر', 'Nov'], '01': ['يناير', 'Jan'] };
+function schedDayLabel(d) {
+  var p = String(d).split('/');
+  var mon = SCHED_MONTHS[p[1]] ? A(SCHED_MONTHS[p[1]][0], SCHED_MONTHS[p[1]][1]) : p[1];
+  return p[0] + ' ' + mon;
+}
+function schedDays(rows) {
+  var order = [], byDay = {};
+  rows.forEach(function (r) { if (!byDay[r.d]) { byDay[r.d] = []; order.push(r.d); } byDay[r.d].push(r); });
+  return { order: order, byDay: byDay };
+}
+function schedDayJump(rows) {
+  var g = schedDays(rows);
+  if (g.order.length < 2) return '';
+  return '<nav class="day-jump" aria-label="' + esc(A('انتقل إلى يوم', 'Jump to a day')) + '">' +
+    g.order.map(function (d) {
+      return '<button type="button" class="day-chip" onclick="schedJump(\'' + d.replace('/', '-') + '\')">' +
+        esc(schedDayLabel(d)) + ' <b>' + g.byDay[d].length + '</b></button>';
+    }).join('') + '</nav>';
+}
+window.schedJump = function (id) {
+  var el = document.getElementById('day-' + id);
+  if (el) el.scrollIntoView({ behavior: (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth', block: 'start' });
+};
+function schedByDay(rows) {
+  var g = schedDays(rows);
+  return g.order.map(function (d) {
+    return '<section class="day-group" id="day-' + d.replace('/', '-') + '">' +
+      '<h3 class="day-head"><span class="day-name">' + esc(schedDayLabel(d)) + '</span>' +
+      '<span class="day-count">' + g.byDay[d].length + ' ' + esc(A('فعالية', g.byDay[d].length === 1 ? 'event' : 'events')) + '</span></h3>' +
+      '<div class="panel" style="margin-bottom:0">' + g.byDay[d].map(function (r) {
+        return '<div class="sched-row"><span aria-hidden="true">' + r.k + '</span><span class="sched-time" dir="ltr">' + r.t + '</span>' +
+          '<span style="flex:1">' + esc(A(r.ar, r.en)) + ' <small class="muted"><span aria-hidden="true">📍</span> ' + esc(r.v) + '</small>' +
+          (r.ws ? ' <small class="' + (r.left > 0 ? 'ok-text' : 'bad-text') + '">' + esc(A('مقاعد متبقية: ', 'Seats left: ')) + r.left + '/' + r.cap + '</small>' : '') + '</span>' +
+          '<button class="btn sm" onclick="toast(A(\'أُضيفت للتقويم مع تنبيه قبل 30 دقيقة 🔔\',\'Added to calendar with a 30-min reminder 🔔\'))">' +
+          '<span aria-hidden="true">🔔</span> ' + esc(A('تذكير', 'Remind')) + '</button></div>';
+      }).join('') + '</div></section>';
+  }).join('');
+}
 
 var resTab = 'live';
 R.res = function () {
@@ -2183,9 +2589,15 @@ R.res = function () {
         return '<div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)"><span style="font-size:1.6rem">🏆</span><div><strong>' + esc(ch.n) + '</strong><br><small class="muted">' + c.ic + ' ' + esc(champName(c)) + (ch.m ? ' — ' + esc(ch.m) : '') + '</small></div></div>';
       }).join('') + '</div></div>';
   }
-  return '<section class="container section"><h2 class="sec-title">📊 ' + esc(A('النتائج والترتيب الفوري', 'Results & Live Rankings')) + ' <span class="live-dot"></span></h2>' +
-    '<div class="lb-tabs">' + tabs.map(function (t2) {
-      return '<span class="lb-tab ' + (resTab === t2[0] ? 'active' : '') + '" onclick="resTab=\'' + t2[0] + '\';go(\'res\')">' + t2[1] + '</span>';
+  return pageHead(
+    A('مباشر', 'LIVE'),
+    A('النتائج والترتيب الفوري', 'Results & Live Rankings'),
+    A('النتائج تُعتمد من غرفة التحكم وتظهر هنا مباشرة.', 'Results are approved in the control room and appear here instantly.'),
+    { bg: GALLERY[0].src }
+  ) +
+    '<section class="container section">' +
+    '<div class="lb-tabs" role="tablist">' + tabs.map(function (t2) {
+      return tabBtn(resTab === t2[0], 'resTab=\'' + t2[0] + '\';go(\'res\')', t2[1]);
     }).join('') + '</div>' + body + '</section>';
 };
 function liveMatchesHtml() {
@@ -2292,12 +2704,15 @@ window.scRegister = function () {
 R.schools = function () {
   var chCards = SC_CH.map(function (c, i) {
     var body;
-    if (c.done) body = '<span class="badge pending">⏳ ' + esc(A('قيد المراجعة / مُرسلة', 'Submitted / under review')) + '</span>';
-    else if (c.t === 'knowledge') body = '<div class="field"><input type="text" id="scA' + i + '" placeholder="' + esc(A('إجابتك...', 'Your answer...')) + '"></div>' +
+    /* These fields carry no visible label — the challenge title is the card heading, so
+       point the control at it rather than leaving it announced as blank. */
+    var titleId = 'scT' + i;
+    if (c.done) body = '<span class="badge pending"><span aria-hidden="true">⏳</span> ' + esc(A('قيد المراجعة / مُرسلة', 'Submitted / under review')) + '</span>';
+    else if (c.t === 'knowledge') body = '<div class="field"><input type="text" id="scA' + i + '" aria-labelledby="' + titleId + '" placeholder="' + esc(A('إجابتك...', 'Your answer...')) + '"></div>' +
       '<button class="btn sm gold" onclick="scAnswer(' + i + ',document.getElementById(\'scA' + i + '\'))">' + esc(A('إرسال', 'Submit')) + '</button>';
-    else body = '<div class="field"><input type="file" accept=".jpg,.png,.webp,.mp4"></div>' +
+    else body = '<div class="field"><input type="file" accept=".jpg,.png,.webp,.mp4" aria-labelledby="' + titleId + '"></div>' +
       '<button class="btn sm gold" onclick="scUpload(' + i + ')">' + esc(A('إرسال المشاركة', 'Submit entry')) + '</button>';
-    return '<div class="card"><div class="ic">' + SC_TYPES[c.t] + '</div><div class="tt" style="font-size:.95rem">' + esc(A(c.ar, c.en)) + '</div>' +
+    return '<div class="card"><div class="ic" aria-hidden="true">' + SC_TYPES[c.t] + '</div><div class="tt" id="' + titleId + '" style="font-size:.95rem">' + esc(A(c.ar, c.en)) + '</div>' +
       '<div class="dd"><b>+' + c.pts + ' ' + esc(T('pts')) + '</b> · ⚡ +5 ' + esc(A('لأول 10 مشاركين', 'first 10')) + '</div>' + body + '</div>';
   }).join('');
   var tabs = [['boys', A('🧑 أفضل 10 طلاب', '🧑 Top boys')], ['girls', A('👧 أفضل 10 طالبات', '👧 Top girls')], ['schools', A('🏫 المدارس', '🏫 Schools')], ['teachers', A('🧑‍🏫 المعلمون', '🧑‍🏫 Teachers')], ['families', A('👨‍👩‍👧‍👦 الأسر', '👨‍👩‍👧‍👦 Families')]];
@@ -2313,14 +2728,20 @@ R.schools = function () {
   } else {
     lb = SC_BOARDS[scBoard].map(function (r, i) { return '<div class="lb-row ' + (i < 3 ? 't' + (i + 1) : '') + '"><span class="lb-rank">' + (i + 1) + '</span><span class="lb-name">' + esc(r[0]) + ' <small class="muted">' + esc(r[1]) + '</small></span><span class="lb-pts">' + r[2] + ' ' + esc(T('pts')) + '</span></div>'; }).join('');
   }
-  return '<section class="container section"><h2 class="sec-title">🎒 ' + esc(A('تحدي مدارس كلباء', 'Kalba Schools Challenge')) + ' <span class="live-dot"></span></h2>' +
+  return pageHead(
+    A('للمدارس والعائلات', 'SCHOOLS & FAMILIES'),
+    A('تحدي مدارس كلباء', 'Kalba Schools Challenge'),
+    A('خمسة أيام من التحديات المعرفية والرياضية والإبداعية — نقاط ومكافآت سرعة، ولوحات متصدرين يومية.', 'Five days of knowledge, sports and creative challenges — points, speed bonuses and daily leaderboards.'),
+    { bg: GALLERY[2].src, chips: phChip(A('تحدياً', 'challenges'), SC_CH.length) + phChip(A('أيام', 'days'), 5) }
+  ) +
+    '<section class="container section">' +
     '<p class="sec-intro">' + esc(A('تحدَّ، شارك، واربح مع مهرجان كلباء الرياضي — 5 أيام من التحديات المعرفية والرياضية والإبداعية لطلبة المدارس وأسرهم. التحديات تُنشر 5:00 مساءً ويُغلق الاستقبال 9:00 مساءً والنتائج 10:00 مساءً.', 'Challenge, participate and win — 5 days of knowledge, sports and creative challenges for school students and their families. Published 5:00 pm, closes 9:00 pm, results 10:00 pm.')) + '</p>' +
     '<div class="btn-row"><button class="btn gold" onclick="scRegister()">📝 ' + esc(A('سجّل الآن — يُنشأ حساب الطالب تلقائياً', 'Register — student account auto-created')) + '</button>' +
     (SC_ME.pts ? '<span class="badge accepted" style="font-size:1rem">⭐ ' + esc(A('نقاطك: ', 'Your points: ')) + SC_ME.pts + '</span>' : '') + '</div>' +
     '<h3 style="margin:22px 0 10px">⚡ ' + esc(A('تحديات اليوم', "Today's challenges")) + ' <small class="muted" id="scCd"></small></h3>' +
     '<div class="grid g4">' + chCards + '</div>' +
     '<h3 style="margin:24px 0 10px">👑 ' + esc(A('لوحة المتصدرين', 'Leaderboards')) + '</h3>' +
-    '<div class="lb-tabs">' + tabs.map(function (t2) { return '<span class="lb-tab ' + (scBoard === t2[0] ? 'active' : '') + '" onclick="scSetBoard(\'' + t2[0] + '\')">' + esc(t2[1]) + '</span>'; }).join('') + '</div>' +
+    '<div class="lb-tabs" role="tablist">' + tabs.map(function (t2) { return tabBtn(scBoard === t2[0], 'scSetBoard(\'' + t2[0] + '\')', esc(t2[1])); }).join('') + '</div>' +
     '<div class="panel">' + lb + '</div>' +
     '<div class="grid g2" style="margin-top:14px"><div class="panel"><h3 style="margin-top:0">📏 ' + esc(A('النقاط', 'Points')) + '</h3>' +
     '<div class="lb-row"><span class="lb-name">🧠 ' + esc(A('إجابة صحيحة', 'Correct answer')) + '</span><span class="pbadge">+10</span></div>' +
@@ -2340,7 +2761,13 @@ R.venue = function () {
     return '<div class="card"><div class="ic">' + (items[0] ? items[0].e : '') + '</div><div class="tt" style="font-size:.95rem">' + esc(A(k[1].replace(/^\S+ /, ''), k[2].replace(/^\S+ /, ''))) + '</div>' +
       '<div class="dd">' + items.map(function (p) { return esc(A(p.ar, p.en)); }).join('<br>') + '</div></div>';
   }).join('');
-  return '<section class="container section"><h2 class="sec-title">📍 ' + esc(A('خريطة موقع المهرجان — كورنيش كلباء', 'Venue map — Kalba Corniche')) + '</h2>' +
+  return pageHead(
+    A('الموقع', 'THE VENUE'),
+    A('خريطة موقع المهرجان', 'Venue Map'),
+    A('كورنيش كلباء — الملاعب ونقاط التسجيل والإسعاف والمواقف على الخريطة التفاعلية.', 'Kalba Corniche — pitches, registration points, first aid and parking on the interactive map.'),
+    { bg: GALLERY[3].src }
+  ) +
+    '<section class="container section">' +
     '<p class="sec-intro">' + esc(A('الموقع الفعلي على الخريطة، ومرافق الموقع الستة أدناه. التوجيه الداخلي مع تطبيق الجوال.', 'The real location on the map, with the six facility groups below. Indoor navigation comes with the mobile app.')) + '</p>' +
     '<div class="panel" style="padding:10px">' + realMapHtml(480) + '</div>' +
     '<div class="grid g3">' + cards + '</div></section>';
@@ -2349,7 +2776,13 @@ R.venue = function () {
 R.community = function () {
   var evs = [['🤸', A('التحديات اليومية والكالستينكس', 'Daily challenges & calisthenics')], ['🎯', A('الألعاب الشعبية (الكيرم وشد الحبل)', 'Traditional games')], ['⚽', A('مسابقات جماهيرية قصيرة', 'Short public contests')], ['👟', A('عروض تعريفية للمحترفين', 'Pro demo sessions')]];
   var ws = [[A('أساسيات اللياقة العامة', 'Fitness basics'), 14], [A('التغذية الرياضية الصحية', 'Sports nutrition'), 6], [A('الوقاية من الإصابات', 'Injury prevention'), 22], [A('أساسيات الجري والسباقات', 'Running basics'), 0], [A('الإسعافات الأولية الرياضية', 'Sports first aid'), 9], [A('لياقة كبار السن', 'Senior fitness'), 17]];
-  return '<section class="container section"><h2 class="sec-title">🤸 ' + esc(A('الفعاليات المجتمعية والورش الصحية', 'Community & Health Workshops')) + '</h2>' +
+  return pageHead(
+    A('للجميع', 'FOR EVERYONE'),
+    A('الفعاليات المجتمعية والورش الصحية', 'Community & Health Workshops'),
+    A('ورش ولياقة وفعاليات مفتوحة للعائلات طوال أيام المهرجان.', 'Workshops, fitness and open family events across every day of the festival.'),
+    { bg: GALLERY[2].src }
+  ) +
+    '<section class="container section">' +
     '<p class="sec-intro">' + esc(A('فعاليات مفتوحة للجميع وورش صحية بمقاعد محدودة — سجّل مسبقاً لضمان مقعدك.', 'Events open to everyone and health workshops with limited seats — pre-register to guarantee yours.')) + '</p><div class="grid g4">' +
     evs.map(function (e2) { return '<div class="card"><div class="ic">' + e2[0] + '</div><div class="tt" style="font-size:.95rem">' + esc(e2[1]) + '</div></div>'; }).join('') +
     '</div><h3 style="margin-top:26px">' + esc(A('الورش الصحية — سجّل مسبقاً لضمان مقعدك', 'Health workshops — pre-register for a seat')) + '</h3><div class="grid g3">' +
@@ -2361,7 +2794,8 @@ R.community = function () {
 };
 
 R.news = function () {
-  return '<section class="container section" style="max-width:640px"><h2 class="sec-title">📰 ' + esc(A('الأخبار والإعلام', 'News & Media')) + '</h2>' +
+  return pageHead(A('آخر المستجدات', 'LATEST'), A('الأخبار والإعلام', 'News & Media'), '', { bg: GALLERY[4].src }) +
+    '<section class="container section" style="max-width:640px">' +
     NEWS.map(function (n) {
       return '<div class="panel">' + (n.u ? '<span class="badge rejected">' + esc(A('عاجل', 'Urgent')) + '</span> ' : '') +
         '<strong>' + esc(A(n.ar, n.en)) + '</strong><div class="muted" style="font-size:.8rem" dir="ltr">2026-12-0' + (Math.floor(Math.random() * 0) + 8) + '</div></div>';
@@ -2376,7 +2810,8 @@ R.about = function () {
     ['🌊', A('طبيعة كلباء', "Kalba's nature"), A('تجربة تمتد من الكورنيش إلى المانغروف والبحر والجبال والمزارع.', 'An experience from the Corniche to the mangrove, sea, mountains and farms.')]
   ];
   var facts = [['🗓️', A('8 أيام', '8 days')], ['🏆', A('13 بطولة', '13 championships')], ['🤸', A('4 فعاليات مجتمعية', '4 community events')], ['🩺', A('6 ورش صحية', '6 workshops')]];
-  return '<section class="container section" style="max-width:760px"><h2 class="sec-title">' + esc(A('عن المهرجان', 'About the Festival')) + '</h2>' +
+  return pageHead(A('من نحن', 'ABOUT'), A('عن المهرجان', 'About the Festival'), '', { bg: GALLERY[3].src }) +
+    '<section class="container section" style="max-width:760px">' +
     '<div class="panel"><p style="font-size:1.05rem;line-height:2;margin:0">' + esc(A(
       'مهرجان كلباء الرياضي 2026 مهرجان رياضي مجتمعي تنظمه لجنة التجربة والفعاليات بإشراف مجلس الشارقة الرياضي في مدينة كلباء بإمارة الشارقة، يجمع على الكورنيش بين المنافسات الرسمية والفعاليات المجتمعية المفتوحة.',
       'Kalba Sports Festival 2026 is a community sports festival organized by the Experience & Events Committee under Sharjah Sports Council in Kalba, Emirate of Sharjah — combining official competitions with open community events on the Corniche.')) + '</p></div>' +
@@ -2393,13 +2828,15 @@ R.faq = function () {
     [A('أين أجد النتائج والجوائز؟', 'Where are results and prizes?'), A('صفحة النتائج تعرض النتائج الفورية وترتيب البطولات والأبطال. الجوائز كؤوس وميداليات للمراكز الثلاثة الأولى.', 'The Results page shows live scores, standings and champions. Cups and medals for the top three.')],
     [A('كيف أحجز مقعد ورشة؟', 'How do I book a workshop seat?'), A('من صفحة المجتمع والورش — المقاعد محدودة والحجز المسبق يضمن مقعدك.', 'From the Community page — seats are limited and pre-registration guarantees yours.')]
   ];
-  return '<section class="container section" style="max-width:680px"><h2 class="sec-title">❓ ' + esc(A('الأسئلة الشائعة', 'FAQ')) + '</h2>' +
+  return pageHead(A('مساعدة', 'HELP'), A('الأسئلة الشائعة', 'Frequently Asked Questions'), '', {}) +
+    '<section class="container section" style="max-width:680px">' +
     faqs.map(function (f) { return '<details class="faq-item"><summary>' + esc(f[0]) + '</summary><p>' + esc(f[1]) + '</p></details>'; }).join('') +
     '<div class="panel" style="text-align:center;margin-top:14px"><button class="btn primary" onclick="go(\'contact\')">✉️ ' + esc(A('تواصل معنا', 'Contact Us')) + '</button></div></section>';
 };
 
 R.contact = function () {
-  return '<section class="container section" style="max-width:900px"><h2 class="sec-title">✉️ ' + esc(A('تواصل معنا', 'Contact Us')) + '</h2><div class="grid g2">' +
+  return pageHead(A('تواصل', 'GET IN TOUCH'), A('تواصل معنا', 'Contact Us'), '', {}) +
+    '<section class="container section" style="max-width:900px"><div class="grid g2">' +
     '<div class="panel"><h3 style="margin-top:0">' + esc(A('أرسل رسالة', 'Send a message')) + '</h3><div id="formErr"></div><div id="formFields">' +
     '<div class="field" data-n="_n" data-t="text" data-r="1"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text"></div>' +
     '<div class="field" data-n="_e" data-t="text" data-r="1"><label class="flabel">' + esc(T('email')) + ' / ' + esc(T('phone')) + ' <span class="req">*</span></label><input type="text" dir="ltr"></div>' +
@@ -2411,20 +2848,46 @@ R.contact = function () {
 };
 
 R.gallery = function () {
-  return '<section class="container section"><h2 class="sec-title">🖼️ ' + esc(A('المعرض الإعلامي', 'Media Gallery')) + '</h2>' +
+  return pageHead(
+    A('الصور والفيديو', 'PHOTOS & VIDEO'),
+    A('المعرض الإعلامي', 'Media Gallery'),
+    A('لقطات من المهرجان — اضغط أي صورة لعرضها بالحجم الكامل.', 'Moments from the festival — tap any image to view it full size.'),
+    { bg: GALLERY[0].src }
+  ) +
+    '<section class="container section">' +
     '<p class="sec-intro">' + esc(A('صور من أجواء كلباء الرياضية — للمواد الصحفية تواصل مع اللجنة الإعلامية.', 'Photos from Kalba sports — for press kits contact the media committee.')) + '</p>' +
     '<div class="gallery-grid">' + GALLERY.map(function (g, i) {
-      return '<figure class="gallery-item" onclick="openLb(' + i + ')"><img src="' + g.src + '" alt=""><figcaption>' + esc(tx(g.cap)) + '</figcaption></figure>';
+      /* was <figure onclick> — not focusable, so the gallery couldn't be opened by keyboard */
+      return '<button type="button" class="gallery-item" onclick="openLb(' + i + ')"><img src="' + g.src + '" alt=""><span class="gallery-cap">' + esc(tx(g.cap)) + '</span></button>';
     }).join('') + '</div>' +
     '<div class="panel" style="margin-top:16px"><strong>📰 ' + esc(A('للإعلام والصحافة', 'Media & press')) + '</strong> ' +
     '<button class="btn sm ghost" onclick="go(\'form\',\'media\')">' + esc(A('اعتماد إعلامي', 'Media accreditation')) + '</button></div>' +
-    '<div class="lightbox" id="lb" hidden onclick="this.hidden=true"><img id="lbImg" alt=""><div class="lb-cap" id="lbCap"></div></div></section>';
+    '<div class="lightbox" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lbCap" onclick="closeLb()">' +
+    '<button type="button" class="lb-close" onclick="event.stopPropagation();closeLb()" aria-label="' + esc(A('إغلاق', 'Close')) + '">&times;</button>' +
+    '<img id="lbImg" alt=""><div class="lb-cap" id="lbCap"></div></div></section>';
 };
+/* The lightbox was dismiss-on-click only: no keyboard escape, no focus handling, and
+   focus stayed behind it on the page. */
+var _lbReturn = null;
 window.openLb = function (i) {
   document.getElementById('lbImg').src = GALLERY[i].src;
   document.getElementById('lbCap').textContent = tx(GALLERY[i].cap);
-  document.getElementById('lb').hidden = false;
+  var lb = document.getElementById('lb');
+  lb.hidden = false;
+  _lbReturn = document.activeElement;
+  var close = lb.querySelector('.lb-close');
+  if (close) close.focus();
 };
+window.closeLb = function () {
+  var lb = document.getElementById('lb');
+  if (!lb || lb.hidden) return;
+  lb.hidden = true;
+  if (_lbReturn && document.contains(_lbReturn)) _lbReturn.focus();   /* return focus to the thumbnail */
+  _lbReturn = null;
+};
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeLb();
+});
 
 R.privacy = function () {
   var items = [
@@ -2432,7 +2895,8 @@ R.privacy = function () {
     [A('استخدام البيانات', 'How data is used'), A('لإدارة التسجيل والاعتماد والنقاط والنتائج فقط — لا نبيع البيانات ولا نشاركها خارج الجهات المنظمة.', 'Only for registration, accreditation, points and results — never sold or shared outside the organizers.')],
     [A('الأمان', 'Security'), A('اتصال مشفر SSL وسجلات تدقيق للعمليات الحساسة وصلاحيات محددة للإدارة.', 'SSL encryption, audit logs for sensitive operations, and role-based admin access.')]
   ];
-  return '<section class="container section" style="max-width:680px"><h2 class="sec-title">🔒 ' + esc(A('سياسة الخصوصية', 'Privacy Policy')) + '</h2>' +
+  return pageHead(A('قانوني', 'LEGAL'), A('سياسة الخصوصية', 'Privacy Policy'), '', {}) +
+    '<section class="container section" style="max-width:680px">' +
     items.map(function (it) { return '<div class="panel"><h3 style="margin-top:0">' + esc(it[0]) + '</h3><p style="margin:0">' + esc(it[1]) + '</p></div>'; }).join('') + '</section>';
 };
 R.terms = function () {
@@ -2441,7 +2905,8 @@ R.terms = function () {
     [A('الاعتماد والدخول', 'Accreditation & entry'), A('رقم التسجيل ورمز QR شخصيان وغير قابلين للتحويل.', 'Registration numbers and QR codes are personal and non-transferable.')],
     [A('قواعد المشاركة', 'Participation rules'), A('يلتزم المشاركون بلوائح البطولات وتعليمات اللجنة وقرارات الحكام.', 'Participants must follow championship regulations, committee instructions and referees\' decisions.')]
   ];
-  return '<section class="container section" style="max-width:680px"><h2 class="sec-title">📄 ' + esc(A('شروط الاستخدام', 'Terms of Use')) + '</h2>' +
+  return pageHead(A('قانوني', 'LEGAL'), A('شروط الاستخدام', 'Terms of Use'), '', {}) +
+    '<section class="container section" style="max-width:680px">' +
     items.map(function (it) { return '<div class="panel"><h3 style="margin-top:0">' + esc(it[0]) + '</h3><p style="margin:0">' + esc(it[1]) + '</p></div>'; }).join('') + '</section>';
 };
 
@@ -2581,11 +3046,16 @@ function kbotAnswer(q) {
 /* ============ boot ============ */
 function render() {
   renderChrome();
-  document.getElementById('app').innerHTML = R[view] ? R[view]() : R.home();
+  var app = document.getElementById('app');
+  app.innerHTML = R[view] ? R[view]() : R.home();
+  associateLabels(app);
 }
 document.documentElement.lang = 'ar';
 document.documentElement.dir = 'rtl';
+/* Paint immediately with defaults, then repaint once saved media comes back from
+   IndexedDB — an async read shouldn't hold the first frame hostage. */
 render();
+mediaHydrate().then(function () { render(); });
 </script>
 
 </body>
