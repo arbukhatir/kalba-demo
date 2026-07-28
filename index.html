@@ -529,12 +529,103 @@
   .hero-thumb button { position: absolute; top: 4px; inset-inline-end: 4px; }
   /* segmented control — hero background type */
   .seg { display: inline-flex; background: #eef1f5; border: 1px solid var(--line); border-radius: 12px; padding: 4px; gap: 4px; margin-bottom: 6px; }
-  .seg-btn { border: 0; background: transparent; font-family: inherit; font-size: .9rem; font-weight: 600; color: var(--muted); padding: 10px 18px; min-height: 44px; border-radius: 9px; cursor: pointer; transition: background .16s, color .16s; }
+  .seg-btn { border: 0; background: transparent; font-family: inherit; font-size: .9rem; font-weight: 600; color: #4b5563; padding: 10px 18px; min-height: 44px; border-radius: 9px; cursor: pointer; transition: background .16s, color .16s; }  /* --muted on the track was 4.27:1 */
   .seg-btn:hover { color: var(--ink); }
   .seg-btn.on { background: var(--deep); color: #fff; box-shadow: 0 2px 8px rgba(15,23,42,.16); }
   .seg-btn:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
   .sub-block { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
   .sub-block h4 { margin: 0 0 10px; font-size: .95rem; }
+
+  /* ---- leaderboard: podium + ranked list + detail panel ---- */
+  .lb-toolbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 22px; }
+  .lb-search { position: relative; flex: 1 1 240px; min-width: 200px; }
+  .lb-search input { padding-inline-end: 42px; }
+  .lb-search-ic { position: absolute; top: 50%; transform: translateY(-50%); inset-inline-end: 14px; font-size: 1.3rem; color: var(--muted); pointer-events: none; }
+  .lb-select { flex: 0 1 220px; min-width: 180px; }
+
+  .lb-grid { display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: 26px; align-items: start; }
+
+  /* podium — 2 · 1 · 3, winner centre and tallest */
+  .lb-podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-items: end;
+    background: linear-gradient(160deg, #14294a, #0a1b33); border-radius: 18px; padding: 26px 18px 0; margin-bottom: 18px; }
+  .pod { display: flex; flex-direction: column; align-items: center; gap: 7px; background: none; border: 0; font-family: inherit;
+    cursor: pointer; padding: 0; color: #fff; }
+  .pod-name { font-size: .92rem; font-weight: 800; color: #fff; text-align: center; line-height: 1.3; }
+  .pod-sub { font-size: .8rem; color: var(--gold-soft); font-variant-numeric: tabular-nums; }
+  .pod-block { width: 100%; border-radius: 12px 12px 0 0; background: rgba(255,255,255,.09); border: 1px solid rgba(207,167,98,.35);
+    border-bottom: 0; display: grid; place-items: center; margin-top: 4px; transition: background .16s; }
+  .pod.p1 .pod-block { height: 108px; background: linear-gradient(180deg, rgba(207,167,98,.42), rgba(207,167,98,.14)); }
+  .pod.p2 .pod-block { height: 78px; }
+  .pod.p3 .pod-block { height: 60px; }
+  .pod-rank { font-size: 2rem; font-weight: 900; color: var(--gold); font-variant-numeric: tabular-nums; }
+  .pod.p1 .pod-rank { color: #fff; }   /* gold-on-gold-tint was only 4.42:1 */
+  .pod:hover .pod-block, .pod.sel .pod-block { background: rgba(207,167,98,.3); }
+  .pod:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 12px; }
+  .pod.p1 .av { width: 66px; height: 66px; font-size: 1.15rem; }
+
+  /* avatars (initials — the demo has no participant photos) */
+  /* L=30% keeps white initials above 4.5:1 across every hue — at 42% the yellow-green
+     range only reached ~2.9:1. */
+  .av { display: inline-grid; place-items: center; border-radius: 50%; font-weight: 800; flex-shrink: 0;
+    background: hsl(var(--h) 50% 30%); color: #fff; width: 38px; height: 38px; font-size: .85rem; letter-spacing: .5px; }
+  .av.sm { width: 38px; height: 38px; }
+  .av.lg { width: 54px; height: 54px; font-size: 1rem; border: 2px solid rgba(255,255,255,.35); }
+  .av.xl { width: 76px; height: 76px; font-size: 1.5rem; }
+
+  .lb-list { display: flex; flex-direction: column; gap: 8px; }
+  .lb-list .lb-row { width: 100%; display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--line);
+    border-radius: 12px; padding: 10px 14px; min-height: 62px; font-family: inherit; text-align: start; cursor: pointer;
+    transition: border-color .16s, box-shadow .16s, transform .16s; }
+  .lb-list .lb-row:hover { border-color: var(--gold); transform: translateX(-2px); }
+  [dir=rtl] .lb-list .lb-row:hover { transform: translateX(2px); }
+  .lb-list .lb-row.sel { border-color: var(--sea); box-shadow: 0 0 0 2px rgba(29,155,176,.18); }
+  .lb-list .lb-row:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
+  .lb-list .lb-rank { min-width: 34px; height: 34px; display: grid; place-items: center; border-radius: 9px; background: #eef1f6;
+    font-weight: 800; color: #4b5563; font-variant-numeric: tabular-nums; font-size: .95rem; }  /* --muted was 4.27:1 here */
+  .lb-row.t1 .lb-rank { background: var(--gold); color: var(--deep); }
+  .lb-row.t2 .lb-rank { background: #c9ced6; color: var(--deep); }
+  .lb-row.t3 .lb-rank { background: #d9b08c; color: var(--deep); }
+  .lb-id { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  .lb-list .lb-name { font-weight: 800; color: var(--ink); font-size: .98rem; }
+  .lb-sub { font-size: .8rem; color: var(--muted); }
+  .lb-trend { font-size: .8rem; font-weight: 700; color: var(--ok-ink); white-space: nowrap; }
+  .lb-list .lb-pts { font-weight: 900; color: var(--sea-dark); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .lb-list .lb-pts small { font-weight: 600; color: var(--muted); font-size: .78rem; }
+  .lb-empty { text-align: center; color: var(--muted); padding: 30px 16px; background: #fff; border: 1px dashed var(--line); border-radius: 12px; }
+
+  /* detail panel */
+  .lb-detail { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px 18px; position: sticky; top: 76px; }
+  .lbd-head { display: flex; flex-direction: column; align-items: center; gap: 9px; text-align: center; }
+  .lbd-head h3 { margin: 0; font-size: 1.15rem; color: var(--ink); }
+  .lbd-badge { font-size: .78rem; font-weight: 700; color: var(--deep); background: #f1f4f8; border-radius: 999px; padding: 5px 13px; }
+  .lbd-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 20px 0 18px; text-align: center; }
+  .lbd-stat b { display: block; font-size: 1.35rem; font-weight: 900; color: var(--sea-dark); font-variant-numeric: tabular-nums; }
+  .lbd-stat span { font-size: .8rem; color: var(--muted); line-height: 1.35; display: block; }  /* .74rem = 11.8px, under the floor */
+  .lbd-next { background: #f8fafc; border-radius: 12px; padding: 13px; margin-bottom: 18px; }
+  .lbd-next-t { font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+  .lbd-next-bar { height: 8px; border-radius: 999px; background: #e3e8ef; overflow: hidden; }
+  .lbd-next-bar span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--gold), var(--surf)); }
+  .lbd-next-n { font-size: .78rem; color: var(--muted); margin-top: 7px; }
+  .lbd-lead { background: linear-gradient(140deg, rgba(207,167,98,.2), rgba(29,155,176,.12)); }
+  .lbd-sec { font-size: .78rem; font-weight: 800; color: var(--muted); letter-spacing: .8px; margin-bottom: 10px; }
+  .zrow { display: grid; grid-template-columns: 74px 1fr 34px; gap: 9px; align-items: center; margin-bottom: 8px; }
+  .zname { font-size: .8rem; color: var(--ink); }
+  .zbar { height: 7px; border-radius: 999px; background: #eef1f6; overflow: hidden; }
+  .zbar span { display: block; height: 100%; border-radius: 999px; background: var(--sea); }
+  .zpts { font-size: .8rem; font-weight: 700; color: var(--muted); text-align: end; font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 900px) {
+    .lb-grid { grid-template-columns: 1fr; }
+    .lb-detail { position: static; order: -1; }
+  }
+  @media (max-width: 520px) {
+    .lb-podium { padding: 20px 10px 0; gap: 7px; }
+    .pod-name { font-size: .78rem; }
+    .pod .av.lg { width: 44px; height: 44px; font-size: .85rem; }
+    .pod.p1 .av { width: 54px; height: 54px; font-size: 1rem; }
+    .pod-rank { font-size: 1.5rem; }
+    .lb-trend { display: none; }
+  }
 
   /* ---- FAQ: help-centre layout (search hero + topic sidebar + grouped articles) ---- */
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -1931,6 +2022,36 @@ R.my = function () {
 };
 
 var lbBoard = 'overall';
+var lbQuery = '';
+var lbLimit = 10;            /* 10 or 0 (= all) */
+var lbSel = null;            /* visitor id shown in the detail panel */
+var LB_BASE = null;          /* points snapshot taken when the board mounts */
+
+function lbSnapshot() {
+  LB_BASE = {};
+  VISITORS.forEach(function (v) { LB_BASE[v.id] = v.pts; });
+}
+/* Gain since the page was opened. Real (simulateAward drives it) rather than an
+   invented "vs last month" figure — the demo has no historical data. */
+function lbDelta(v, shownPts) {
+  if (!LB_BASE || LB_BASE[v.id] === undefined) return 0;
+  return (v.pts === shownPts) ? v.pts - LB_BASE[v.id] : 0;
+}
+function initials(name) {
+  var p = String(name).trim().split(/\s+/);
+  return ((p[0] || '').charAt(0) + ((p[1] || '').charAt(0) || ''));
+}
+function avatarHue(name) {
+  var h = 0;
+  for (var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
+  return h;
+}
+function avatarHtml(name, cls) {
+  return '<span class="av ' + (cls || '') + '" aria-hidden="true" style="--h:' + avatarHue(name) + '">' + esc(initials(name)) + '</span>';
+}
+
+/* Full ranked set for the current board — ranks are computed before search filtering
+   so a searched-for name keeps its true position. */
 function lbRows() {
   var rows;
   if (lbBoard.indexOf('sport:') === 0) {
@@ -1939,36 +2060,124 @@ function lbRows() {
     var az = act ? act.zone : 'corniche';
     rows = VISITORS.map(function (v) { return { v: v, p: v.zonePts[az] || 0 }; }).filter(function (r) { return r.p > 0; });
     rows.sort(function (a, b) { return b.p - a.p; });
-    return rows.slice(0, 10).map(function (r) { return { name: r.v.name, pts: r.p, me: r.v === me }; });
-  }
-  if (lbBoard.indexOf('zone:') === 0) {
+    rows = rows.map(function (r) { return { v: r.v, name: r.v.name, pts: r.p, me: r.v === me }; });
+  } else if (lbBoard.indexOf('zone:') === 0) {
     var z = lbBoard.slice(5);
     rows = VISITORS.map(function (v) { return { v: v, p: v.zonePts[z] || 0 }; }).filter(function (r) { return r.p > 0; });
     rows.sort(function (a, b) { return b.p - a.p; });
-    return rows.slice(0, 10).map(function (r) { return { name: r.v.name, pts: r.p, me: r.v === me }; });
-  }
-  if (lbBoard.indexOf('age:') === 0) {
-    var g = lbBoard.slice(4);
-    rows = VISITORS.filter(function (v) { return v.age === g && v.pts > 0; });
+    rows = rows.map(function (r) { return { v: r.v, name: r.v.name, pts: r.p, me: r.v === me }; });
   } else {
-    rows = VISITORS.filter(function (v) { return v.pts > 0; });
+    var pool = (lbBoard.indexOf('age:') === 0)
+      ? VISITORS.filter(function (v) { return v.age === lbBoard.slice(4) && v.pts > 0; })
+      : VISITORS.filter(function (v) { return v.pts > 0; });
+    rows = pool.slice().sort(function (a, b) { return b.pts - a.pts; })
+      .map(function (v) { return { v: v, name: v.name, pts: v.pts, me: v === me }; });
   }
-  rows = rows.slice().sort(function (a, b) { return b.pts - a.pts; });
-  return rows.slice(0, 10).map(function (v) { return { name: v.name, pts: v.pts, me: v === me }; });
+  rows.forEach(function (r, i) { r.rank = i + 1; });
+  return rows;
+}
+function lbVisible() {
+  var rows = lbRows();
+  if (lbQuery) {
+    var q = lbQuery.toLowerCase();
+    rows = rows.filter(function (r) { return r.name.toLowerCase().indexOf(q) > -1; });
+  }
+  return lbLimit ? rows.slice(0, lbLimit) : rows;
 }
 function lbListHtml() {
-  return lbRows().map(function (r, i) {
-    return '<div class="lb-row ' + (i < 3 ? 't' + (i + 1) : '') + (r.me ? ' me' : '') + '"><span class="lb-rank">' + (i + 1) + '</span>' +
-      '<span class="lb-name">' + esc(r.name) + '</span><span class="lb-pts">' + r.pts + ' ' + esc(T('pts')) + '</span></div>';
-  }).join('') || '<p class="muted center">—</p>';
+  var rows = lbVisible();
+  if (!rows.length) {
+    return '<div class="lb-empty">' + esc(lbQuery
+      ? A('لا يوجد مشارك بهذا الاسم.', 'No participant by that name.')
+      : A('لا توجد نقاط بعد على هذه اللوحة.', 'No points on this board yet.')) + '</div>';
+  }
+  return rows.map(function (r) {
+    var d = lbDelta(r.v, r.pts);
+    return '<button type="button" class="lb-row' + (r.rank <= 3 ? ' t' + r.rank : '') + (r.me ? ' me' : '') +
+      (lbSel === r.v.id ? ' sel' : '') + '" onclick="lbSelect(' + r.v.id + ')" aria-pressed="' + (lbSel === r.v.id) + '">' +
+      '<span class="lb-rank">' + r.rank + '</span>' +
+      avatarHtml(r.name, 'sm') +
+      '<span class="lb-id"><span class="lb-name">' + esc(r.name) + '</span>' +
+      '<span class="lb-sub">' + esc(tx(AGES[r.v.age])) + '</span></span>' +
+      (d > 0 ? '<span class="lb-trend up">▲ ' + d + '</span>' : '') +
+      '<span class="lb-pts">' + r.pts + ' <small>' + esc(T('pts')) + '</small></span></button>';
+  }).join('');
 }
+function lbPodiumHtml() {
+  var top = lbRows().slice(0, 3);
+  if (top.length < 3) return '';
+  var order = [top[1], top[0], top[2]];        /* 2 · 1 · 3 */
+  return '<div class="lb-podium">' + order.map(function (r) {
+    return '<button type="button" class="pod p' + r.rank + (lbSel === r.v.id ? ' sel' : '') + '" onclick="lbSelect(' + r.v.id + ')">' +
+      avatarHtml(r.name, 'lg') +
+      '<span class="pod-name">' + esc(r.name) + '</span>' +
+      '<span class="pod-sub">' + esc(r.pts) + ' ' + esc(T('pts')) + '</span>' +
+      '<span class="pod-block"><span class="pod-rank">' + r.rank + '</span></span></button>';
+  }).join('') + '</div>';
+}
+function lbDetailHtml() {
+  var rows = lbRows();
+  var sel = null;
+  rows.forEach(function (r) { if (r.v.id === lbSel) sel = r; });
+  if (!sel) sel = rows[0];
+  if (!sel) return '<aside class="lb-detail"><p class="muted center">—</p></aside>';
+
+  var above = rows[sel.rank - 2];
+  var gap = above ? above.pts - sel.pts : 0;
+  var maxZone = Math.max.apply(null, Object.keys(ZONES).map(function (z) { return sel.v.zonePts[z] || 0; }).concat([1]));
+  var zones = Object.keys(ZONES).map(function (z) {
+    var p = sel.v.zonePts[z] || 0;
+    return '<div class="zrow"><span class="zname">' + esc(tx(ZONES[z])) + '</span>' +
+      '<span class="zbar"><span style="width:' + Math.round(p / maxZone * 100) + '%"></span></span>' +
+      '<span class="zpts">' + p + '</span></div>';
+  }).join('');
+
+  return '<aside class="lb-detail">' +
+    '<div class="lbd-head">' + avatarHtml(sel.name, 'xl') +
+    '<h3>' + esc(sel.name) + '</h3>' +
+    '<span class="lbd-badge">' + esc(tx(AGES[sel.v.age])) + '</span></div>' +
+    '<div class="lbd-stats">' +
+    '<div class="lbd-stat"><b>#' + sel.rank + '</b><span>' + esc(T('rank')) + '</span></div>' +
+    '<div class="lbd-stat"><b>' + sel.pts + '</b><span>' + esc(T('totalPts')) + '</span></div>' +
+    '<div class="lbd-stat"><b>' + (lbDelta(sel.v, sel.pts) || 0) + '</b><span>' + esc(A('منذ فتح الصفحة', 'since you opened')) + '</span></div>' +
+    '</div>' +
+    (above
+      ? '<div class="lbd-next"><div class="lbd-next-t">' + esc(A('للوصول للمركز ' + (sel.rank - 1), 'To reach rank ' + (sel.rank - 1))) + '</div>' +
+        '<div class="lbd-next-bar"><span style="width:' + Math.round(sel.pts / above.pts * 100) + '%"></span></div>' +
+        '<div class="lbd-next-n">' + esc(A('يحتاج ' + gap + ' نقطة', gap + ' points to go')) + '</div></div>'
+      : '<div class="lbd-next lbd-lead"><div class="lbd-next-t">' + esc(A('المركز الأول 🏆', 'Leading 🏆')) + '</div></div>') +
+    '<div class="lbd-sec">' + esc(A('النقاط حسب المنطقة', 'Points by zone')) + '</div>' +
+    '<div class="zlist">' + zones + '</div>' +
+    '</aside>';
+}
+window.lbSelect = function (id) {
+  lbSel = id;
+  var l = document.getElementById('lbList'); if (l) l.innerHTML = lbListHtml();
+  var p = document.getElementById('lbPodium'); if (p) p.innerHTML = lbPodiumHtml();
+  var d = document.getElementById('lbDetail'); if (d) d.outerHTML = lbDetailHtml().replace('<aside class="lb-detail"', '<aside class="lb-detail" id="lbDetail"');
+};
+window.lbSearch = function (input) {
+  lbQuery = (input.value || '').trim();
+  var l = document.getElementById('lbList'); if (l) l.innerHTML = lbListHtml();
+};
+window.lbSetLimit = function (n) { lbLimit = n; go('leaderboard'); };
+window.lbSetBoardSel = function (sel) { lbBoard = sel.value; lbSel = null; go('leaderboard'); };
 R.leaderboard = function () {
-  var tabs = tabBtn(lbBoard === 'overall', 'setBoard(\'overall\')', esc(T('overall'))) +
-    '<span class="lb-grp">' + esc(T('byZone')) + ':</span>' +
-    ACTIVITIES.map(function (a) { return tabBtn(lbBoard === 'sport:' + a.id, 'setBoard(\'sport:' + a.id + '\')', esc(lang === 'ar' ? a.ar : a.en)); }).join('') +
-    '<span class="lb-grp">' + esc(T('byAge')) + ':</span>' +
-    Object.keys(AGES).map(function (g) { return tabBtn(lbBoard === 'age:' + g, 'setBoard(\'age:' + g + '\')', esc(tx(AGES[g]))); }).join('');
+  lbSnapshot();
   timers.push(setInterval(simulateAward, 3500));
+
+  var opts = '<option value="overall"' + (lbBoard === 'overall' ? ' selected' : '') + '>' + esc(T('overall')) + '</option>' +
+    '<optgroup label="' + esc(T('byZone')) + '">' +
+    ACTIVITIES.map(function (a) {
+      var v = 'sport:' + a.id;
+      return '<option value="' + v + '"' + (lbBoard === v ? ' selected' : '') + '>' + esc(lang === 'ar' ? a.ar : a.en) + '</option>';
+    }).join('') + '</optgroup>' +
+    '<optgroup label="' + esc(T('byAge')) + '">' +
+    Object.keys(AGES).map(function (g) {
+      var v = 'age:' + g;
+      return '<option value="' + v + '"' + (lbBoard === v ? ' selected' : '') + '>' + esc(tx(AGES[g])) + '</option>';
+    }).join('') + '</optgroup>';
+
   return pageHead(
     A('الترتيب المباشر', 'LIVE STANDINGS'),
     T('leaderboard'),
@@ -1976,8 +2185,26 @@ R.leaderboard = function () {
     { bg: GALLERY[0].src }
   ) +
     '<section class="container section">' +
-    '<div class="lb-tabs" role="tablist">' + tabs + '</div><div id="lbList">' + lbListHtml() + '</div>' +
-    '<p class="hint center">' + esc(T('lbAuto')) + '</p></section>';
+
+    '<div class="lb-toolbar">' +
+    '<div class="lb-search"><label class="sr-only" for="lbQ">' + esc(A('ابحث عن مشارك', 'Search a participant')) + '</label>' +
+    '<input type="text" id="lbQ" value="' + esc(lbQuery) + '" placeholder="' + esc(A('ابحث بالاسم…', 'Search by name…')) + '" oninput="lbSearch(this)">' +
+    '<span class="lb-search-ic" aria-hidden="true">⌕</span></div>' +
+    '<label class="sr-only" for="lbBoardSel">' + esc(A('اللوحة', 'Board')) + '</label>' +
+    '<select id="lbBoardSel" class="lb-select" onchange="lbSetBoardSel(this)">' + opts + '</select>' +
+    '<div class="seg" role="group" aria-label="' + esc(A('عدد المعروضين', 'How many to show')) + '">' +
+    '<button type="button" class="seg-btn' + (lbLimit === 10 ? ' on' : '') + '" aria-pressed="' + (lbLimit === 10) + '" onclick="lbSetLimit(10)">' + esc(A('أفضل 10', 'Top 10')) + '</button>' +
+    '<button type="button" class="seg-btn' + (!lbLimit ? ' on' : '') + '" aria-pressed="' + (!lbLimit) + '" onclick="lbSetLimit(0)">' + esc(A('الكل', 'All')) + '</button>' +
+    '</div></div>' +
+
+    '<div class="lb-grid">' +
+    '<div class="lb-main">' +
+    '<div id="lbPodium">' + lbPodiumHtml() + '</div>' +
+    '<div class="lb-list" id="lbList">' + lbListHtml() + '</div>' +
+    '<p class="hint center">' + esc(T('lbAuto')) + '</p>' +
+    '</div>' +
+    lbDetailHtml().replace('<aside class="lb-detail"', '<aside class="lb-detail" id="lbDetail"') +
+    '</div></section>';
 };
 window.setBoard = function (b) { lbBoard = b; go('leaderboard'); };
 function simulateAward() {
@@ -1987,6 +2214,10 @@ function simulateAward() {
   v.pts += a.pts; v.zonePts[a.zone] = (v.zonePts[a.zone] || 0) + a.pts;
   var el = document.getElementById('lbList');
   if (el) { el.innerHTML = lbListHtml(); var first = el.querySelector('.lb-row'); if (first) first.classList.add('bump'); }
+  var pod = document.getElementById('lbPodium');
+  if (pod) pod.innerHTML = lbPodiumHtml();
+  var det = document.getElementById('lbDetail');
+  if (det) det.outerHTML = lbDetailHtml().replace('<aside class="lb-detail"', '<aside class="lb-detail" id="lbDetail"');
   var sm = document.getElementById('ssMain');
   if (sm) renderScreenLists();
 }
