@@ -10,7 +10,7 @@
 <style>
   :root {
     --deep: #183254; --deep2: #1f3a5f; --sea: #24466e; --sea-dark: #183254;
-    --gold: #cfa762; --gold-soft: #ddbe8a; --sand: #fbfaf7; --ink: #2a3442;
+    --gold: #cfa762; --gold-soft: #ddbe8a; --gold-ink: #8a6a33; --surf: #1d9bb0; --sand: #fbfaf7; --ink: #2a3442;
     --muted: #6b7280; --line: #e6e3dc; --ok: #16a34a; --warn: #d97706; --bad: #dc2626;
     --radius: 14px; --shadow: 0 4px 18px rgba(15,23,42,.08);
     --font: "Sakkal Majalla", "Segoe UI", Tahoma, "Noto Sans Arabic", "Geeza Pro", Arial, sans-serif;
@@ -18,7 +18,7 @@
  
   /* Product demo: committed single look (the festival's own identity) in both viewer themes */
   html, body { background: var(--sand); }
-  body { margin: 0; font-family: var(--font); color: var(--ink); line-height: 1.6; font-size: 17px; }
+  body { margin: 0; font-family: var(--font); color: var(--ink); line-height: 1.6; font-size: 17px; background: linear-gradient(180deg, #fdfcf8 0%, #f6efe1 100%) fixed var(--sand); }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
   a { color: var(--sea-dark); text-decoration: none; cursor: pointer; }
@@ -76,7 +76,8 @@
   .btn:active { transform: scale(.98); }
   .btn:focus-visible, a:focus-visible, .award-btn:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
   .btn.primary { background: var(--sea); color: #fff; }
-  .btn.gold { background: var(--gold); color: var(--deep); font-weight: 700; }
+  .btn.gold { background: linear-gradient(135deg, var(--gold-soft), var(--gold)); color: var(--deep); font-weight: 700; box-shadow: 0 4px 14px rgba(207,167,98,.35); transition: transform .12s, box-shadow .12s; }
+  .btn.gold:hover { transform: translateY(-1px); box-shadow: 0 7px 18px rgba(207,167,98,.45); }
   .btn.ghost { background: transparent; border: 1px solid var(--sea); color: var(--sea-dark); }
   .hero .btn.ghost { border-color: #64748b; color: #e2e8f0; }
   .btn.ok { background: var(--ok); color: #fff; } .btn.warn { background: var(--warn); color: #fff; } .btn.danger { background: var(--bad); color: #fff; }
@@ -249,11 +250,14 @@
   .success-panel { text-align: center; padding: 40px 20px; }
   .success-panel .be { font-size: 3rem; }
 
+  /* summer wave divider — blends the photo hero into the sand background */
+  .hero { position: relative; overflow: hidden; }
+  .hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 26px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 26' preserveAspectRatio='none'%3E%3Cpath d='M0 16 Q15 4 30 14 T60 14 T90 14 T120 14 V26 H0 Z' fill='%23fdfcf8'/%3E%3C/svg%3E") repeat-x bottom; background-size: 120px 26px; pointer-events: none; z-index: 3; }
   .hero > * { position: relative; }
   .hero-bookmark { position: absolute; top: 0; inset-inline-start: 9%; width: 42px; height: 66px; z-index: 1; }
   @media (max-width: 640px) { .hero-bookmark { inset-inline-start: 16px; } }
   .sec-title { color: var(--sea-dark); }
-  .sec-title::after { content: ''; display: block; width: 54px; height: 3px; background: var(--gold); border-radius: 2px; margin-top: 7px; }
+  .sec-title::after { content: ''; display: block; width: 54px; height: 3px; background: linear-gradient(90deg, var(--gold), var(--surf)); border-radius: 2px; margin-top: 7px; }
   .sec-title.center::after { margin-inline: auto; }
 
   /* v2 modules */
@@ -396,7 +400,7 @@
   .services-row a:hover { background: var(--sand); color: var(--sea-dark); }
   .sv-ic { width: 40px; height: 40px; border-radius: 50%; background: var(--sand); border: 1px solid var(--line); display: grid; place-items: center; font-size: 1.1rem; flex-shrink: 0; }
   .sv-arr { color: var(--gold); margin-inline-start: auto; }
-  .stats-band { background: #f3efe6; border: 1px solid var(--line); border-radius: 14px; display: flex; justify-content: space-around; gap: 12px; flex-wrap: wrap; padding: 16px 14px; margin-top: 15px; }
+  .stats-band { background: linear-gradient(120deg, #ffffff, #ecf6f5); border: 1px solid var(--line); border-top: 3px solid var(--surf); border-radius: 14px; display: flex; justify-content: space-around; gap: 12px; flex-wrap: wrap; padding: 16px 14px; margin-top: 15px; }
   .sb-item { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .92rem; }
   .sb-item b { color: var(--sea-dark); font-size: 1.4rem; font-variant-numeric: tabular-nums; }
   .sb-ic { font-size: 1.4rem; }
