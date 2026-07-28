@@ -39,9 +39,11 @@
   nav.main a.cta { background: var(--gold); color: var(--deep); font-weight: 700; }
   nav.main a.lang { border: 1px solid #475569; }
 
-  /* Background image */
-  .hero {background:url("pic/MainB.png") center 45%/cover no-repeat;color: #fff; text-align: 
+  /* Background image (WebP, ~115KB; sky-tone fallback shows while it loads) */
+  .hero {background:#dceef5 url("portals/MainB.webp") center 45%/cover no-repeat;color: #fff; text-align:
   center; padding: 48px 16px 42px;min-height: 650px;}
+  /* soft scrim so the navy hero text stays legible over any photo area */
+  .hero-split h1, .hero-sub.festival-subtitle, .hero-welcome, .hero-meta { text-shadow: 0 1px 12px rgba(255,255,255,.75), 0 0 28px rgba(255,255,255,.5); }
   /* HERO SECTION */
   .hero-split{text-align:center;padding:80px 20px 90px;}
   .hero-grid{max-width:900px;margin:0 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:30px;text-align:center;}
@@ -234,12 +236,14 @@
   @media (prefers-reduced-motion: reduce) { .car-slide { transition: none; } }
   .car-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .car-cap { position: absolute; bottom: 0; inset-inline: 0; background: linear-gradient(transparent, rgba(15,23,42,.88)); color: #fff; padding: 30px 16px 22px; font-size: .92rem; font-weight: 600; }
-  .car-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(15,23,42,.55); color: #fff; border: 0; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1.05rem; z-index: 2; }
+  .car-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(15,23,42,.55); color: #fff; border: 0; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1.05rem; z-index: 2; }
   .car-btn:hover { background: rgba(15,23,42,.8); }
   .car-btn.prev { inset-inline-start: 10px; } .car-btn.next { inset-inline-end: 10px; }
-  .car-dots { position: absolute; bottom: 7px; inset-inline: 0; display: flex; gap: 6px; justify-content: center; z-index: 2; }
-  .car-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.45); border: 0; cursor: pointer; padding: 0; }
-  .car-dot.on { background: var(--gold); }
+  .car-dots { position: absolute; bottom: 0; inset-inline: 0; display: flex; gap: 2px; justify-content: center; z-index: 2; }
+  /* 24px tap area with a 9px visual dot */
+  .car-dot { width: 24px; height: 24px; background: transparent; border: 0; cursor: pointer; padding: 0; position: relative; }
+  .car-dot::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.45); }
+  .car-dot.on::after { background: var(--gold); }
   .toast { position: fixed; bottom: 22px; inset-inline-start: 50%; transform: translateX(50%); background: var(--deep); color: #fff;
            padding: 12px 22px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.35); z-index: 100; font-size: .9rem;
            opacity: 0; transition: opacity .25s; pointer-events: none; max-width: 92vw; }
@@ -264,7 +268,7 @@
   .countdown { display: flex; gap: 10px; justify-content: center; margin: 16px 0 4px; direction: ltr; }
   .cd-cell { background: rgba(255,255,255,.08); border: 1px solid rgba(207,167,98,.4); border-radius: 12px; padding: 9px 13px; min-width: 72px; text-align: center; }
   .cd-num { display: block; font-size: 1.7rem; font-weight: 800; color: var(--gold-soft); font-variant-numeric: tabular-nums; }
-  .cd-lbl { font-size: .7rem; color: #c9d3e0; }
+  .cd-lbl { font-size: .75rem; color: #c9d3e0; }
   @media (max-width: 520px) { .cd-cell { min-width: 58px; padding: 7px 7px; } .cd-num { font-size: 1.25rem; } }
   .ticker { background: var(--sea-dark); color: #fff; display: flex; align-items: center; gap: 12px; padding: 8px 16px; overflow: hidden; border-top: 2px solid var(--gold); }
   .ticker-label { font-weight: 700; color: var(--gold-soft); white-space: nowrap; font-size: .84rem; }
@@ -408,7 +412,7 @@
   @media (max-width: 960px) { .tri-grid { grid-template-columns: 1fr; } }
   .tri-panel { margin-bottom: 0; }
   .tri-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-weight: 800; color: var(--sea-dark); margin-bottom: 11px; flex-wrap: wrap; }
-  .tri-head a { font-size: .78rem; color: var(--gold); font-weight: 700; cursor: pointer; }
+  .tri-head a { font-size: .78rem; color: var(--gold-ink); font-weight: 700; cursor: pointer; display: inline-block; padding: 12px 6px; margin: -12px -6px; }
   .tri-item { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px dashed var(--line); color: var(--ink); cursor: pointer; }
   .tri-item img { width: 60px; height: 46px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
   .tri-item strong { display: block; font-size: .86rem; line-height: 1.45; }
@@ -431,6 +435,9 @@
   .realmap iframe { width: 100%; border: 0; border-radius: 10px; display: block; background: #e8e6e0; }
   .realmap-open { position: absolute; bottom: 12px; inset-inline-start: 12px; background: #fff; box-shadow: 0 4px 14px rgba(15,23,42,.25); z-index: 500; }
   .kmap { width: 100%; border-radius: 10px; background: #e8e6e0; z-index: 0; }
+  .kmap .leaflet-bar a { width: 44px; height: 44px; line-height: 44px; font-size: 20px; }
+  /* visible keyboard focus everywhere */
+  :focus-visible { outline: 2px solid var(--surf); outline-offset: 2px; }
   .kmap-pin { display: grid; place-items: center; }
   .kmap-pin span { display: grid; place-items: center; width: 34px; height: 34px; font-size: 17px; background: #fff; border: 2px solid var(--gold); border-radius: 50%; box-shadow: 0 3px 10px rgba(15,23,42,.35); cursor: pointer; transition: transform .12s; }
   .kmap-pin span:hover { transform: scale(1.15); }
@@ -483,7 +490,7 @@
   .countdown{width:100%;display:grid;grid-template-columns:repeat(4, 1fr);gap:7px;margin:0;}
   .cd-cell{width:auto;min-width:0;padding:11px 4px;border-radius:11px;}
   .cd-num{font-size:1.45rem;margin-bottom:5px;}
-  .cd-lbl{font-size:.67rem;}
+  .cd-lbl{font-size:.75rem;}
   .hero-split .ctas,.hero .ctas{order:3;width:100%;display:flex;justify-content:center;align-items:center;margin:0 auto;}
   .hero .btn.gold{min-width:145px;padding:11px 22px;font-size:1rem;}
   /* Quick services */
@@ -508,7 +515,7 @@
   .cd-card{padding-inline:9px;}
   .cd-card .countdown,.countdown{gap:5px;}
   .cd-num{font-size:1.25rem;}
-  .cd-lbl{font-size:.61rem;}}
+  .cd-lbl{font-size:.75rem;}}
 
 
 /* =================================
@@ -1080,7 +1087,7 @@ window.carGo = function (i) {
 function carouselHtml() {
   return '<section class="container section" style="padding-top:26px"><h2 class="sec-title center">📸 ' + esc(T('galleryTitle')) + '</h2>' +
     '<div class="carousel">' + GALLERY.map(function (g, i) {
-      return '<div class="car-slide' + (i === 0 ? ' on' : '') + '"><img src="' + g.src + '" alt="' + esc(tx(g.cap)) + '"><div class="car-cap">' + esc(tx(g.cap)) + '</div></div>';
+      return '<div class="car-slide' + (i === 0 ? ' on' : '') + '"><img src="' + g.src + '" alt="' + esc(tx(g.cap)) + '" loading="lazy"><div class="car-cap">' + esc(tx(g.cap)) + '</div></div>';
     }).join('') +
     '<button class="car-btn prev" onclick="carGo(carIdx-1)" aria-label="previous">‹</button>' +
     '<button class="car-btn next" onclick="carGo(carIdx+1)" aria-label="next">›</button>' +
@@ -1165,7 +1172,9 @@ function renderChrome() {
   document.getElementById('footSlogan').textContent = T('dates');
   document.getElementById('footNote').textContent = T('loc') + ' · ' + T('committee');
   document.getElementById('kbotTitle').textContent = '🤖 ' + A('مساعد المهرجان', 'Festival Assistant');
-  document.getElementById('nlEmail').placeholder = A('بريدك الإلكتروني — النشرة البريدية', 'Your email — newsletter');
+  var nlIn = document.getElementById('nlEmail');
+  nlIn.placeholder = A('بريدك الإلكتروني — النشرة البريدية', 'Your email — newsletter');
+  nlIn.setAttribute('aria-label', A('البريد الإلكتروني للنشرة البريدية', 'Email for the newsletter'));
   var nlB = document.getElementById('nlBtn');
   nlB.textContent = A('اشترك', 'Subscribe');
   nlB.onclick = function () { toast(T('subscribed')); document.getElementById('nlEmail').value = ''; };
@@ -1372,18 +1381,18 @@ R.home = function () {
     ['🏆', A('النتائج', 'Results'), 'res']
   ];
   var newsPanel = NEWS.map(function (n, i) {
-    return '<a class="tri-item" onclick="go(\'news\')"><img src="' + GALLERY[(i + 2) % 5].src + '" alt="">' +
+    return '<a class="tri-item" onclick="go(\'news\')"><img src="' + GALLERY[(i + 2) % 5].src + '" alt="" loading="lazy">' +
       '<span><strong>' + (n.u ? '🔴 ' : '') + esc(A(n.ar, n.en)) + '</strong><small dir="ltr">🗓️ 08/12/2026</small></span></a>';
   }).join('');
   var commPanel = [[A('ورشة التغذية الرياضية', 'Sports nutrition workshop'), '11/12/2026'],
     [A('يوم العائلة والأنشطة الترفيهية', 'Family & fun day'), '13/12/2026'],
     [A('دورة الإسعافات الأولية', 'First aid session'), '15/12/2026']].map(function (ev2, i) {
-    return '<a class="tri-item" onclick="go(\'community\')"><img src="' + GALLERY[(i + 1) % 5].src + '" alt="">' +
+    return '<a class="tri-item" onclick="go(\'community\')"><img src="' + GALLERY[(i + 1) % 5].src + '" alt="" loading="lazy">' +
       '<span><strong>' + esc(ev2[0]) + '</strong><small dir="ltr">🗓️ ' + ev2[1] + '</small></span></a>';
   }).join('');
   var featPanel = [0, 5, 4].map(function (ci, i) {
     var c = CHAMPS[ci];
-    return '<a class="feat-card" onclick="go(\'champ\',' + ci + ')"><img src="' + (CARD_IMG.champs[ci] || GALLERY[(i + 2) % 5].src) + '" alt="">' +
+    return '<a class="feat-card" onclick="go(\'champ\',' + ci + ')"><img src="' + (CARD_IMG.champs[ci] || GALLERY[(i + 2) % 5].src) + '" alt="" loading="lazy">' +
       '<strong>' + c.ic + ' ' + esc(champName(c)) + '</strong><small dir="ltr">🗓️ 10–17/12/2026</small></a>';
   }).join('');
 
