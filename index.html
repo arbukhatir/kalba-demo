@@ -72,12 +72,13 @@
   .cd-cell{width:70px;}.cd-num{font-size:1.5rem;}}
 
 
-  .btn { display: inline-block; padding: 10px 20px; border-radius: 10px; border: 0; background: #e2e8f0;
+  .btn { display: inline-block; padding: 11px 20px; border-radius: 10px; border: 0; background: #e2e8f0;
     color: var(--ink); font-size: .93rem; cursor: pointer; font-family: inherit; transition: filter .15s, transform .06s; }
   .btn:hover { filter: brightness(1.07); }
   .btn:active { transform: scale(.98); }
   .btn:focus-visible, a:focus-visible, .award-btn:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
-  .btn.primary { background: var(--sea); color: #fff; }
+  .btn.primary { background: linear-gradient(135deg, var(--sea), var(--sea-dark)); color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(24,50,84,.28); transition: transform .12s, box-shadow .12s; }
+  .btn.primary:hover { transform: translateY(-1px); box-shadow: 0 7px 18px rgba(24,50,84,.38); }
   .btn.gold { background: linear-gradient(135deg, var(--gold-soft), var(--gold)); color: var(--deep); font-weight: 700; box-shadow: 0 4px 14px rgba(207,167,98,.35); transition: transform .12s, box-shadow .12s; }
   .btn.gold:hover { transform: translateY(-1px); box-shadow: 0 7px 18px rgba(207,167,98,.45); }
   .btn.ghost { background: transparent; border: 1px solid var(--sea); color: var(--sea-dark); }
@@ -105,12 +106,12 @@
   .cardimg-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
   .cardimg-actions input[type=file] { max-width: 150px; font-size: .75rem; }
   .card.link { cursor: pointer; transition: transform .12s, box-shadow .12s; }
-  .card.link:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(15,23,42,.13); }
+  .card.link:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(15,23,42,.13); border-color: var(--surf); }
   .card .ic { font-size: 1.8rem; }
   .card .tt { font-weight: 700; margin: 7px 0 3px; }
   .card .dd { color: var(--muted); font-size: .85rem; }
   .panel { background: #fff; border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); border: 1px solid var(--line); margin-bottom: 16px; }
-  .sec-title { font-size: 1.45rem; margin: 0 0 4px; }
+  .sec-title { font-size: 1.45rem; font-weight: 800; margin: 0 0 4px; }
   .sec-intro { color: var(--muted); margin: 0 0 18px; }
 
   .field { margin-bottom: 14px; flex: 1; min-width: 150px; }
@@ -147,7 +148,8 @@
   .vstat .l { font-size: .75rem; color: #cbd5e1; }
 
   .lb-tabs { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
-  .lb-tab { padding: 6px 13px; background: #fff; border: 1px solid var(--line); border-radius: 999px; font-size: .84rem; cursor: pointer; }
+  .lb-tab { padding: 10px 16px; background: #fff; border: 1px solid var(--line); border-radius: 999px; font-size: .84rem; cursor: pointer; display: inline-block; transition: border-color .15s, background .15s; }
+  .lb-tab:hover { border-color: var(--surf); }
   .lb-tab.active { background: var(--sea); color: #fff; border-color: var(--sea); }
   .lb-grp { color: var(--muted); font-size: .78rem; margin-inline-start: 6px; }
   .lb-row { display: flex; align-items: center; gap: 13px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 11px 15px; margin-bottom: 7px; box-shadow: var(--shadow); transition: transform .5s, opacity .5s; }
@@ -277,11 +279,15 @@
   .ticker-track a { color: #e7ecf3; font-size: .86rem; cursor: pointer; }
   .champ-hero { background: linear-gradient(150deg, var(--deep), var(--deep2)); color: #fff; border-radius: 14px; padding: 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
   .match-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); margin-bottom: 8px; flex-wrap: wrap; background: #fff; }
-  .match-row.live { border-color: var(--gold); background: #fdf9f1; }
+  .match-row.live { border-color: var(--gold); background: #fdf9f1; border-inline-start: 4px solid #ef4444; animation: liveGlow 2.4s ease-in-out infinite; }
+  @keyframes liveGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } 50% { box-shadow: 0 0 0 4px rgba(239,68,68,.12); } }
+  @media (prefers-reduced-motion: reduce) { .match-row.live { animation: none; } }
   .m-champ { flex-basis: 100%; color: var(--muted); font-size: .78rem; }
   .m-side { flex: 1; font-weight: 700; min-width: 80px; }
   .m-side:last-of-type { text-align: end; }
-  .m-score { font-weight: 800; font-size: 1.05rem; color: var(--sea-dark); background: var(--sand); border-radius: 8px; padding: 2px 12px; font-variant-numeric: tabular-nums; }
+  /* scoreboard chip */
+  .m-score { font-weight: 800; font-size: 1.15rem; color: #fff; background: var(--deep); border-radius: 9px; padding: 4px 14px; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+  .match-row.live .m-score { background: linear-gradient(135deg, var(--gold-soft), var(--gold)); color: var(--deep); }
   .sched-row { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; border-top: 1px dashed var(--line); font-size: .92rem; flex-wrap: wrap; }
   .sched-time { color: var(--sea-dark); font-weight: 700; font-size: .8rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .ok-text { color: var(--ok); } .bad-text { color: var(--bad); }
@@ -1145,18 +1151,28 @@ function closeMobileNav(){
 var view = 'home', viewArg = null, timers = [];
 
 
-function go(v, arg) {
+function go(v, arg, fromPop) {
   closeMobileNav();
 
   view = v;
-  viewArg = arg || null;
+  viewArg = arg === undefined ? null : arg;
 
   timers.forEach(clearInterval);
   timers = [];
 
   render();
   window.scrollTo(0, 0);
+
+  /* keep browser back/forward working across views */
+  if (!fromPop) {
+    try { history.pushState({ v: view, arg: viewArg }, ''); } catch (e) {}
+  }
 }
+window.addEventListener('popstate', function (ev) {
+  if (ev.state && ev.state.v) go(ev.state.v, ev.state.arg, true);
+  else go('home', null, true);
+});
+try { history.replaceState({ v: 'home', arg: null }, ''); } catch (e) {}
 
 
 function setLang(l) {
