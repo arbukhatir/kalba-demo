@@ -256,6 +256,40 @@
   .success-panel { text-align: center; padding: 40px 20px; }
   .success-panel .be { font-size: 3rem; }
 
+  /* ===== DEF-style homepage: full-screen dark hero, statement band, alternating features ===== */
+  .defdark { background: #0a1b33; color: #eaf1f9; position: relative; padding-bottom: 52px; }
+  .defdark::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 26px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 26' preserveAspectRatio='none'%3E%3Cpath d='M0 16 Q15 4 30 14 T60 14 T90 14 T120 14 V26 H0 Z' fill='%23fdfcf8'/%3E%3C/svg%3E") repeat-x bottom; background-size: 120px 26px; pointer-events: none; z-index: 3; }
+  .def-hero { position: relative; min-height: 86vh; display: grid; place-items: center; overflow: hidden; padding: 90px 16px 60px; text-align: center; }
+  .def-hero .hero-media { position: absolute; inset: 0; z-index: 0; }
+  .def-hero .hero-overlay { background: linear-gradient(180deg, rgba(10,27,51,.5), rgba(10,27,51,.95)); }
+  .def-hero-in { position: relative; z-index: 2; max-width: 920px; margin: 0 auto; }
+  .def-kicker { color: var(--gold); font-weight: 800; letter-spacing: 3px; font-size: .95rem; margin-bottom: 12px; }
+  .def-hero h1 { color: #fff; font-size: clamp(2.5rem, 7vw, 4.4rem); font-weight: 900; line-height: 1.15; margin: 0 0 14px; text-shadow: 0 4px 30px rgba(0,0,0,.45); }
+  .def-sub { color: #c9d6e6; font-size: clamp(1rem, 2.2vw, 1.22rem); max-width: 660px; margin: 0 auto 16px; line-height: 1.9; }
+  .def-meta { color: #9fb1c7; display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin: 0 0 24px; font-size: .95rem; }
+  .btn.def { clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%); border-radius: 0; padding: 15px 40px; font-size: 1.05rem; font-weight: 800; min-width: 170px; letter-spacing: .5px; }
+  .btn.defghost { background: rgba(255,255,255,.04); box-shadow: inset 0 0 0 2px rgba(207,167,98,.75); color: var(--gold-soft); }
+  .btn.defghost:hover { background: rgba(207,167,98,.15); }
+  .def-count { display: flex; gap: 12px; justify-content: center; margin-top: 30px; direction: ltr; flex-wrap: wrap; }
+  .def-count .cd-cell { background: rgba(255,255,255,.06); border: 1px solid rgba(207,167,98,.45); backdrop-filter: blur(4px); }
+  .def-state { text-align: center; padding: 80px 16px 50px; position: relative; z-index: 1; }
+  .def-state h2 { font-size: clamp(1.9rem, 4.6vw, 3.1rem); font-weight: 900; color: #fff; margin: 0 0 16px; line-height: 1.3; }
+  .def-state h2 b { color: var(--gold); }
+  .def-state > p { color: #b9c8db; max-width: 720px; margin: 0 auto 34px; font-size: 1.08rem; line-height: 1.9; }
+  .def-stats { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
+  .def-stat b { display: block; font-size: clamp(1.8rem, 4vw, 2.6rem); color: var(--gold); font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.2; }
+  .def-stat span { color: #9fb1c7; font-size: .95rem; }
+  .def-feat { display: flex; gap: 44px; align-items: center; max-width: 1100px; margin: 0 auto; padding: 46px 24px; flex-wrap: wrap; position: relative; z-index: 1; }
+  .def-feat.flip { flex-direction: row-reverse; }
+  .def-feat-img { flex: 1 1 400px; position: relative; min-width: 0; }
+  .def-feat-img img { width: 100%; border-radius: 4px; display: block; aspect-ratio: 16/10; object-fit: cover; }
+  .def-feat-img::before { content: ''; position: absolute; inset: -12px 12px 12px -12px; border: 2px solid var(--gold); opacity: .5; pointer-events: none; }
+  [dir=rtl] .def-feat-img::before { inset: -12px -12px 12px 12px; }
+  .def-feat-txt { flex: 1 1 380px; min-width: 0; }
+  .def-over { color: var(--gold); font-weight: 800; letter-spacing: 3px; font-size: .82rem; }
+  .def-feat-txt h3 { color: #fff; font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 900; margin: 8px 0 12px; }
+  .def-feat-txt p { color: #b9c8db; line-height: 1.9; margin: 0 0 22px; }
+  @media (max-width: 760px) { .def-hero { min-height: 76vh; } .def-feat, .def-feat.flip { flex-direction: column; gap: 26px; padding: 30px 18px; } .def-stats { gap: 22px; } }
   /* summer wave divider — blends the photo hero into the sand background */
   .hero { position: relative; overflow: hidden; }
   .hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 26px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 26' preserveAspectRatio='none'%3E%3Cpath d='M0 16 Q15 4 30 14 T60 14 T90 14 T120 14 V26 H0 Z' fill='%23fdfcf8'/%3E%3C/svg%3E") repeat-x bottom; background-size: 120px 26px; pointer-events: none; z-index: 3; }
@@ -1378,7 +1412,6 @@ R.surveys = function () {
 };
 
 R.home = function () {
-  timers.push(setInterval(function () { window.carGo(carIdx + 1); }, 4500));
   timers.push(setInterval(function () { window.winScroll(1); }, 3500));
   timers.push(setInterval(function () {
     var t = new Date('2026-12-10T16:00:00+04:00').getTime() - Date.now();
@@ -1390,67 +1423,70 @@ R.home = function () {
     el('cdS', ('0' + Math.floor(t / 1000) % 60).slice(-2));
   }, 1000));
 
-  var services = [
-    ['ℹ️', A('عن المهرجان', 'About the Festival'), 'about'],
-    ['🗓️', A('الجدول', 'Schedule'), 'sched'],
-    ['📍', A('الخريطة', 'Map'), 'venue'],
-    ['🏆', A('النتائج', 'Results'), 'res']
-  ];
-  var newsPanel = NEWS.map(function (n, i) {
-    return '<a class="tri-item" onclick="go(\'news\')"><img src="' + GALLERY[(i + 2) % 5].src + '" alt="" loading="lazy">' +
-      '<span><strong>' + (n.u ? '🔴 ' : '') + esc(A(n.ar, n.en)) + '</strong><small dir="ltr">🗓️ 08/12/2026</small></span></a>';
-  }).join('');
-  var commPanel = [[A('ورشة التغذية الرياضية', 'Sports nutrition workshop'), '11/12/2026'],
-    [A('يوم العائلة والأنشطة الترفيهية', 'Family & fun day'), '13/12/2026'],
-    [A('دورة الإسعافات الأولية', 'First aid session'), '15/12/2026']].map(function (ev2, i) {
-    return '<a class="tri-item" onclick="go(\'community\')"><img src="' + GALLERY[(i + 1) % 5].src + '" alt="" loading="lazy">' +
-      '<span><strong>' + esc(ev2[0]) + '</strong><small dir="ltr">🗓️ ' + ev2[1] + '</small></span></a>';
-  }).join('');
-  var featPanel = [0, 5, 4].map(function (ci, i) {
-    var c = CHAMPS[ci];
-    return '<a class="feat-card" onclick="go(\'champ\',' + ci + ')"><img src="' + (CARD_IMG.champs[ci] || GALLERY[(i + 2) % 5].src) + '" alt="" loading="lazy">' +
-      '<strong>' + c.ic + ' ' + esc(champName(c)) + '</strong><small dir="ltr">🗓️ 10–17/12/2026</small></a>';
+  var cd = ['cdD', 'cdH', 'cdM', 'cdS'].map(function (id, i) {
+    var lbls = [A('يوم', 'days'), A('ساعة', 'hours'), A('دقيقة', 'min'), A('ثانية', 'sec')];
+    return '<div class="cd-cell"><span class="cd-num" id="' + id + '">--</span><span class="cd-lbl">' + esc(lbls[i]) + '</span></div>';
   }).join('');
 
-  return '<section class="hero hero-live hero-split">' + heroMediaHtml() +
-    '<div class="container hero-grid">' +'<div class="hero-info">'  +
-    '<p class="hero-welcome">' + esc(A('أهلاً بك في', 'Welcome to')) + '</p>' +
+  function feat(flip, imgHtml, over, title, txt, btnLbl, v) {
+    return '<section class="def-feat' + (flip ? ' flip' : '') + '">' +
+      '<div class="def-feat-img">' + imgHtml + '</div>' +
+      '<div class="def-feat-txt"><div class="def-over">' + esc(over) + '</div>' +
+      '<h3>' + esc(title) + '</h3><p>' + esc(txt) + '</p>' +
+      '<button class="btn gold def" onclick="go(\'' + v + '\')">' + esc(btnLbl) + '</button></div></section>';
+  }
+
+  return '<div class="defdark">' +
+
+    /* ---- full-screen hero ---- */
+    '<section class="def-hero">' + heroMediaHtml() +
+    '<div class="def-hero-in">' +
+    '<div class="def-kicker">' + esc(A('كلباء — الشارقة | 10–17 ديسمبر 2026', 'KALBA — SHARJAH | DEC 10–17, 2026')) + '</div>' +
     '<h1>' + esc(T('site')) + '</h1>' +
-    '<p class="hero-sub festival-subtitle">' + esc(A('احتفال بالرياضة والمجتمع وروح المنافسة', 'A celebration of sport, community and competition')) + '</p>' +
-    '<p class="hero-meta"><span>🗓️ ' + esc(T('dates')) + '</span><span>📍 ' + esc(A('كلباء، الشارقة – دولة الإمارات', 'Kalba, Sharjah – UAE')) + '</span></p>' +
-    '<div class="ctas"><button class="btn gold" onclick="go(\'register\')"> ' + esc(A('سجّل الآن', 'Register Now')) + '</button></div></div>' +
-    '<div class="cd-card"><div class="cd-title">' + esc(A('العد التنازلي لافتتاح المهرجان', 'Countdown to the opening')) + '</div>' +
-    '<div class="countdown"><div class="cd-cell"><span class="cd-num" id="cdD">--</span><span class="cd-lbl">' + esc(A('يوم', 'days')) + '</span></div>' +
-    '<div class="cd-cell"><span class="cd-num" id="cdH">--</span><span class="cd-lbl">' + esc(A('ساعة', 'hours')) + '</span></div>' +
-    '<div class="cd-cell"><span class="cd-num" id="cdM">--</span><span class="cd-lbl">' + esc(A('دقيقة', 'min')) + '</span></div>' +
-    '<div class="cd-cell"><span class="cd-num" id="cdS">--</span><span class="cd-lbl">' + esc(A('ثانية', 'sec')) + '</span></div></div></div>' +
+    '<p class="def-sub">' + esc(A('احتفال بالرياضة والمجتمع وروح المنافسة — بطولات معتمدة، تحديات، وفعاليات لكل العائلة على كورنيش كلباء.', 'A celebration of sport, community and competition — official championships, challenges and events for the whole family on the Kalba Corniche.')) + '</p>' +
+    '<div class="btn-row" style="justify-content:center">' +
+    '<button class="btn gold def" onclick="go(\'register\')">' + esc(A('سجّل الآن', 'REGISTER NOW')) + '</button>' +
+    '<button class="btn def defghost" onclick="go(\'champs\')">' + esc(A('استكشف البطولات', 'EXPLORE CHAMPIONSHIPS')) + '</button></div>' +
+    '<div class="def-count">' + cd + '</div>' +
     '</div></section>' +
 
-    '<section class="container services-wrap"><div class="services-card">' +
-    '<div class="services-head">⚡ ' + esc(A('خدمات سريعة', 'Quick services')) + '</div><div class="services-row">' +
-    services.map(function (sv) {
-      return '<a onclick="go(\'' + sv[2] + '\')"><span class="sv-ic">' + sv[0] + '</span>' + esc(sv[1]) + '<span class="sv-arr">‹</span></a>';
-    }).join('') + '</div></div></section>' +
-
-    '<section class="container"><div class="stats-band">' +
-    '<div class="sb-item"><span class="sb-ic">🏅</span><b>13</b> ' + esc(A('بطولة رياضية', 'championships')) + '</div>' +
-    '<div class="sb-item"><span class="sb-ic">🤸</span><b>10</b> ' + esc(A('فعالية مجتمعية', 'community events')) + '</div>' +
-    '<div class="sb-item"><span class="sb-ic">🏃</span><b>5000+</b> ' + esc(A('مشارك', 'participants')) + '</div>' +
-    '<div class="sb-item"><span class="sb-ic">👨‍👩‍👧‍👦</span><b>50,000+</b> ' + esc(A('زائر متوقع', 'expected visitors')) + '</div>' +
+    /* ---- big statement + stats ---- */
+    '<section class="def-state">' +
+    '<h2>' + A('<b>٨ أيام.</b> مدينة واحدة. <b>حماس لا يتوقف!</b>', '<b>8 DAYS.</b> ONE CITY. <b>GAME ON!</b>') + '</h2>' +
+    '<p>' + esc(A('من 10 إلى 17 ديسمبر تتحول كلباء إلى ملعب كبير مفتوح للجميع — منافسات رسمية على الشاطئ، تحديات للمدارس والعائلات، وورش وفعاليات مجتمعية حول كل زاوية. سواء كنت لاعباً أو مشجعاً أو زائراً مع عائلتك، المهرجان صُنع لك.', 'From 10 to 17 December, Kalba becomes one giant open playground — official beach competitions, school and family challenges, and community events around every corner. Player, fan or family visitor: this festival is built for you.')) + '</p>' +
+    '<div class="def-stats">' +
+    '<div class="def-stat"><b>13</b><span>' + esc(A('بطولة معتمدة', 'championships')) + '</span></div>' +
+    '<div class="def-stat"><b>10+</b><span>' + esc(A('فعالية مجتمعية', 'community events')) + '</span></div>' +
+    '<div class="def-stat"><b>5,000+</b><span>' + esc(A('مشارك', 'participants')) + '</span></div>' +
+    '<div class="def-stat"><b>50,000+</b><span>' + esc(A('زائر متوقع', 'expected visitors')) + '</span></div>' +
     '</div></section>' +
 
-    '<section class="container section" style="padding-top:20px"><div class="tri-grid">' +
-    '<div class="panel tri-panel"><div class="tri-head"><span>📣 ' + esc(A('آخر الأخبار والإعلانات', 'Latest News')) + '</span><a onclick="go(\'news\')">' + esc(A('عرض جميع الأخبار ‹', 'All news ›')) + '</a></div>' + newsPanel + '</div>' +
-    '<div class="panel tri-panel"><div class="tri-head"><span>🤸 ' + esc(A('الفعاليات المجتمعية', 'Community Events')) + '</span><a onclick="go(\'community\')">' + esc(A('عرض جميع الفعاليات ‹', 'All events ›')) + '</a></div>' + commPanel + '</div>' +
-    '<div class="panel tri-panel"><div class="tri-head"><span>🏆 ' + esc(A('البطولات المميزة', 'Featured Championships')) + '</span><a onclick="go(\'champs\')">' + esc(A('عرض جميع البطولات ‹', 'All championships ›')) + '</a></div>' +
-    '<div class="feat-cards">' + featPanel + '</div></div>' +
-    '</div></section>' +
+    /* ---- alternating feature blocks ---- */
+    feat(false,
+      '<img src="' + (CARD_IMG.champs[0] || GALLERY[3].src) + '" alt="" loading="lazy">',
+      A('المنافسات', 'COMPETITIONS'),
+      A('البطولات الـ13 المعتمدة', 'The 13 Official Championships'),
+      A('من كرة القدم الشاطئية إلى نصف الماراثون والجوجيتسو — منافسات رسمية على كورنيش كلباء بجوائز كبرى، تسجيل إلكتروني فوري واعتماد ميداني برمز QR يُمسح عند كل مباراة.', 'From beach football to the half-marathon and jiu-jitsu — official competitions on the Kalba Corniche with major prizes, instant online registration and QR field accreditation scanned at every game.'),
+      A('اعرف المزيد', 'LEARN MORE'), 'champs') +
 
-    carouselHtml() +
+    feat(true,
+      '<img src="' + GALLERY[2].src + '" alt="" loading="lazy">',
+      A('للمدارس والعائلات', 'SCHOOLS & FAMILIES'),
+      A('تحدي مدارس كلباء', 'Kalba Schools Challenge'),
+      A('خمسة أيام من التحديات المعرفية والرياضية والإبداعية لطلبة المدارس وأسرهم — نقاط ومكافآت سرعة، لوحات متصدرين يومية، وكأس مدارس كلباء للمدرسة الأعلى نقاطاً.', 'Five days of knowledge, sports and creative challenges for students and their families — points and speed bonuses, daily leaderboards, and the Kalba Schools Cup for the top school.'),
+      A('تحدَّ وشارك', 'TAKE THE CHALLENGE'), 'schools') +
+
+    feat(false,
+      realMapHtml(320),
+      A('الموقع', 'THE VENUE'),
+      A('خريطة شاطئ كلباء التفاعلية', 'Interactive Kalba Beach Map'),
+      A('استكشف الملاعب ونقاط التسجيل والإسعاف والمواقف على الخريطة التفاعلية — الشاطئ أفقياً أمامك كما تراه من الكورنيش.', 'Explore the pitches, registration points, first aid and parking on the interactive map — the beach laid out just as you see it from the Corniche.'),
+      A('مرافق الموقع كاملة', 'FULL VENUE MAP'), 'venue') +
+
+    '</div>' +
+
+    /* ---- light section: live scores + partners ---- */
     winnersHtml() +
-    '<section class="container section" style="padding-top:12px"><h2 class="sec-title center">📍 ' + esc(A('خريطة شاطئ كلباء', 'Kalba beach map')) + '</h2>' +
-    '<div class="panel" style="padding:10px;max-width:860px;margin:0 auto">' + realMapHtml(380) + '</div>' +
-    '<div class="btn-row" style="justify-content:center"><button class="btn ghost" onclick="go(\'venue\')">' + esc(A('مرافق الموقع كاملة (ملاعب، إسعاف، مواقف...)', 'Full site facilities')) + '</button></div></section>' +
     sponsorsHtml();
 };
 
