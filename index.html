@@ -536,6 +536,81 @@
   .sub-block { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
   .sub-block h4 { margin: 0 0 10px; font-size: .95rem; }
 
+  /* ---- agenda: event cards + month calendar sidebar ---- */
+  .ag-grid { display: grid; grid-template-columns: minmax(0,1fr) 330px; gap: 30px; align-items: start; }
+
+  .ag-card { display: grid; grid-template-columns: 240px 1fr; gap: 0; border: 1px solid var(--line); background: #fff;
+    border-radius: 14px; overflow: hidden; margin-bottom: 18px; }
+  .ag-card-media { background: #e8edf3; aspect-ratio: 4/3; }
+  .ag-card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ag-card-body { padding: 20px 22px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .ag-tag { background: var(--ok-ink); color: #fff; font-size: .8rem; font-weight: 800; letter-spacing: .6px;
+    padding: 6px 13px; border-radius: 4px; margin-bottom: 6px; }
+  .ag-card-title { font-size: 1.2rem; font-weight: 800; color: var(--ink); margin: 0 0 10px; line-height: 1.35; }
+  .ag-field { margin-bottom: 8px; }
+  .ag-lbl { display: block; font-size: .76rem; font-weight: 800; color: var(--ink); margin-bottom: 2px; }
+  .ag-val { display: block; font-size: .92rem; color: var(--muted); }
+  .ag-val.gold { color: var(--gold-ink); font-weight: 700; }
+  .btn-outline { margin-top: 10px; background: none; border: 1px solid var(--deep); color: var(--deep); font-family: inherit;
+    font-size: .84rem; font-weight: 700; letter-spacing: .4px; padding: 12px 22px; min-height: 44px; border-radius: 4px;
+    cursor: pointer; transition: background .16s, color .16s; }
+  .btn-outline:hover { background: var(--deep); color: #fff; }
+  .btn-outline:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
+  .ag-empty { text-align: center; padding: 40px 16px; background: #fff; border: 1px dashed var(--line); border-radius: 14px; color: var(--muted); }
+  .ag-rhythm { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; margin-top: 26px; }
+  .ag-rhythm h3 { margin: 0 0 4px; font-size: 1.1rem; }
+  .ag-rhythm p { margin: 0 0 12px; font-size: .88rem; }
+
+  /* month calendar */
+  .ag-side { position: sticky; top: 76px; }
+  /* 10px side padding keeps the 7 day cells at 44px inside a 330px sidebar */
+  .cal { border: 1px solid var(--gold); background: #fff; border-radius: 4px; padding: 18px 10px 0; }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+  .cal-title { text-align: center; line-height: 1.15; }
+  .cal-title b { display: block; font-size: 1.25rem; font-weight: 700; color: var(--ink); }
+  .cal-title span { font-size: .82rem; color: var(--muted); }
+  .cal-nav { width: 44px; height: 44px; border: 0; border-radius: 4px; background: var(--deep); color: #fff;
+    font-size: 1.2rem; line-height: 1; cursor: pointer; font-family: inherit; }
+  .cal-nav:hover { background: var(--sea-dark); }
+  .cal-nav:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
+  [dir=rtl] .cal-nav { transform: scaleX(-1); }
+  .cal-dow, .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+  .cal-dow { margin-bottom: 6px; }
+  .cal-dow span { text-align: center; font-size: .8rem; font-weight: 700; color: var(--muted); padding: 4px 0; }
+  .cal-day { aspect-ratio: 1; display: grid; place-items: center; position: relative; font-size: .95rem; color: #4b5563;
+    background: none; border: 0; font-family: inherit; border-radius: 50%; }
+  /* Adjacent-month filler. Deliberately de-emphasised and inactive (and aria-hidden),
+     so it falls under the incidental-text exemption — but #c3c9d2 was only 1.67:1. */
+  .cal-day.out { color: #9aa4b0; }
+  .cal-day.fest { cursor: pointer; font-weight: 700; color: var(--ink); }
+  .cal-day.fest:hover { background: #f1f4f8; }
+  .cal-day.fest:focus-visible { outline: 2px solid var(--sea); outline-offset: -2px; }
+  /* gold dot marks a day that has scheduled events */
+  .cal-day.has-event::after { content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+    width: 5px; height: 5px; border-radius: 50%; background: var(--gold-ink); }
+  .cal-day.today { box-shadow: inset 0 0 0 2px var(--sea); }
+  .cal-day.sel { background: var(--deep); color: #fff; }
+  .cal-day.sel::after { background: var(--gold); }
+  .cal-all { display: block; width: calc(100% + 32px); margin: 16px -16px 0; min-height: 45px; border: 0;
+    background: var(--gold-ink); color: #fff; font-family: inherit; font-size: .84rem; font-weight: 700; letter-spacing: .5px;
+    cursor: pointer; border-radius: 0 0 3px 3px; }
+  .cal-all:hover { background: var(--deep); }
+  .cal-all.on { background: var(--deep); }
+  .cal-all:focus-visible { outline: 2px solid var(--sea); outline-offset: -3px; }
+  .cal-legend { display: flex; align-items: center; gap: 7px; justify-content: center; font-size: .78rem; color: var(--muted);
+    margin: 12px 0; }
+  .cal-legend .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold-ink); display: inline-block; }
+
+  @media (max-width: 900px) {
+    .ag-grid { grid-template-columns: 1fr; }
+    .ag-side { position: static; order: -1; }
+    .cal { max-width: 360px; margin: 0 auto; }
+  }
+  @media (max-width: 560px) {
+    .ag-card { grid-template-columns: 1fr; }
+    .ag-card-media { aspect-ratio: 16/9; }
+  }
+
   /* ---- leaderboard: podium + ranked list + detail panel ---- */
   .lb-toolbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 22px; }
   .lb-search { position: relative; flex: 1 1 240px; min-width: 200px; }
@@ -2299,6 +2374,121 @@ window.doAward = function (aid) {
   toast('+' + a.pts + ' ' + T('pts'));
 };
 
+/* ---- agenda calendar ----
+   Festival runs 10–17 Dec 2026. Days carrying a SCHED entry get a dot; picking a day
+   filters the card list. agDay === null means "all days". */
+var AG_Y = 2026, AG_M = 11;              /* month shown, 0-based (11 = December) */
+var agDay = null;                        /* 'YYYY-MM-DD' or null */
+var agMonth = { y: AG_Y, m: AG_M };
+var FEST_FROM = '2026-12-10', FEST_TO = '2026-12-17';
+
+function agIso(y, m, d) { return y + '-' + ('0' + (m + 1)).slice(-2) + '-' + ('0' + d).slice(-2); }
+/* SCHED stores 'DD/MM'; the festival is entirely within 2026 */
+function agSchedIso(r) { var p = r.d.split('/'); return agIso(2026, +p[1] - 1, +p[0]); }
+function agEventDays() {
+  var s = {};
+  SCHED.forEach(function (r) { s[agSchedIso(r)] = (s[agSchedIso(r)] || 0) + 1; });
+  return s;
+}
+function agIsFestival(iso) { return iso >= FEST_FROM && iso <= FEST_TO; }
+var AG_MONTHS = {
+  ar: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
+  en: ['January','February','March','April','May','June','July','August','September','October','November','December']
+};
+var AG_DOW = { ar: ['إث','ثلا','أرب','خم','جم','سب','أح'], en: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] };
+
+function agCalendarHtml() {
+  var y = agMonth.y, m = agMonth.m;
+  var evd = agEventDays();
+  var first = new Date(y, m, 1);
+  var lead = (first.getDay() + 6) % 7;                 /* Monday-first */
+  var dim = new Date(y, m + 1, 0).getDate();
+  var prevDim = new Date(y, m, 0).getDate();
+  var todayIso = agIso(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+
+  var cells = '';
+  for (var i = 0; i < lead; i++) {
+    cells += '<div class="cal-day out" aria-hidden="true">' + (prevDim - lead + 1 + i) + '</div>';
+  }
+  for (var d = 1; d <= dim; d++) {
+    var iso = agIso(y, m, d);
+    var cls = 'cal-day';
+    if (evd[iso]) cls += ' has-event';
+    if (agIsFestival(iso)) cls += ' fest';
+    if (iso === todayIso) cls += ' today';
+    if (iso === agDay) cls += ' sel';
+    cells += agIsFestival(iso)
+      ? '<button type="button" class="' + cls + '" onclick="agPick(\'' + iso + '\')" aria-pressed="' + (iso === agDay) + '">' + d + '</button>'
+      : '<div class="' + cls + '">' + d + '</div>';
+  }
+  var trail = (7 - ((lead + dim) % 7)) % 7;
+  for (var t = 1; t <= trail; t++) cells += '<div class="cal-day out" aria-hidden="true">' + t + '</div>';
+
+  return '<aside class="ag-side"><div class="cal">' +
+    '<div class="cal-head">' +
+    '<button type="button" class="cal-nav" onclick="agMonthShift(-1)" aria-label="' + esc(A('الشهر السابق', 'Previous month')) + '">‹</button>' +
+    '<div class="cal-title"><b>' + esc(AG_MONTHS[lang][m]) + '</b><span>' + y + '</span></div>' +
+    '<button type="button" class="cal-nav" onclick="agMonthShift(1)" aria-label="' + esc(A('الشهر التالي', 'Next month')) + '">›</button>' +
+    '</div>' +
+    '<div class="cal-dow">' + AG_DOW[lang].map(function (d2) { return '<span>' + esc(d2) + '</span>'; }).join('') + '</div>' +
+    '<div class="cal-grid">' + cells + '</div>' +
+    '<button type="button" class="cal-all' + (agDay ? '' : ' on') + '" onclick="agPick(null)">' +
+    esc(A('عرض كل الأيام', 'Show all days')) + '</button>' +
+    '<p class="cal-legend"><span class="dot"></span> ' + esc(A('يوم به فعاليات', 'Day with events')) + '</p>' +
+    '</div></aside>';
+}
+window.agPick = function (iso) {
+  agDay = iso;
+  var c = document.getElementById('agCal'); if (c) c.outerHTML = agCalendarHtml().replace('<aside class="ag-side"', '<aside class="ag-side" id="agCal"');
+  var l = document.getElementById('agList'); if (l) l.innerHTML = agListHtml();
+};
+window.agMonthShift = function (n) {
+  var m = agMonth.m + n, y = agMonth.y;
+  if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; }
+  agMonth = { y: y, m: m };
+  var c = document.getElementById('agCal'); if (c) c.outerHTML = agCalendarHtml().replace('<aside class="ag-side"', '<aside class="ag-side" id="agCal"');
+};
+var AG_KIND = {
+  '📝': { ar: 'التسجيل', en: 'Registration' },
+  '🩺': { ar: 'ورشة', en: 'Workshop' },
+  '🤸': { ar: 'مجتمعية', en: 'Community' },
+  '🏆': { ar: 'بطولة', en: 'Championship' },
+  '🏅': { ar: 'تتويج', en: 'Ceremony' }
+};
+/* Card artwork: fixtures borrow a championship photo, everything else a gallery frame. */
+function agImg(r, i) {
+  if (r.k === '🏆') return champImg([0, 2, 7, 12][i % 4]);
+  return GALLERY[[2, 4, 0, 3][i % 4]].src;
+}
+function agDateLabel(iso) {
+  var p = iso.split('-');
+  return (+p[2]) + ' ' + AG_MONTHS[lang][+p[1] - 1] + ' ' + p[0];
+}
+function agListHtml() {
+  var rows = SCHED.map(function (r, i) { return { r: r, i: i, iso: agSchedIso(r) }; });
+  if (agDay) rows = rows.filter(function (x) { return x.iso === agDay; });
+  if (!rows.length) {
+    return '<div class="ag-empty"><p>' + esc(A('لا توجد فعاليات مجدولة في هذا اليوم.', 'No events scheduled on this day.')) +
+      '</p><button class="btn sm ghost" onclick="agPick(null)">' + esc(A('عرض كل الأيام', 'Show all days')) + '</button></div>';
+  }
+  return rows.map(function (x) {
+    var r = x.r;
+    var kind = AG_KIND[r.k] || { ar: 'فعالية', en: 'Event' };
+    return '<article class="ag-card">' +
+      '<div class="ag-card-media"><img src="' + agImg(r, x.i) + '" alt="" loading="lazy"></div>' +
+      '<div class="ag-card-body">' +
+      '<span class="ag-tag">' + esc(tx(kind)) + '</span>' +
+      '<h3 class="ag-card-title">' + esc(A(r.ar, r.en)) + '</h3>' +
+      '<div class="ag-field"><span class="ag-lbl">' + esc(A('متى', 'When')) + '</span>' +
+      '<span class="ag-val gold" dir="auto">' + esc(agDateLabel(x.iso)) + ' · <span dir="ltr">' + esc(r.t) + '</span></span></div>' +
+      '<div class="ag-field"><span class="ag-lbl">' + esc(A('أين', 'Where')) + '</span>' +
+      '<span class="ag-val">' + esc(r.v) + '</span></div>' +
+      (r.ws ? '<div class="ag-field"><span class="ag-lbl">' + esc(A('المقاعد', 'Seats')) + '</span>' +
+        '<span class="ag-val ' + (r.left > 0 ? 'ok-text' : 'bad-text') + '">' + r.left + '/' + r.cap + '</span></div>' : '') +
+      '<button class="btn-outline" onclick="go(\'sched\')">' + esc(A('الجدول الكامل', 'Full schedule')) + '</button>' +
+      '</div></article>';
+  }).join('');
+}
 R.agenda = function () {
   var ms = [
     ['🏟️', A('حفل الافتتاح', 'Opening ceremony'), '2026-12-10T16:00:00'],
@@ -2318,14 +2508,20 @@ R.agenda = function () {
       return '<div class="card" style="text-align:center"><div class="ic">' + m[0] + '</div><div class="tt">' + esc(m[1]) + '</div>' +
         '<div class="mini-cd" dir="ltr" data-target="' + m[2] + '">--</div></div>';
     }).join('') + '</div>';
-  var days = T('days').map(function (d, i) {
-    return '<div class="aday"><div class="ah"><span class="num">' + (i + 1) + '</span> ' + esc(d) + '</div><ul class="agenda-blocks">' +
-      T('blocks').map(function (b) { return '<li><span>' + b[0] + '</span><span class="agenda-time" dir="ltr">' + b[1] + '</span><span class="agenda-desc">' + esc(b[2]) + '</span></li>'; }).join('') +
-      '</ul></div>';
-  }).join('');
+  /* the fixed daily rhythm, shown under the event cards */
+  var rhythm = '<div class="ag-rhythm"><h3>' + esc(A('الإيقاع اليومي', 'The daily rhythm')) + '</h3>' +
+    '<p class="muted">' + esc(A('يتكرر هذا البرنامج كل يوم من أيام المهرجان الثمانية.', 'This runs every one of the eight festival days.')) + '</p>' +
+    '<ul class="agenda-blocks">' + T('blocks').map(function (b) {
+      return '<li><span aria-hidden="true">' + b[0] + '</span><span class="agenda-time" dir="ltr">' + b[1] + '</span><span class="agenda-desc">' + esc(b[2]) + '</span></li>';
+    }).join('') + '</ul></div>';
+
   return pageHead(A('البرنامج', 'PROGRAMME'), T('agTitle'), T('agIntro') || '', { bg: GALLERY[2].src }) +
     '<section class="container section">' +
-    '<p class="sec-intro">' + esc(T('agIntro')) + '</p>' + msHtml + '<div class="agenda-days">' + days + '</div></section>';
+    msHtml +
+    '<div class="ag-grid">' +
+    '<div class="ag-main"><div id="agList">' + agListHtml() + '</div>' + rhythm + '</div>' +
+    agCalendarHtml().replace('<aside class="ag-side"', '<aside class="ag-side" id="agCal"') +
+    '</div></section>';
 };
 
 var adminTab = 'dash';
