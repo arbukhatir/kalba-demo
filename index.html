@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<head>
 <html>
 <head>
 <!-- Artifact source for the shareable interactive demo of the Kalba 2026 platform.
@@ -39,7 +40,8 @@
   nav.main a.lang { border: 1px solid #475569; }
 
   /* Background image */
- .hero{background:url("portals/MainB.png") center 45%/cover no-repeat;color:#fff;text-align:center;padding:48px 16px 42px;min-height:650px;}
+  .hero {background:url("pic/MainB.png") center 45%/cover no-repeat;color: #fff; text-align: 
+  center; padding: 48px 16px 42px;min-height: 650px;}
   /* HERO SECTION */
   .hero-split{text-align:center;padding:80px 20px 90px;}
   .hero-grid{max-width:900px;margin:0 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:30px;text-align:center;}
@@ -290,7 +292,7 @@
   .win-score { margin: 6px 0; display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; font-size: .92rem; }
   .win-score b { background: var(--deep); color: var(--gold-soft); border-radius: 8px; padding: 3px 12px; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
 
- /* dropdown nav menus */
+  /* dropdown nav menus */
 .menu{position:relative;}
 .menu-btn{background:none;border:0;color:#cbd5e1;padding:7px 10px;
   border-radius:8px;font-family:inherit;font-size:.88rem;cursor:pointer;display:flex;align-items:center;gap:4px;}
@@ -315,7 +317,6 @@
 
 
 
-     
   /* v3: about / faq / gallery / policies / sponsors / footer links */
   .faq-item { background: #fff; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; box-shadow: var(--shadow); }
   .faq-item summary { cursor: pointer; padding: 14px 17px; font-weight: 700; color: var(--sea-dark); list-style: none; position: relative; }
@@ -438,8 +439,6 @@
   .pts-table tr.t2 { background: rgba(207,167,98,.09); }
   .pts-table tr.t3 { background: rgba(207,167,98,.05); }
 
-
-
   /* Final date and location color */
 .hero.hero-live .hero-meta,
 .hero.hero-live .hero-meta span{
@@ -447,8 +446,6 @@
 }
 
 
-
- 
 /* =========================
    MOBILE PHONE DESIGN
 ========================= */
@@ -509,9 +506,85 @@
   .cd-num{font-size:1.25rem;}
   .cd-lbl{font-size:.61rem;}}
 
-    
 
-     
+/* =================================
+   MOBILE SIDEBAR NAVIGATION
+================================= */
+
+/* Hidden on desktop */
+.mobile-menu-btn{display:none;}
+.mobile-nav-overlay{display:none;}
+/* Mobile navigation */
+@media (max-width:768px){
+  /* Compact header */
+  .topbar{position:sticky;top:0;z-index:120;min-height:auto;}
+  .topbar-in{min-height:68px;padding:8px 14px;display:flex;
+    flex-wrap:nowrap;justify-content:space-between;align-items:center;gap:10px;}
+  /* Keep logo and title on one line */
+  .brand{width:auto;min-width:0;flex:1;justify-content:flex-start;gap:9px;font-size:.88rem;}
+  [dir="rtl"] .brand{justify-content:flex-start;}
+  .brand-logo{width:44px;flex-shrink:0;}
+  #brandName{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  /* Square Outlook-style button */
+  .mobile-menu-btn{
+    width:46px;height:46px;flex:0 0 46px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+    padding:0;border:1px solid rgba(255,255,255,.22);border-radius:10px;
+    background:rgba(255,255,255,.08);color:#fff;cursor:pointer;z-index:132;}
+  .mobile-menu-btn span{display:block;width:21px;height:2px;border-radius:2px;background:#fff;
+    transition:transform .25s ease,opacity .2s ease;}
+  /* Change hamburger to X when opened */
+  body.mobile-nav-open .mobile-menu-btn span:nth-child(1){
+    transform:translateY(7px) rotate(45deg);  }
+  body.mobile-nav-open .mobile-menu-btn span:nth-child(2){
+    opacity:0;}
+  body.mobile-nav-open .mobile-menu-btn span:nth-child(3){
+    transform:translateY(-7px) rotate(-45deg);}
+  /* Sidebar */
+  nav.main{
+    position:fixed;top:0;bottom:0;inset-inline-start:0;width:min(84vw, 340px);height:100dvh;
+    display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;flex-wrap:nowrap;
+    gap:7px;padding:82px 16px 25px;background:#183254;box-shadow:10px 0 35px rgba(15,23,42,.28);overflow-y:auto;
+    overscroll-behavior:contain;z-index:130;transform:translateX(-105%);visibility:hidden;
+    transition:transform .28s ease,visibility .28s ease;}
+  /* RTL menu enters from the right */
+  [dir="rtl"] nav.main{transform:translateX(105%);}
+  body.mobile-nav-open nav.main{transform:translateX(0);visibility:visible;}
+  /* Home, login and language buttons */
+  nav.main > a{width:100%;min-height:48px;display:flex;align-items:center;
+    justify-content:flex-start;padding:10px 13px;color:#e6edf6;font-size:1rem;border-radius:10px;}
+  nav.main > a:hover,nav.main > a.active{background:rgba(255,255,255,.12);color:#fff;}
+  nav.main > a.cta,nav.main > a.nav-login{justify-content:center;margin-top:5px;}
+  nav.main > a.lang{justify-content:center;}
+  /* Navigation groups */
+  nav.main .menu{width:100%;}
+  nav.main .menu-btn{width:100%;min-height:48px;justify-content:space-between;
+    padding:10px 13px;color:#e6edf6;font-size:1rem;text-align:start;border-radius:10px;}
+  nav.main .menu-btn:hover,
+  nav.main .menu.open .menu-btn{background:rgba(255,255,255,.12);color:#fff;}
+  /* Dropdown items inside sidebar */
+nav.main .menu{width:100%;position:relative;}
+
+nav.main .dropdown{
+  display:none !important;position:static !important;width:100%;min-width:0;
+  margin:5px 0 10px;padding:7px;background:#ffffff;border:1px solid rgba(207,167,98,.25);border-radius:12px;
+  box-shadow:none;opacity:1;visibility:visible;transform:none;pointer-events:auto;z-index:auto;}
+nav.main .menu.open > .dropdown{display:block !important;}
+
+nav.main .dropdown a{width:100%;min-height:44px;display:flex !important;align-items:center;
+  justify-content:flex-start;padding:9px 12px;margin:2px 0;color:#163B67 !important;background:transparent;
+  font-size:.95rem;font-weight:700;text-align:start;border-radius:9px;pointer-events:auto !important;}
+
+nav.main .dropdown a:hover,nav.main .dropdown a:active{background:#F2F4F7;color:#163B67 !important;}
+nav.main .menu.open > .menu-btn{background:rgba(255,255,255,.12);color:#ffffff;}
+nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
+  .mobile-nav-overlay{position:fixed;top:0;bottom:0;
+  /* Cover only the area outside the sidebar */
+  inset-inline-end:0;width:calc(100% - min(84vw, 340px));display:block;background:rgba(8,18,33,.54);
+  opacity:0;visibility:hidden;pointer-events:none;z-index:125;transition:opacity .25s ease,visibility .25s ease;}
+  body.mobile-nav-open .mobile-nav-overlay{ opacity:1;visibility:visible;pointer-events:auto;}
+  /* Stop the page scrolling behind the menu */
+  body.mobile-nav-open{overflow:hidden;}}  
 
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -521,13 +594,43 @@
 </head>
 <body>
 
+
 <header class="topbar">
   <div class="topbar-in">
-    <span class="brand" onclick="go('home')"><img class="brand-logo" id="brandLogo" alt=""> 
-    <span id="brandName"></span></span>
+
+    <span class="brand" onclick="go('home')">
+      <img class="brand-logo" id="brandLogo" alt="">
+      <span id="brandName"></span>
+    </span>
+
+    <!-- Mobile menu button -->
+    <button
+      class="mobile-menu-btn"
+      id="mobileMenuBtn"
+      type="button"
+      aria-label="فتح القائمة"
+      aria-expanded="false"
+      onclick="toggleMobileNav()"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
     <nav class="main" id="mainNav"></nav>
+
   </div>
 </header>
+
+<!-- Dark layer behind the mobile menu -->
+<div
+  class="mobile-nav-overlay"
+  id="mobileNavOverlay"
+  onclick="closeMobileNav()"
+></div>
+
+
+
 <main id="app"></main>
 <footer class="footer">
   <div class="fb">★ <span id="footName"></span></div>
@@ -995,14 +1098,56 @@ function newCode() {
 }
 function statusBadge(s) { return '<span class="badge ' + s + '">' + esc(T(s)) + '</span>'; }
 
+
+/* ============ mobile navigation ============ */
+
+function toggleMobileNav(){
+  var isOpen = document.body.classList.toggle('mobile-nav-open');
+  var button = document.getElementById('mobileMenuBtn');
+
+  if(button){
+    button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    button.setAttribute(
+      'aria-label',
+      isOpen
+        ? A('إغلاق القائمة', 'Close menu')
+        : A('فتح القائمة', 'Open menu')
+    );
+  }
+}
+/* Nav to test*/
+function closeMobileNav(){
+  document.body.classList.remove('mobile-nav-open');
+
+  var button = document.getElementById('mobileMenuBtn');
+
+  if(button){
+    button.setAttribute('aria-expanded', 'false');
+    button.setAttribute(
+      'aria-label',
+      A('فتح القائمة', 'Open menu')
+    );
+  }
+}
+
 /* ============ router & chrome ============ */
 var view = 'home', viewArg = null, timers = [];
+
+
 function go(v, arg) {
-  view = v; viewArg = arg || null;
-  timers.forEach(clearInterval); timers = [];
+  closeMobileNav();
+
+  view = v;
+  viewArg = arg || null;
+
+  timers.forEach(clearInterval);
+  timers = [];
+
   render();
   window.scrollTo(0, 0);
 }
+
+
 function setLang(l) {
   lang = l; document.documentElement.lang = l; document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
   timers.forEach(clearInterval); timers = [];
@@ -1022,10 +1167,11 @@ function renderChrome() {
   nlB.onclick = function () { toast(T('subscribed')); document.getElementById('nlEmail').value = ''; };
   document.getElementById('kbotIn').placeholder = A('اكتب سؤالك...', 'Type your question...');
   document.getElementById('footLinks').innerHTML = [
-    ['about', A('عن المهرجان', 'About')], ['gallery', A('المعرض', 'Gallery')], ['faq', A('الأسئلة الشائعة', 'FAQ')],
-    ['contact', A('تواصل معنا', 'Contact')], ['privacy', A('الخصوصية', 'Privacy')], ['terms', A('الشروط', 'Terms')]
+  ['about', A('عن المهرجان', 'About')], ['gallery', A('المعرض', 'Gallery')], ['faq', A('الأسئلة الشائعة', 'FAQ')],
+  ['contact', A('تواصل معنا', 'Contact')], ['privacy', A('الخصوصية', 'Privacy')], ['terms', A('الشروط', 'Terms')]
   ].map(function (l) { return '<a onclick="go(\'' + l[0] + '\')">' + esc(l[1]) + '</a>'; }).join(' · ');
   
+
   var MENUS = [[A('المنافسات', 'Competitions'),[['champs', T('champsT')],['res', T('resT')],['leaderboard', T('leaderboard')]]],
   [A('الفعاليات', 'Programme'),[['sched', T('schedT')],['community', T('communityT')],['schools', A('تحدي مدارس كلباء', 'Schools Challenge')],['agenda', T('agenda')]]],
   [A('التسجيل', 'Register'),[['champs', A('تسجيل المشاركين', 'Participants')],['register', T('register')],['join', A('تصريح الزيارة', 'Visitor Pass')],['surveys', T('surveys')]]],
@@ -1052,29 +1198,74 @@ function renderChrome() {
         ROLE_MENUS[window.opsRole].map(function (it) { return '<a data-v="' + it[0] + '">' + esc(it[1]) + '</a>'; }).join('') +
         '<a data-v="logout">🚪 ' + esc(A('تسجيل الخروج', 'Log out')) + '</a></div></div>') +
     '<a class="lang" data-lang="1">' + esc(T('langBtn')) + '</a>';
+  
+  
   nav.querySelectorAll('a[data-v]').forEach(function (a) {
-    a.onclick = function () {
-      var v = a.dataset.v;
-      if (v === 'logout') { window.opsRole = null; toast(A('تم تسجيل الخروج', 'Logged out')); go('home'); }
-      else if (v === 'ops:scores') go('admin', 'scores');
-      else go(v);
-    };
-  });
+  a.addEventListener('click', function (ev) {ev.preventDefault();ev.stopPropagation();
+    var v = a.dataset.v;closeMobileNav();
+    if (v === 'logout') {window.opsRole = null;toast(A('تم تسجيل الخروج', 'Logged out'));go('home');}
+    else if (v === 'ops:scores') {go('admin', 'scores');}
+    else {go(v);}});});
+
   nav.querySelector('a[data-lang]').onclick = function () { setLang(lang === 'ar' ? 'en' : 'ar'); };
-  nav.querySelectorAll('.menu-btn').forEach(function (btn) {
-    btn.onclick = function (ev) {
-      ev.stopPropagation();
-      var menu = btn.parentElement, wasOpen = menu.classList.contains('open');
-      nav.querySelectorAll('.menu.open').forEach(function (m2) { m2.classList.remove('open'); });
-      if (!wasOpen) menu.classList.add('open');
-    };
-  });
-  if (!window._menuCloser) {
-    window._menuCloser = true;
-    document.addEventListener('click', function () {
-      document.querySelectorAll('nav.main .menu.open').forEach(function (m2) { m2.classList.remove('open'); });
+
+  /* Open and close navigation submenus */
+nav.querySelectorAll('.menu-btn').forEach(function (btn) {
+
+  btn.addEventListener('click', function (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    ev.stopImmediatePropagation();
+
+    var currentMenu = btn.closest('.menu');
+    if (!currentMenu) return;
+    var isAlreadyOpen = currentMenu.classList.contains('open');
+
+    /* Close the other categories */
+    nav.querySelectorAll('.menu.open').forEach(function (menu) {
+      if (menu !== currentMenu) {
+        menu.classList.remove('open');
+
+        var otherButton = menu.querySelector('.menu-btn');
+        if (otherButton) {
+          otherButton.setAttribute('aria-expanded', 'false');
+        }
+      }
     });
-  }
+
+    /* Open or close the selected category */
+    if (isAlreadyOpen) {
+      currentMenu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    } else {
+      currentMenu.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  });
+
+});
+
+
+  if (!window._menuCloser) {
+  window._menuCloser = true;
+  document.addEventListener('click', function (ev) {
+
+    /* Do not close when clicking inside the navigation */
+    if (ev.target.closest('nav.main')) {
+      return;
+    }
+    document.querySelectorAll('nav.main .menu.open').forEach(function (menu) {
+      menu.classList.remove('open');
+
+      var button = menu.querySelector('.menu-btn');
+      if (button) {
+        button.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+  });
+}
+
 }
 
 /* ============ field rendering (shared by forms & surveys) ============ */
