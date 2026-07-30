@@ -1049,6 +1049,25 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
   body.mobile-nav-open .mobile-nav-overlay{ opacity:1;visibility:visible;pointer-events:auto;}
   /* Stop the page scrolling behind the menu */
   body.mobile-nav-open{overflow:hidden;}}  
+  
+  /* RESULTS PAGE TABS */
+  .results-tabs{width:fit-content;max-width:100%;display:flex;align-items:center;
+  gap:4px;margin:0 auto 28px;padding:5px;background:#ffffff;border:1px solid #e2e6eb;
+  border-radius:15px;box-shadow:0 5px 18px rgba(22,59,103,.08);}
+  .results-tabs .lb-tab{position:relative;min-height:46px;padding:10px 22px;display:flex;
+  align-items:center;  justify-content:center;color:#526174;
+  background:transparent;border:0;border-radius:11px;font-size:.92rem;font-weight:700;
+  white-space:nowrap;box-shadow:none;transition:background .18s ease,color .18s ease,transform .18s ease;}
+  .results-tabs .lb-tab:hover{color:#163B67;background:#f3f5f8;border-color:transparent;}
+  .results-tabs .lb-tab.active{color:#ffffff;background:#163B67;border-color:#163B67;
+  box-shadow:0 5px 13px rgba(22,59,103,.2);}
+  .results-tabs .lb-tab.active::after{content:"";position:absolute;left:50%;bottom:5px;
+  width:28px;height:2px;transform:translateX(-50%);background:#D5A12E;border-radius:10px;}
+  .results-tabs .lb-tab:focus-visible{outline:2px solid #1D9BB0; outline-offset:2px;}
+  @media (max-width:700px){
+    .results-tabs{width:100%;display:grid;grid-template-columns:repeat(2,1fr);
+      padding:5px;gap:5px;border-radius:14px;}
+  .results-tabs .lb-tab{width:100%;min-width:0;padding:10px 6px;font-size:.84rem;white-space:normal;text-align:center;}}
 
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1094,8 +1113,6 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
   id="mobileNavOverlay"
   onclick="closeMobileNav()"
 ></div>
-
-
 
 <main id="app" tabindex="-1"></main>
 <footer class="footer">
@@ -3301,8 +3318,10 @@ function schedByDay(rows) {
 
 var resTab = 'live';
 R.res = function () {
-  var tabs = [['live', '⚡ ' + A('نتائج فورية', 'Instant results')], ['points', '🎯 ' + A('جدول النقاط', 'Points table')], ['standings', '🏆 ' + A('ترتيب البطولات', 'Standings')], ['overall', '👑 ' + A('الترتيب الكلي والأبطال', 'Overall & champions')]];
-  var body = '';
+var tabs = [
+  ['live', A('النتائج الفورية', 'Live results')],['points', A('جدول النقاط', 'Points table')],
+  ['standings', A('ترتيب البطولات', 'Championship ranking')],['overall', A('الترتيب الكلي والأبطال', 'Overall ranking')]]; 
+var body = '';
   if (resTab === 'live') {
     timers.push(setInterval(function () {
       var m = MATCHES[Math.floor(Math.random() * 2)];
@@ -3347,7 +3366,7 @@ R.res = function () {
     { bg: GALLERY[0].src }
   ) +
     '<section class="container section">' +
-    '<div class="lb-tabs" role="tablist">' + tabs.map(function (t2) {
+    '<div class="lb-tabs results-tabs" role="tablist">' + tabs.map(function (t2) {
       return tabBtn(resTab === t2[0], 'resTab=\'' + t2[0] + '\';go(\'res\')', t2[1]);
     }).join('') + '</div>' + body + '</section>';
 };
