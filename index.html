@@ -103,8 +103,14 @@
   /* Responsive */
   @media (max-width:768px){.hero-split{padding:60px 18px 70px;}.hero-grid{gap:24px;}.hero-split h1{font-size:2.2rem;}
   .hero-sub.festival-subtitle{font-size:1rem;}.hero-meta{flex-direction:column; gap:8px;}.cd-card{max-width:100%;}
-  .cd-cell{width:70px;}.cd-num{font-size:1.5rem;}}
-
+  .cd-cell{width:70px;}.cd-num{font-size:1.5rem;}
+  /* Hide desktop tabs */
+  .results-tabs{display:none;}
+  
+  /* Show dropdown */
+  /*.results-mobile-select-wrap{display:block;margin-bottom:20px;}
+  .results-mobile-select{width:100%;height:48px;border:none;border-radius:12px;
+    background:#163B67;color:#fff;font-size:1rem;font-weight:700;padding:0 16px;}*/}
 
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px;
     padding: 11px 20px; border-radius: 10px; border: 0; background: #e2e8f0;
@@ -1064,10 +1070,58 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
   .results-tabs .lb-tab.active::after{content:"";position:absolute;left:50%;bottom:5px;
   width:28px;height:2px;transform:translateX(-50%);background:#D5A12E;border-radius:10px;}
   .results-tabs .lb-tab:focus-visible{outline:2px solid #1D9BB0; outline-offset:2px;}
+
+
+  /* CHAMPIONSHIP CATEGORY TABS */
+  .fpills{ width:fit-content;max-width:100%;display:flex;align-items:center;
+  justify-content:center;gap:4px;margin:0 auto 30px;padding:5px;background:#ffffff;
+  border:1px solid #e2e6eb;border-radius:15px;box-shadow:0 5px 18px rgba(22,59,103,.08);}
+  .fpill{position:relative;min-height:46px;padding:10px 22px;display:flex;align-items:center;
+  justify-content:center;gap:7px;color:#526174;background:transparent;border:0;
+  border-radius:11px;font-family:inherit;font-size:.92rem;font-weight:700;white-space:nowrap;
+  box-shadow:none;transition:background .18s ease,color .18s ease,transform .18s ease;}
+  .fpill:hover{color:#163B67;background:#f3f5f8;border-color:transparent;}
+  .fpill.on{color:#ffffff;background:#163B67;border-color:#163B67;
+  box-shadow:0 5px 13px rgba(22,59,103,.20);}
+  .fpill.on::after{content:"";position:absolute;left:50%;bottom:5px;width:28px;
+  height:2px;transform:translateX(-50%);background:#D5A12E;border-radius:10px;}
+  .fpill b{color:#6b7280;font-weight:700;}
+  .fpill.on b{color:#DDBE8A;}
+  .fpill:focus-visible{outline:2px solid #1D9BB0;outline-offset:2px;}
+  
+  /* MOBILE RESULTS MENU */
+  .results-mobile-dropdown{display:none;}
   @media (max-width:700px){
-    .results-tabs{width:100%;display:grid;grid-template-columns:repeat(2,1fr);
-      padding:5px;gap:5px;border-radius:14px;}
-  .results-tabs .lb-tab{width:100%;min-width:0;padding:10px 6px;font-size:.84rem;white-space:normal;text-align:center;}}
+  .results-tabs{display:none !important;}
+  .results-mobile-dropdown{position:relative;display:block;width:100%;max-width:420px;
+    margin:0 auto 22px;z-index:20;}
+  .results-dropdown-button{width:100%;min-height:46px;display:flex;align-items:center;
+    justify-content:space-between;gap:12px;padding:8px 14px;color:#ffffff;
+    background:#183254;border:1px solid #183254;border-radius:12px;font-family:inherit;
+    font-size:1rem;font-weight:700;text-align:start;box-shadow:0 4px 14px rgba(24,50,84,.14);
+    cursor:pointer;transition:background .18s ease,border-color .18s ease,box-shadow .18s ease;}
+
+  .results-dropdown-button:hover{background:#1f3a5f;border-color:#1f3a5f;  }
+  .results-dropdown-button:focus-visible{outline:3px solid rgba(174,184,196,.45);
+    outline-offset:2px;}
+  .results-dropdown-arrow{flex-shrink:0;color:#FFFFFF;font-size:1.05rem;line-height:1;
+    transition:transform .2s ease;}
+  .results-mobile-dropdown.open .results-dropdown-arrow{transform:rotate(180deg);}
+  .results-dropdown-menu{position:absolute;top:calc(100% + 6px);inset-inline:0;
+    display:none;overflow:hidden;padding:4px;background:#ffffff;border:1px solid #E1E6EC;
+    border-radius:12px;box-shadow:0 10px 24px rgba(24,50,84,.14);}
+  .results-mobile-dropdown.open .results-dropdown-menu{display:block;}
+  .results-dropdown-option{
+    width:100%;min-height:40px;display:flex;align-items:center;justify-content:space-between;
+    gap:10px;padding:8px 12px;color:#183254;background:#ffffff;border:0;border-radius:8px;
+    font-family:inherit;font-size:.96rem;font-weight:700;text-align:start;cursor:pointer;
+    transition:background .15s ease,color .15s ease;}
+  /* Light gray hover */
+  .results-dropdown-option:hover{color:#183254;background:#F6F8FA;}
+  /* Selected option uses a light gray background */
+  .results-dropdown-option.selected{color:#183254;background:#EEF2F6;  }
+  .results-dropdown-option.selected:hover{color:#183254;background:#E8EDF2;}
+}
 
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -1581,6 +1635,35 @@ function newCode() {
 }
 function statusBadge(s) { return '<span class="badge ' + s + '">' + esc(T(s)) + '</span>'; }
 
+function toggleResultsDropdown(){
+  var dropdown = document.querySelector('.results-mobile-dropdown');
+  if(!dropdown) return;
+
+  var button = dropdown.querySelector('.results-dropdown-button');
+  var isOpen = dropdown.classList.toggle('open');
+
+  button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+
+function selectResultsTab(value){
+  resTab = value;
+  go('res');
+}
+
+document.addEventListener('click', function(event){
+  var dropdown = document.querySelector('.results-mobile-dropdown');
+
+  if(dropdown && !dropdown.contains(event.target)){
+    dropdown.classList.remove('open');
+
+    var button = dropdown.querySelector('.results-dropdown-button');
+
+    if(button){
+      button.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+
 
 /* ============ mobile navigation ============ */
 
@@ -1598,7 +1681,6 @@ function toggleMobileNav(){
     );
   }
 }
-/* Nav to test*/
 function closeMobileNav(){
   document.body.classList.remove('mobile-nav-open');
 
@@ -1696,7 +1778,6 @@ function renderChrome() {
         '<a data-v="logout">🚪 ' + esc(A('تسجيل الخروج', 'Log out')) + '</a></div></div>') +
     '<a class="lang" data-lang="1">' + esc(T('langBtn')) + '</a>';
   
-  
   nav.querySelectorAll('a[data-v]').forEach(function (a) {
   a.addEventListener('click', function (ev) {ev.preventDefault();ev.stopPropagation();
     var v = a.dataset.v;closeMobileNav();
@@ -1770,7 +1851,6 @@ function renderChrome() {
   }
 
 }
-
 /* ============ field rendering (shared by forms & surveys) ============ */
 function fieldHtml(f) {
   /* Labels used to be visual-only (no `for`, inputs had no id), so screen readers
@@ -3365,10 +3445,27 @@ var body = '';
     A('النتائج تُعتمد من غرفة التحكم وتظهر هنا مباشرة.', 'Results are approved in the control room and appear here instantly.'),
     { bg: GALLERY[0].src }
   ) +
-    '<section class="container section">' +
-    '<div class="lb-tabs results-tabs" role="tablist">' + tabs.map(function (t2) {
-      return tabBtn(resTab === t2[0], 'resTab=\'' + t2[0] + '\';go(\'res\')', t2[1]);
-    }).join('') + '</div>' + body + '</section>';
+    '<div class="lb-tabs results-tabs" role="tablist">' +
+tabs.map(function (t2) {
+    return tabBtn(
+        resTab === t2[0],
+        'resTab=\'' + t2[0] + '\';go(\'res\')',
+        t2[1]
+    );
+}).join('') +
+'</div>' +
+'<div class="results-mobile-dropdown">' +
+  '<button class="results-dropdown-button" type="button" ' +
+    'onclick="toggleResultsDropdown()" aria-expanded="false">' +
+    '<span>' +esc(tabs.filter(function(t2){return t2[0] === resTab;})[0][1]) +
+    '</span>' +'<span class="results-dropdown-arrow">⌄</span>' +
+  '</button>' +'<div class="results-dropdown-menu">' +
+    tabs.map(function(t2){return '<button type="button" ' +
+  'class="results-dropdown-option' +
+  (resTab === t2[0] ? ' selected' : '') +
+  '" onclick="selectResultsTab(\'' + t2[0] + '\')">' +
+  '<span>' + esc(t2[1]) + '</span>' +
+  '</button>';}).join('') +'</div>' +'</div>'  +body +'</section>';
 };
 
 
@@ -3384,42 +3481,20 @@ function liveMatchesHtml() {
 
     if (!matches.length) return '';
 
-    return (
-      '<div class="results-group">' +
-        '<h2 class="results-section-title">' +
-          esc(A(group.ar, group.en)) +
-        '</h2>' +
-
-        '<div class="results-list">' +
-          matches.map(function (m) {
-            var c = CHAMPS[m.c];
-
-            return (
-              '<div class="match-row ' + m.st + '">' +
-
-                '<span class="m-champ">' +
-                  c.ic +
-                  ' <small>' +
-                    esc(champName(c)) +
-                  '</small>' +
-                '</span>' +
-
-                '<span class="m-side">' +
-                  esc(A(m.ar, m.en)) +
-                '</span>' +
-
+    return ('<div class="results-group">' +'<h2 class="results-section-title">' +
+    esc(A(group.ar, group.en)) +'</h2>' +
+    '<div class="results-list">' +matches.map(function (m) {  var c = CHAMPS[m.c];
+    return ('<div class="match-row ' + m.st + '">' +'<span class="m-champ">' +c.ic +
+       ' <small>' +esc(champName(c)) +'</small>' +'</span>' +
+            '<span class="m-side">' +esc(A(m.ar, m.en)) +'</span>' +
                 '<span class="m-score" dir="ltr">' +
                   (m.a !== null ? m.a : '–') +
                   (m.ar2
                     ? ' : ' + (m.b !== null ? m.b : '–')
                     : '') +
-                '</span>' +
-
-                '<span class="m-side">' +
+                '</span>' +'<span class="m-side">' +
                   esc(A(m.ar2, m.en2)) +
-                '</span>' +
-
-                '<span class="badge ' +
+                '</span>' +'<span class="badge ' +
                   (m.st === 'live'
                     ? 'accepted'
                     : m.st === 'finished'
@@ -3427,17 +3502,8 @@ function liveMatchesHtml() {
                     : 'pending') +
                 '">' +
                   esc(A(lbl[m.st][0], lbl[m.st][1])) +
-                '</span>' +
-
-              '</div>'
-            );
-          }).join('') +
-        '</div>' +
-      '</div>'
-    );
-  }).join('');
+                '</span>' +'</div>');}).join('') +'</div>' +'</div>');}).join('');
 }
-
 
 var KALBA = [25.086991093169747, 56.35894497300927];
 /* CMS-managed map buttons (mock of admin → Map Pins) */
