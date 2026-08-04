@@ -3225,12 +3225,11 @@ R.champs = function () {
     return '<button type="button" class="fpill' + (on ? ' on' : '') + '" aria-pressed="' + (on ? 'true' : 'false') +
       '" onclick="setChampFilter(\'' + k + '\')">' + esc(label) + ' <b>' + n + '</b></button>';
   };
-  var pills = '<div class="fpills" role="group" aria-label="' + esc(A('تصفية حسب الرياضة', 'Filter by sport')) + '">' +
-    pill('', A('الكل', 'All'), CHAMPS.length, !champFilter) +
-    used.map(function (cat) {
-      var n = CHAMPS.filter(function (c) { return c.c === cat.k; }).length;
-      return pill(cat.k, A(cat.ar, cat.en), n, champFilter === cat.k);
-    }).join('') + '</div>';
+var pills = '<div class="fpills" role="group" aria-label="' + esc(A('تصفية حسب الرياضة', 'Filter by sport')) + '">' +
+  pill('', A('الكل', 'All'), '', !champFilter) +
+  used.map(function (cat) {
+    return pill(cat.k,A(cat.ar, cat.en),'',champFilter === cat.k
+    );}).join('') +'</div>';
 
   var shown = used.filter(function (cat) { return !champFilter || cat.k === champFilter; });
   var body = shown.map(function (cat) {
