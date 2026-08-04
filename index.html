@@ -1119,6 +1119,37 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
   .results-dropdown-option.selected:hover{color:#183254;background:#E8EDF2;}
 }
 
+/* MOBILE CHAMPIONSHIP FILTER */
+.champ-mobile-dropdown{display:none;}
+@media (max-width:700px){
+  /* Hide desktop championship category tabs */
+  .fpills{display:none !important;}
+  .champ-mobile-dropdown{position:relative;
+    display:block;width:75%;max-width:420px;margin:0 auto 22px;z-index:20;}
+  .champ-dropdown-button{width:100%;min-height:40px;display:flex;
+    align-items:center;justify-content:space-between;gap:10px;
+    padding:6px 12px;color:#ffffff;background:#183254;
+    border:1px solid #183254;border-radius:12px;
+    font-family:inherit;font-size:.9rem;font-weight:600;text-align:start;
+    box-shadow:0 4px 14px rgba(24,50,84,.14);cursor:pointer;}
+  .champ-dropdown-button:hover{background:#1f3a5f;border-color:#1f3a5f;}
+  .champ-dropdown-arrow{flex-shrink:0;color:#ffffff;font-size:.9rem;
+    line-height:1;transition:transform .2s ease;}
+  .champ-mobile-dropdown.open .champ-dropdown-arrow{transform:rotate(180deg);}
+  .champ-dropdown-menu{position:absolute;top:calc(100% + 6px);
+    inset-inline:0;display:none;overflow:hidden;padding:4px;
+    background:#ffffff;border:1px solid #E1E6EC;border-radius:12px;
+    box-shadow:0 10px 24px rgba(24,50,84,.14);}
+  .champ-mobile-dropdown.open .champ-dropdown-menu{display:block; }
+  .champ-dropdown-option{width:100%;min-height:40px;
+    display:flex;align-items:center;padding:8px 12px;color:#183254;
+    background:#ffffff;border:0;border-radius:6px;font-family:inherit;
+    font-size:.8rem;font-weight:550;text-align:start;cursor:pointer;}
+  .champ-dropdown-option:hover{background:#F6F8FA;}
+  .champ-dropdown-option.selected{background:#EEF2F6;color:#183254;}
+  .champ-dropdown-option.selected:hover{background:#E8EDF2;}
+}
+
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -3225,11 +3256,40 @@ R.champs = function () {
     return '<button type="button" class="fpill' + (on ? ' on' : '') + '" aria-pressed="' + (on ? 'true' : 'false') +
       '" onclick="setChampFilter(\'' + k + '\')">' + esc(label) + ' <b>' + n + '</b></button>';
   };
-var pills = '<div class="fpills" role="group" aria-label="' + esc(A('تصفية حسب الرياضة', 'Filter by sport')) + '">' +
-  pill('', A('الكل', 'All'), '', !champFilter) +
-  used.map(function (cat) {
-    return pill(cat.k,A(cat.ar, cat.en),'',champFilter === cat.k
-    );}).join('') +'</div>';
+var selectedChampLabel = !champFilter
+  ? A('الكل', 'All')
+  : A(
+      used.filter(function (cat) {
+        return cat.k === champFilter;
+      })[0].ar,
+      used.filter(function (cat) {
+        return cat.k === champFilter;
+      })[0].en
+    );
+
+var pills ='<div class="fpills" role="group" aria-label="' +
+    esc(A('تصفية حسب الرياضة', 'Filter by sport')) +'">' +
+    pill('', A('الكل', 'All'), '', !champFilter) +
+    used.map(function (cat) {return pill(
+        cat.k,A(cat.ar, cat.en),'',champFilter === cat.k);}).join('') +
+  '</div>' +'<div class="champ-mobile-dropdown">' +
+    '<button class="champ-dropdown-button" type="button" ' +
+      'onclick="toggleChampDropdown()" aria-expanded="false">' +
+      '<span>' + esc(selectedChampLabel) + '</span>' +
+      '<span class="champ-dropdown-arrow">⌄</span>' +'</button>' +
+    '<div class="champ-dropdown-menu">' +
+      '<button type="button" ' +
+        'class="champ-dropdown-option' +
+        (!champFilter ? ' selected' : '') +
+        '" onclick="selectChampCategory(\'\')">' +
+        esc(A('الكل', 'All')) +'</button>' +
+      used.map(function (cat) {
+        return ('<button type="button" ' +
+            'class="champ-dropdown-option' +
+            (champFilter === cat.k ? ' selected' : '') +
+            '" onclick="selectChampCategory(\'' + cat.k + '\')">' +
+            esc(A(cat.ar, cat.en)) +'</button>');}).join('') +
+    '</div>' + '</div>';
 
   var shown = used.filter(function (cat) { return !champFilter || cat.k === champFilter; });
   var body = shown.map(function (cat) {
@@ -3282,6 +3342,14 @@ R.champ = function () {
       return '<div class="panel"><h2 class="sec-h" style="margin-top:0">' + b[0] + ' ' + esc(b[1]) + '</h2><p class="muted">' + esc(b[2]) + '</p></div>';
     }).join('') + '</div></section>';
 };
+
+
+var champDropdown = document.querySelector('.champ-mobile-dropdown');
+if(champDropdown &&!champDropdown.contains(event.target)){
+  champDropdown.classList.remove('open');
+  var champButton =champDropdown.querySelector('.champ-dropdown-button');
+  if(champButton){champButton.setAttribute('aria-expanded', 'false');}
+}
 
 R.pform = function () {
   var c = CHAMPS[viewArg || 0];
@@ -3463,6 +3531,18 @@ tabs.map(function (t2) {
   '</button>';}).join('') +'</div>' +'</div>'  +body +'</section>';
 };
 
+function toggleChampDropdown(){
+  var dropdown = document.querySelector('.champ-mobile-dropdown');
+  if(!dropdown) return;
+  var button = dropdown.querySelector('.champ-dropdown-button');
+  var isOpen = dropdown.classList.toggle('open');
+  button.setAttribute('aria-expanded',isOpen ? 'true' : 'false');
+}
+
+function selectChampCategory(value){
+  champFilter = value;
+  go('champs');
+}
 
 function liveMatchesHtml() {
   var lbl = {
