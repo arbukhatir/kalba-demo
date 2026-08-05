@@ -3321,64 +3321,109 @@ var champFilter = '';
 window.setChampFilter = function (k) { champFilter = k; go('champs'); };
 R.champs = function () {
   var used = CHAMP_CATS.filter(function (cat) {
-    return CHAMPS.some(function (c) { return c.c === cat.k; });
+    return CHAMPS.some(function (c) {
+      return c.c === cat.k;
+    });
   });
+
   var pill = function (k, label, n, on) {
-    return '<button type="button" class="fpill' + (on ? ' on' : '') + '" aria-pressed="' + (on ? 'true' : 'false') +
-      '" onclick="setChampFilter(\'' + k + '\')">' + esc(label) + ' <b>' + n + '</b></button>';
-  };
-var selectedChampLabel = !champFilter
-  ? A('الكل', 'All')
-  : A(
-      used.filter(function (cat) {
-        return cat.k === champFilter;
-      })[0].ar,used.filter(function (cat) {
-        return cat.k === champFilter;
-      })[0].en
+    return (
+      '<button type="button" class="fpill' +
+        (on ? ' on' : '') +
+        '" aria-pressed="' +
+        (on ? 'true' : 'false') +
+        '" onclick="setChampFilter(\'' + k + '\')">' +
+        esc(label) +
+        ' <b>' + n + '</b>' +
+      '</button>'
     );
+  };
 
-var pills ='<div class="fpills" role="group" aria-label="' +
-    esc(A('تصفية حسب الرياضة', 'Filter by sport')) +'">' +
-    pill('', A('الكل', 'All'), '', !champFilter) +
-    used.map(function (cat) {return pill(
-        cat.k,A(cat.ar, cat.en),'',champFilter === cat.k);}).join('') +
-  '</div>' +'<div class="champ-mobile-dropdown">' +
-    '<button class="champ-dropdown-button" type="button" ' +
-      'onclick="toggleChampDropdown()" aria-expanded="false">' +
-      '<span>' + esc(selectedChampLabel) + '</span>' +
-      '<span class="champ-dropdown-arrow">⌄</span>' +'</button>' +
-    '<div class="champ-dropdown-menu">' +
-      '<button type="button" ' +
-        'class="champ-dropdown-option' +
-        (!champFilter ? ' selected' : '') +
-        '" onclick="selectChampCategory(\'\')">' +
-        esc(A('الكل', 'All')) +'</button>' +
+  var selectedChampLabel = !champFilter
+    ? A('الكل', 'All')
+    : A(
+        used.filter(function (cat) {
+          return cat.k === champFilter;
+        })[0].ar,
+        used.filter(function (cat) {
+          return cat.k === champFilter;
+        })[0].en
+      );
+
+  var pills =
+    '<div class="fpills" role="group" aria-label="' +
+      esc(A('تصفية حسب الرياضة', 'Filter by sport')) +
+    '">' +
+      pill('', A('الكل', 'All'), '', !champFilter) +
+
       used.map(function (cat) {
-        return ('<button type="button" ' +
-            'class="champ-dropdown-option' +
-            (champFilter === cat.k ? ' selected' : '') +
-            '" onclick="selectChampCategory(\'' + cat.k + '\')">' +
-            esc(A(cat.ar, cat.en)) +'</button>');}).join('') +
-    '</div>' + '</div>';
+        return pill(
+          cat.k,
+          A(cat.ar, cat.en),
+          '',
+          champFilter === cat.k
+        );
+      }).join('') +
+    '</div>' +
+    '<div class="champ-mobile-dropdown">' +
+      '<button class="champ-dropdown-button" type="button" ' +
+        'onclick="toggleChampDropdown()" aria-expanded="false">' +
+        '<span>' +
+          esc(selectedChampLabel) +
+        '</span>' +
+        '<span class="champ-dropdown-arrow">⌄</span>' +
+      '</button>' +
+      '<div class="champ-dropdown-menu">' +
+        '<button type="button" ' +
+          'class="champ-dropdown-option' +
+          (!champFilter ? ' selected' : '') +
+          '" onclick="selectChampCategory(\'\')">' +
+          esc(A('الكل', 'All')) + '</button>' +
 
-  var shown = used.filter(function (cat) { return !champFilter || cat.k === champFilter; });
+        used.map(function (cat) {
+          return (
+            '<button type="button" ' +
+              'class="champ-dropdown-option' +
+              (champFilter === cat.k ? ' selected' : '') +
+              '" onclick="selectChampCategory(\'' + cat.k + '\')">' +
+              esc(A(cat.ar, cat.en)) + '</button>');
+        }).join('') +
+      '</div>' +
+    '</div>';
+
+  var shown = used.filter(function (cat) {
+    return !champFilter || cat.k === champFilter;
+  });
+
   var body = shown.map(function (cat) {
     var items = [];
-    CHAMPS.forEach(function (c, i) { if (c.c === cat.k) items.push([c, i]); });
-    return '<section class="cat-sec">' +
-      '<h2 class="cat-head">' + esc(A(cat.ar, cat.en)) +
-      '<span class="cat-chev" aria-hidden="true">›</span>' +
-      '<span class="cat-n">' + items.length + '</span></h2>' +
-      '<div class="ev-grid">' + items.map(function (x) { return champCard(x[0], x[1]); }).join('') + '</div></section>';
-  }).join('');
 
-  return pageHead(
-    A('المنافسات', 'COMPETITIONS'),
-    A('البطولات الـ13 المعتمدة', 'The 13 Official Championships'),
-    A('منافسات رسمية معتمدة على كورنيش كلباء — اضغط أي بطولة للتفاصيل والتسجيل.', 'Official accredited competitions on the Kalba Corniche — tap any championship for details and registration.'),
-    { bg: champImg(0), chips: phChip(A('بطولة', 'championships'), CHAMPS.length) + phChip(A('أيام', 'days'), 8) }
-  ) +
-    '<section class="container section">' + pills + body + '</section>';
+    CHAMPS.forEach(function (c, i) {
+      if (c.c === cat.k) {items.push([c, i]);}});
+    return (
+      '<section class="cat-sec">' +
+        '<h2 class="cat-head">' +
+          esc(A(cat.ar, cat.en)) +
+          '<span class="cat-chev" aria-hidden="true">›</span>' +
+          '<span class="cat-n">' +
+            items.length +
+          '</span>' +
+        '</h2>' +
+        '<div class="ev-grid">' +
+          items.map(function (x) {
+            return champCard(x[0], x[1]);
+          }).join('') +
+        '</div>' + '</section>');
+  }).join('');
+  return (
+    pageHead(
+      A('المنافسات', 'COMPETITIONS'),
+      A('البطولات الـ13 المعتمدة', 'The 13 Official Championships'),
+      A(
+        'منافسات رسمية معتمدة على كورنيش كلباء — اضغط أي بطولة للتفاصيل والتسجيل.',
+        'Official accredited competitions on the Kalba Corniche — tap any championship for details and registration.'
+      ),{bg: champImg(0)}) +
+    '<section class="container section">' + pills + body +'</section>');
 };
 function champCard(c, i) {
   return '<button type="button" class="ev-card" onclick="go(\'champ\',' + i + ')">' +
