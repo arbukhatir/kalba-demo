@@ -870,12 +870,31 @@
   @media (prefers-reduced-motion: reduce) { .ev-media img { transition: none; } .ev-card:hover .ev-media img { transform: none; } }
   @media (max-width: 520px) { .ev-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px 14px; } .ev-title { font-size: .95rem; } }
 
-  /* ---- schedule grouped by day ---- */
-  .day-jump { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 18px; }
-  .day-chip { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 9px 14px; min-height: 44px; font-family: inherit; font-size: .85rem; color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; gap: 7px; transition: border-color .15s, background .15s; }
-  .day-chip:hover { border-color: var(--gold); background: #fffdf8; }
-  .day-chip:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
-  .day-chip b { background: var(--deep); color: #fff; border-radius: 999px; font-size: .8rem; min-width: 22px; height: 22px; display: inline-grid; place-items: center; padding: 0 6px; font-variant-numeric: tabular-nums; }
+  /* ---- PREVIOUS / NEXT SCHEDULE DAY CONTROL ---- */
+  .schedule-day-nav{width:100%;max-width:700px;   /* was 520px */
+    min-height:64px;display:grid;grid-template-columns:56px minmax(0,1fr) 56px;
+    align-items:center;gap:8px;margin:0 auto 24px;padding:6px;
+    background:#fff;border:1px solid #dfe4ea;border-radius:16px;
+    box-shadow:0 5px 18px rgba(24,50,84,.09);
+}
+/* Previous and next buttons */
+.schedule-day-arrow{width:50px;height:50px;display:grid;place-items:center;
+  padding:0;color:#ffffff;background:#183254;border:0;border-radius:12px;
+  font-family:inherit;font-size:1.65rem;line-height:1;cursor:pointer;
+  transition:background .18s ease,transform .15s ease,opacity .18s ease;}
+  .schedule-day-arrow:hover:not(:disabled){background:#24466e;transform:translateY(-1px);}
+  .schedule-day-arrow:active:not(:disabled){transform:scale(.96);}
+  .schedule-day-arrow:disabled{color:#94a3b8;background:#eef2f6;cursor:not-allowed;opacity:.7;}
+  .schedule-day-arrow:focus-visible,
+  .schedule-day-current:focus-visible{outline:2px solid #1d9bb0;outline-offset:2px;}
+  /* Date in the middle */
+  .schedule-day-current{width:100%;min-height:50px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;padding:5px 12px;color:#183254;
+  background:transparent;border:0;border-radius:11px;font-family:inherit;text-align:center;
+  cursor:pointer;transition:background .18s ease;}
+  .schedule-day-current:hover{background:#f3f5f8;}
+  .schedule-current-date{font-size:1rem;font-weight:700;line-height:1.35;}
+  .schedule-current-count{color:#6b7280;font-size:.78rem;line-height:1.3;}
   .day-group { margin-bottom: 22px; }
   .day-head { position: sticky; top: 0; z-index: 4; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 8px; padding: 10px 14px; background: var(--deep); color: #fff; border-radius: 10px; }
   .day-name { font-size: 1.02rem; font-weight: 800; }
@@ -887,6 +906,15 @@
   .realmap-open { position: absolute; bottom: 12px; inset-inline-start: 12px; background: #fff; box-shadow: 0 4px 14px rgba(15,23,42,.25); z-index: 500; }
   .kmap { width: 100%; border-radius: 10px; background: #e8e6e0; z-index: 0; }
   .kmap .leaflet-bar a { width: 44px; height: 44px; line-height: 44px; font-size: 20px; }
+  /* Phone */
+  @media (max-width:700px){
+  .schedule-day-nav{width:88%;max-width:420px;min-height:54px;
+    grid-template-columns:44px minmax(0, 1fr) 44px;gap:5px;margin:0 auto 18px;padding:5px;border-radius:14px;}
+  .schedule-day-arrow{width:40px;height:40px;border-radius:10px;font-size:1.4rem;}
+  .schedule-day-current{min-height:42px;padding:3px 7px;  }
+  .schedule-current-date{font-size:.9rem;}
+  .schedule-current-count{font-size:.72rem;}}
+
   /* visible keyboard focus everywhere */
   :focus-visible { outline: 2px solid var(--surf); outline-offset: 2px; }
   .kmap-pin { display: grid; place-items: center; }
@@ -1210,6 +1238,9 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
   .schedule-dropdown-option.selected{color:#183254;background:#EEF2F6;}
   .schedule-dropdown-option.selected:hover{background:#E8EDF2;}
 }
+
+/* To keep the text centered below the date buttons */
+.sec-intro{text-align: center;max-width: 800px;margin: 5px auto 0;margin-bottom: 30px;}
 
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -2612,7 +2643,6 @@ R.leaderboard = function () {
     { bg: GALLERY[0].src }
   ) +
     '<section class="container section">' +
-
     '<div class="lb-toolbar">' +
     '<div class="lb-search"><label class="sr-only" for="lbQ">' + esc(A('ابحث عن مشارك', 'Search a participant')) + '</label>' +
     '<input type="text" id="lbQ" value="' + esc(lbQuery) + '" placeholder="' + esc(A('ابحث بالاسم…', 'Search by name…')) + '" oninput="lbSearch(this)">' +
@@ -3463,9 +3493,7 @@ R.sched = function () {
       bg: GALLERY[2].src
     }
   ) +
-
   '<section class="container section">' +
-
     '<p class="sec-intro">' +
       esc(
         A(
@@ -3500,7 +3528,7 @@ R.sched = function () {
                 (schedFilter === k[0] ? ' selected' : '') + '" ' +
               'onclick="selectScheduleFilter(\'' + k[0] + '\')">' +esc(k[1]) +
             '</button>');}).join('') +
-      '</div>' + '</div>' + schedDayJump(rows) +
+      '</div>' + '</div>' + schedDayJump(rows) + 
     (
       rows.length
         ? schedByDay(rows)
@@ -3527,15 +3555,116 @@ function schedDays(rows) {
   rows.forEach(function (r) { if (!byDay[r.d]) { byDay[r.d] = []; order.push(r.d); } byDay[r.d].push(r); });
   return { order: order, byDay: byDay };
 }
+/* Current selected day in the schedule navigator */
+var schedDayIndex = 0;
+var schedVisibleDays = [];
+var schedVisibleDayCounts = {};
+
 function schedDayJump(rows) {
   var g = schedDays(rows);
-  if (g.order.length < 2) return '';
-  return '<nav class="day-jump" aria-label="' + esc(A('انتقل إلى يوم', 'Jump to a day')) + '">' +
-    g.order.map(function (d) {
-      return '<button type="button" class="day-chip" onclick="schedJump(\'' + d.replace('/', '-') + '\')">' +
-        esc(schedDayLabel(d)) + ' <b>' + g.byDay[d].length + '</b></button>';
-    }).join('') + '</nav>';
+  if (!g.order.length) {
+    schedVisibleDays = [];
+    schedVisibleDayCounts = {};
+    schedDayIndex = 0;
+    return '';
+  }
+
+  /* Save the currently available days after category filtering */
+  schedVisibleDays = g.order.slice();
+  schedVisibleDayCounts = g.byDay;
+  /* Prevent the index from becoming invalid after changing category */
+  if (schedDayIndex >= schedVisibleDays.length) {schedDayIndex = 0;}
+
+  var currentDay = schedVisibleDays[schedDayIndex];
+  var eventCount = schedVisibleDayCounts[currentDay].length;
+
+  return (
+    '<nav class="schedule-day-nav" ' +
+      'aria-label="' + esc(A('التنقل بين أيام الجدول', 'Schedule day navigation')) + '">' +
+      '<button type="button" ' +
+        'class="schedule-day-arrow schedule-day-prev" ' +
+        'onclick="changeScheduleDay(-1)" ' +
+        'aria-label="' + esc(A('اليوم السابق', 'Previous day')) + '" ' +
+        (schedDayIndex === 0 ? 'disabled' : '') +
+      '>' +
+        '<span aria-hidden="true">‹</span>' +
+      '</button>' +
+      '<button type="button" ' +
+        'class="schedule-day-current" ' +
+        'onclick="jumpToCurrentScheduleDay()">' +
+        '<span class="schedule-current-date">' +
+          esc(schedDayLabel(currentDay)) +
+        '</span>' +
+        '<span class="schedule-current-count">' +
+          eventCount + ' ' +
+          esc(
+            A(
+              'فعالية',
+              eventCount === 1 ? 'event' : 'events')) +'</span>' +'</button>' +
+      '<button type="button" ' +
+        'class="schedule-day-arrow schedule-day-next" ' +
+        'onclick="changeScheduleDay(1)" ' +
+        'aria-label="' + esc(A('اليوم التالي', 'Next day')) + '" ' +
+        (schedDayIndex === schedVisibleDays.length - 1 ? 'disabled' : '') +
+      '>' +
+        '<span aria-hidden="true">›</span>' + '</button>' +'</nav>'
+  );
 }
+
+function updateScheduleDayNavigator() {
+  var currentDay = schedVisibleDays[schedDayIndex];
+  if (!currentDay) return;
+  var dateElement = document.querySelector('.schedule-current-date');
+  var countElement = document.querySelector('.schedule-current-count');
+  var previousButton = document.querySelector('.schedule-day-prev');
+  var nextButton = document.querySelector('.schedule-day-next');
+  var eventCount = schedVisibleDayCounts[currentDay].length;
+  if (dateElement) {
+    dateElement.textContent =
+      schedDayLabel(currentDay);
+  }
+  if (countElement) {
+    countElement.textContent =
+      eventCount + ' ' +
+      A(
+        'فعالية',
+        eventCount === 1 ? 'event' : 'events'
+      );
+  }
+  if (previousButton) {
+    previousButton.disabled =
+      schedDayIndex === 0;
+  }
+  if (nextButton) {
+    nextButton.disabled =
+      schedDayIndex ===
+      schedVisibleDays.length - 1;
+  }
+}
+
+function changeScheduleDay(direction) {
+  var newIndex =
+    schedDayIndex + direction;
+  if (
+    newIndex < 0 ||
+    newIndex >= schedVisibleDays.length
+  ) {
+    return;
+  }
+  schedDayIndex = newIndex;
+  updateScheduleDayNavigator();
+  jumpToCurrentScheduleDay();
+}
+
+function jumpToCurrentScheduleDay() {
+  var currentDay =
+    schedVisibleDays[schedDayIndex];
+  if (!currentDay) return;
+  schedJump(
+    currentDay.replace('/', '-')
+  );
+}
+
 window.schedJump = function (id) {
   var el = document.getElementById('day-' + id);
   if (el) el.scrollIntoView({ behavior: (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth', block: 'start' });
@@ -3649,7 +3778,6 @@ function liveMatchesHtml() {
     });
 
     if (!matches.length) return '';
-
     return ('<div class="results-group">' +'<h2 class="results-section-title">' +
     esc(A(group.ar, group.en)) +'</h2>' +
     '<div class="results-list">' +matches.map(function (m) {  var c = CHAMPS[m.c];
