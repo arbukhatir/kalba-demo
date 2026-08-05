@@ -501,8 +501,6 @@
   .dropdown a,nav.main .dropdown a{color:#163B67;  }
   .dropdown a:hover,nav.main .dropdown a:hover{background:#F2F4F7;color:#163B67;}}
 
-
-
   /* v3: about / faq / gallery / policies / sponsors / footer links */
   .faq-item { background: #fff; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; box-shadow: var(--shadow); }
   .faq-item summary { cursor: pointer; padding: 14px 17px; font-weight: 700; color: var(--sea-dark); list-style: none; position: relative; }
@@ -703,7 +701,6 @@
   .lb-search input { padding-inline-end: 42px; }
   .lb-search-ic { position: absolute; top: 50%; transform: translateY(-50%); inset-inline-end: 14px; font-size: 1.3rem; color: var(--muted); pointer-events: none; }
   .lb-select { flex: 0 1 220px; min-width: 180px; }
-
   .lb-grid { display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: 26px; align-items: start; }
 
   /* podium — 2 · 1 · 3, winner centre and tallest */
@@ -843,7 +840,6 @@
   .fpill.on { background: var(--deep); border-color: var(--deep); color: #fff; }
   .fpill.on b { color: var(--gold); }
   .fpill:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
-
   .cat-sec { margin: 0 0 42px; }
   .cat-head { display: flex; align-items: center; gap: 10px; font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 900;
     color: var(--deep); margin: 0 0 18px; }
@@ -912,10 +908,7 @@
 }
 
 
-/* =========================
-   MOBILE PHONE DESIGN
-========================= */
-
+/* MOBILE PHONE DESIGN */
 @media (max-width: 768px){
   body{font-size:16px;}
   .demo-banner{position:relative;top:auto;font-size:.76rem;line-height:1.5;padding:7px 10px;}
@@ -973,10 +966,7 @@
   .cd-lbl{font-size:.75rem;}}
 
 
-/* =================================
-   MOBILE SIDEBAR NAVIGATION
-================================= */
-
+/* MOBILE SIDEBAR NAVIGATION */
 /* Hidden on desktop */
 .mobile-menu-btn{display:none;}
 .mobile-nav-overlay{display:none;}
@@ -1030,13 +1020,11 @@
   nav.main .menu.open .menu-btn{background:rgba(255,255,255,.12);color:#fff;}
   /* Dropdown items inside sidebar */
 nav.main .menu{width:100%;position:relative;}
-
 nav.main .dropdown{
   display:none !important;position:static !important;width:100%;min-width:0;
   margin:5px 0 10px;padding:7px;background:#ffffff;border:1px solid rgba(207,167,98,.25);border-radius:12px;
   box-shadow:none;opacity:1;visibility:visible;transform:none;pointer-events:auto;z-index:auto;}
 nav.main .menu.open > .dropdown{display:block !important;}
-
 nav.main .dropdown a{width:100%;min-height:44px;display:flex !important;align-items:center;
   justify-content:flex-start;padding:9px 12px;margin:2px 0;color:#163B67 !important;background:transparent;
   font-size:.95rem;font-weight:700;text-align:start;border-radius:9px;pointer-events:auto !important;}
@@ -1066,7 +1054,6 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
   .results-tabs .lb-tab.active::after{content:"";position:absolute;left:50%;bottom:5px;
   width:28px;height:2px;transform:translateX(-50%);background:#D5A12E;border-radius:10px;}
   .results-tabs .lb-tab:focus-visible{outline:2px solid #1D9BB0; outline-offset:2px;}
-
 
   /* CHAMPIONSHIP CATEGORY TABS */
   .fpills{ width:fit-content;max-width:100%;display:flex;align-items:center;
@@ -1150,6 +1137,80 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
   .champ-dropdown-option.selected:hover{background:#E8EDF2;}
 }
 
+/* SCHEDULE PAGE FILTER BAR */
+/* The schedule tabs come directly after .sec-intro */
+.container.section > .sec-intro + .lb-tabs{width:fit-content;max-width:100%;display:flex;
+  align-items:center;justify-content:center;flex-wrap:nowrap;gap:4px;margin:0 auto 24px;
+  padding:5px;background:#ffffff;border:1px solid #e2e6eb;border-radius:15px;
+  box-shadow:0 5px 18px rgba(22,59,103,.08);}
+/* Schedule filter buttons */
+.container.section > .sec-intro + .lb-tabs .lb-tab{position:relative;
+  min-height:46px;padding:10px 22px;display:inline-flex;align-items:center;
+  justify-content:center;gap:7px;flex-shrink:0;color:#526174;background:transparent;
+  border:0; border-radius:11px; font-family:inherit; font-size:.92rem; font-weight:600;
+  white-space:nowrap;box-shadow:none;cursor:pointer;transition:
+    background .18s ease,color .18s ease,box-shadow .18s ease;}
+/* Light-grey hover */
+.container.section > .sec-intro + .lb-tabs .lb-tab:hover{color:#163B67;background:#F2F4F7;
+  border-color:transparent;}
+/* Selected category */
+.container.section > .sec-intro + .lb-tabs .lb-tab.active{color:#ffffff;
+  background:#163B67;border-color:#163B67;box-shadow:0 5px 13px rgba(22,59,103,.20);}
+/* Gold line under selected category */
+.container.section > .sec-intro + .lb-tabs .lb-tab.active::after{content:"";position:absolute;
+  left:50%;bottom:5px;width:28px;height:2px;transform:translateX(-50%);background:#D5A12E;
+  border-radius:10px;}
+/* Keep the icon aligned with the text */
+.container.section > .sec-intro + .lb-tabs .lb-tab span{display:inline-flex;
+  align-items:center;justify-content:center;line-height:1;}
+/* Keyboard focus */
+.container.section > .sec-intro + .lb-tabs .lb-tab:focus-visible{outline:2px solid #1D9BB0;
+  outline-offset:2px;}
+
+@media (max-width:700px){
+  .container.section > .sec-intro + .lb-tabs{width:100%;max-width:100%;
+    justify-content:flex-start;margin:0 auto 18px;padding:5px;overflow-x:auto;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .container.section > .sec-intro + .lb-tabs::-webkit-scrollbar{display:none;}
+  .container.section > .sec-intro + .lb-tabs .lb-tab{min-height:42px;padding:8px 14px;
+    font-size:.84rem;border-radius:9px;}
+  .container.section > .sec-intro + .lb-tabs .lb-tab.active::after{bottom:4px;width:24px;
+  }}
+  
+/* MOBILE PHONE DESIGN FOR SCHEDULE PAGE */
+/* Hidden on desktop */
+.schedule-mobile-dropdown{display:none;}
+@media (max-width:700px){
+  /* Hide the desktop schedule tabs only */
+  .schedule-desktop-tabs{display:none !important;}
+  .schedule-mobile-dropdown{position:relative;display:block;width:75%;
+    max-width:420px;margin:0 auto 22px;z-index:20;}
+  .schedule-dropdown-button{width:100%;min-height:40px;display:flex;
+    align-items:center;justify-content:space-between;gap:10px;padding:6px 12px;
+    color:#ffffff;background:#183254;border:1px solid #183254;border-radius:12px;
+    font-family:inherit;font-size:.9rem;font-weight:600;text-align:start;
+    box-shadow:0 4px 14px rgba(24,50,84,.14);cursor:pointer;
+    transition:background .18s ease,border-color .18s ease,box-shadow .18s ease;}
+  .schedule-dropdown-button:hover{background:#1f3a5f;border-color:#1f3a5f;}
+  .schedule-dropdown-button:focus-visible{outline:3px solid rgba(174,184,196,.45);
+    outline-offset:2px;}
+  .schedule-dropdown-arrow{flex-shrink:0;color:#ffffff;font-size:.9rem;line-height:1;
+    transition:transform .2s ease;}
+  .schedule-mobile-dropdown.open
+  .schedule-dropdown-arrow{transform:rotate(180deg);}
+  .schedule-dropdown-menu{position:absolute;top:calc(100% + 6px);inset-inline:0;
+    display:none;overflow:hidden;padding:4px;background:#ffffff;border:1px solid #E1E6EC;
+    border-radius:12px;box-shadow:0 10px 24px rgba(24,50,84,.14);}
+  .schedule-mobile-dropdown.open .schedule-dropdown-menu{display:block;}
+  .schedule-dropdown-option{width:100%;min-height:40px;display:flex;align-items:center;
+    padding:8px 12px;color:#183254;background:#ffffff;border:0;border-radius:6px;
+    font-family:inherit;font-size:.8rem;font-weight:550;text-align:start;
+    cursor:pointer;transition:background .15s ease,color .15s ease;}
+  .schedule-dropdown-option:hover{color:#183254;background:#F6F8FA;}
+  .schedule-dropdown-option.selected{color:#183254;background:#EEF2F6;}
+  .schedule-dropdown-option.selected:hover{background:#E8EDF2;}
+}
+
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -1160,10 +1221,8 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
 
 <!-- 20 nav links sit ahead of the content; keyboard users need a way past them -->
 <a class="skip-link" href="#app">تخطَّ إلى المحتوى</a>
-
 <header class="topbar">
   <div class="topbar-in">
-
     <span class="brand" onclick="go('home')">
       <img class="brand-logo" id="brandLogo" alt="">
       <span id="brandName"></span>
@@ -1182,9 +1241,7 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
       <span></span>
       <span></span>
     </button>
-
     <nav class="main" id="mainNav"></nav>
-
   </div>
 </header>
 
@@ -1657,18 +1714,14 @@ function toast(msg) {
 }
 function newCode() {
   var a = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', c = '';
-  for (var i = 0; i < 8; i++) c += a[Math.floor(Math.random() * a.length)];
-  return c;
+  for (var i = 0; i < 8; i++) c += a[Math.floor(Math.random() * a.length)];return c;
 }
 function statusBadge(s) { return '<span class="badge ' + s + '">' + esc(T(s)) + '</span>'; }
-
 function toggleResultsDropdown(){
   var dropdown = document.querySelector('.results-mobile-dropdown');
   if(!dropdown) return;
-
   var button = dropdown.querySelector('.results-dropdown-button');
   var isOpen = dropdown.classList.toggle('open');
-
   button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 }
 
@@ -1677,67 +1730,71 @@ function selectResultsTab(value){
   go('res');
 }
 
+function toggleScheduleDropdown(){
+  var dropdown = document.querySelector('.schedule-mobile-dropdown');
+  if(!dropdown) return;
+  var button = dropdown.querySelector('.schedule-dropdown-button');
+  var isOpen = dropdown.classList.toggle('open');
+  if(button){button.setAttribute('aria-expanded',isOpen ? 'true' : 'false');}}
+
+function selectScheduleFilter(value){schedFilter = value;go('sched');}
+
 document.addEventListener('click', function(event){
-  var dropdown = document.querySelector('.results-mobile-dropdown');
+  /* Close results dropdown */
+  var resultsDropdown =document.querySelector('.results-mobile-dropdown');
+  if(
+    resultsDropdown &&
+    !resultsDropdown.contains(event.target)
+  ){
+    resultsDropdown.classList.remove('open');
+    var resultsButton = resultsDropdown.querySelector('.results-dropdown-button');
+    if(resultsButton){resultsButton.setAttribute('aria-expanded', 'false');
+    }}
 
-  if(dropdown && !dropdown.contains(event.target)){
-    dropdown.classList.remove('open');
-
-    var button = dropdown.querySelector('.results-dropdown-button');
-
-    if(button){
-      button.setAttribute('aria-expanded', 'false');
-    }
-  }
-});
-
+  /* Close schedule dropdown */
+  var scheduleDropdown =
+    document.querySelector('.schedule-mobile-dropdown');
+  if(scheduleDropdown &&!scheduleDropdown.contains(event.target)){
+    scheduleDropdown.classList.remove('open');
+    var scheduleButton =scheduleDropdown.querySelector('.schedule-dropdown-button');
+    if(scheduleButton){scheduleButton.setAttribute('aria-expanded', 'false');}
+  }});
 
 /* ============ mobile navigation ============ */
 
 function toggleMobileNav(){
   var isOpen = document.body.classList.toggle('mobile-nav-open');
   var button = document.getElementById('mobileMenuBtn');
-
   if(button){
     button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     button.setAttribute(
       'aria-label',
       isOpen
-        ? A('إغلاق القائمة', 'Close menu')
-        : A('فتح القائمة', 'Open menu')
-    );
-  }
-}
+        ? A('إغلاق القائمة', 'Close menu'): A('فتح القائمة', 'Open menu')
+    );}}
+    
 function closeMobileNav(){
   document.body.classList.remove('mobile-nav-open');
-
   var button = document.getElementById('mobileMenuBtn');
-
   if(button){
     button.setAttribute('aria-expanded', 'false');
     button.setAttribute(
       'aria-label',
       A('فتح القائمة', 'Open menu')
-    );
-  }
-}
+    );}}
 
 /* ============ router & chrome ============ */
 var view = 'home', viewArg = null, timers = [];
-
 function go(v, arg, fromPop) {
   closeMobileNav();
-
   view = v;
   viewArg = arg === undefined ? null : arg;
-
   timers.forEach(clearInterval);
   timers = [];
-
-  _navRender = true;          /* tells render() this is a real navigation */
+  _navRender = true;          
+  /* tells render() this is a real navigation */
   render();
   window.scrollTo(0, 0);
-
   /* keep browser back/forward working across views */
   if (!fromPop) {
     try { history.pushState({ v: view, arg: viewArg }, ''); } catch (e) {}
@@ -1748,7 +1805,6 @@ window.addEventListener('popstate', function (ev) {
   else go('home', null, true);
 });
 try { history.replaceState({ v: 'home', arg: null }, ''); } catch (e) {}
-
 
 function setLang(l) {
   lang = l; document.documentElement.lang = l; document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
@@ -1776,14 +1832,12 @@ function renderChrome() {
   ['about', A('عن المهرجان', 'About')], ['gallery', A('المعرض', 'Gallery')], ['faq', A('الأسئلة الشائعة', 'FAQ')],
   ['contact', A('تواصل معنا', 'Contact')], ['privacy', A('الخصوصية', 'Privacy')], ['terms', A('الشروط', 'Terms')]
   ].map(function (l) { return '<a onclick="go(\'' + l[0] + '\')">' + esc(l[1]) + '</a>'; }).join(' · ');
-  
 
   var MENUS = [[A('المنافسات', 'Competitions'),[['champs', T('champsT')],['res', T('resT')],['leaderboard', T('leaderboard')]]],
   [A('الفعاليات', 'Programme'),[['sched', T('schedT')],['community', T('communityT')],['schools', A('تحدي مدارس كلباء', 'Schools Challenge')],['agenda', T('agenda')]]],
   [A('التسجيل', 'Register'),[['champs', A('تسجيل المشاركين', 'Participants')],['register', T('register')],['join', A('تصريح الزيارة', 'Visitor Pass')],['surveys', T('surveys')]]],
   [A('استكشف', 'Explore'),[['about', A('عن المهرجان', 'About')],['venue', T('venueT')],['gallery', A('المعرض الإعلامي', 'Gallery')],
   ['news', T('newsT')],['faq', A('الأسئلة الشائعة', 'FAQ')],['contact', A('تواصل معنا', 'Contact')]]]];
-  
 
   var ROLE_MENUS = {
     admin: [['admin', '🛡️ ' + T('admin')], ['ops:scores', A('⚡ إدخال النتائج', '⚡ Results Entry')], ['award', '🎯 ' + T('award')], ['screen', '📺 ' + T('screen')]],
@@ -1796,8 +1850,7 @@ function renderChrome() {
     MENUS.map(function (m, mi) {
       return '<div class="menu"><button type="button" class="menu-btn">' + esc(m[0]) + ' <span class="caret">▾</span></button><div class="dropdown">' +
         m[1].map(function (it) { return '<a data-v="' + it[0] + '">' + esc(it[1]) + '</a>'; }).join('') +
-        '</div></div>';
-    }).join('') +
+        '</div></div>';}).join('') +
     (!window.opsRole
       ? '<a class="nav-login" data-v="gate"> ' + esc(A('تسجيل الدخول', 'Log in')) + '</a>'
       : '<div class="menu"><button type="button" class="menu-btn nav-login"> ' + esc(ROLE_NAMES[window.opsRole]) + ' <span class="caret">▾</span></button><div class="dropdown">' +
@@ -1827,8 +1880,7 @@ function renderChrome() {
   function closeMenus(except) {
     nav.querySelectorAll('.menu.open').forEach(function (m) {
       if (m !== except) menuSetOpen(m, false);
-    });
-  }
+    });}
   var navHoverOpens = function () {
     return window.matchMedia && window.matchMedia('(hover:hover) and (min-width:861px)').matches;
   };
@@ -1875,9 +1927,8 @@ function renderChrome() {
         if (b) b.setAttribute('aria-expanded', 'false');
       });
     });
-  }
+  }}
 
-}
 /* ============ field rendering (shared by forms & surveys) ============ */
 function fieldHtml(f) {
   /* Labels used to be visual-only (no `for`, inputs had no id), so screen readers
@@ -1963,11 +2014,8 @@ function hideDecorativeEmoji(root) {
         sp.setAttribute('aria-hidden', 'true');
         sp.textContent = found[i];
         frag.appendChild(sp);
-      }
-    });
-    p.replaceChild(frag, node);
-  });
-}
+      }});p.replaceChild(frag, node);});}
+
 /* Validation used to produce only a comma-separated summary at the top of the form, so
    the reader had to map names back onto fields by eye, nothing was marked invalid, and
    screen readers were never told (the summary was not a live region). Each failing
@@ -2232,7 +2280,6 @@ R.home = function () {
   }).join('');
 
   var feat = defFeat;
-
   return '<div class="defdark">' +
 
     /* ---- full-screen hero ---- */
@@ -2575,14 +2622,10 @@ R.leaderboard = function () {
     '<div class="seg" role="group" aria-label="' + esc(A('عدد المعروضين', 'How many to show')) + '">' +
     '<button type="button" class="seg-btn' + (lbLimit === 10 ? ' on' : '') + '" aria-pressed="' + (lbLimit === 10) + '" onclick="lbSetLimit(10)">' + esc(A('أفضل 10', 'Top 10')) + '</button>' +
     '<button type="button" class="seg-btn' + (!lbLimit ? ' on' : '') + '" aria-pressed="' + (!lbLimit) + '" onclick="lbSetLimit(0)">' + esc(A('الكل', 'All')) + '</button>' +
-    '</div></div>' +
-
-    '<div class="lb-grid">' +
-    '<div class="lb-main">' +
+    '</div></div>' + '<div class="lb-grid">' + '<div class="lb-main">' +
     '<div id="lbPodium">' + lbPodiumHtml() + '</div>' +
     '<div class="lb-list" id="lbList">' + lbListHtml() + '</div>' +
-    '<p class="hint center">' + esc(T('lbAuto')) + '</p>' +
-    '</div>' +
+    '<p class="hint center">' + esc(T('lbAuto')) + '</p>' + '</div>' +
     lbDetailHtml().replace('<aside class="lb-detail"', '<aside class="lb-detail" id="lbDetail"') +
     '</div></section>';
 };
@@ -2710,7 +2753,6 @@ function agCalendarHtml() {
   var dim = new Date(y, m + 1, 0).getDate();
   var prevDim = new Date(y, m, 0).getDate();
   var todayIso = agIso(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
-
   var cells = '';
   for (var i = 0; i < lead; i++) {
     cells += '<div class="cal-day out" aria-hidden="true">' + (prevDim - lead + 1 + i) + '</div>';
@@ -2890,7 +2932,6 @@ R.admin = function () {
       '<div class="panel"><h2 class="sec-h" style="margin-top:0">🏆 ' + esc(A('صور البطاقات — البطولات الـ13 المعتمدة', 'Card images — the 13 championships')) + '</h2>' +
       '<p class="sec-intro">' + esc(A('تظهر الصورة على بطاقة البطولة وفي «البطولات المميزة» بالرئيسية.', 'The image appears on the championship card and the homepage featured cards.')) + '</p>' +
       '<div class="cardimg-grid">' + champRows + '</div></div>' +
-
       '<div class="panel"><h2 class="sec-h" style="margin-top:0">🖼️ ' + esc(A('خلفية البانر الرئيسي (الهيرو)', 'Hero landing background')) + '</h2>' +
       '<p class="sec-intro">' + esc(A('اختر خلفية الصفحة الرئيسية: معرض صور متناوب أو فيديو يعمل تلقائياً. يُحفظ الاختيار في هذا المتصفح.', 'Choose the homepage background: a rotating image carousel or an auto-playing video. Your choice is saved in this browser.')) + '</p>' +
 
@@ -3017,7 +3058,6 @@ function champCatName(k) {
   return c ? A(c.ar, c.en) : k;
 }
 function champName(c) { return (lang === 'ar' ? c.ar : c.en) + (c.f ? ' ' + c.f : ''); }
-
 var NEWS = [
   { u: 1, ar: 'افتتاح باب التسجيل في البطولات الـ13 المعتمدة', en: 'Registration opens for the 13 approved championships' },
   { u: 0, ar: 'الكشف عن مسار نصف ماراثون كلباء على الكورنيش', en: 'Kalba half-marathon route revealed along the Corniche' },
@@ -3261,8 +3301,7 @@ var selectedChampLabel = !champFilter
   : A(
       used.filter(function (cat) {
         return cat.k === champFilter;
-      })[0].ar,
-      used.filter(function (cat) {
+      })[0].ar,used.filter(function (cat) {
         return cat.k === champFilter;
       })[0].en
     );
@@ -3343,7 +3382,6 @@ R.champ = function () {
     }).join('') + '</div></section>';
 };
 
-
 var champDropdown = document.querySelector('.champ-mobile-dropdown');
 if(champDropdown &&!champDropdown.contains(event.target)){
   champDropdown.classList.remove('open');
@@ -3357,10 +3395,8 @@ R.pform = function () {
     A('تسجيل مشارك', 'PARTICIPANT REGISTRATION'),
     champName(c),
     A('ستحصل على رقم تسجيل فريد ورمز QR للاعتماد الميداني.', 'You will get a unique registration number and a QR code for field accreditation.'),
-    { back: 'champs', backLbl: T('champsT') }
-  ) +
-    '<section class="container section" style="max-width:620px">' +
-    '<div class="panel">' +
+    { back: 'champs', backLbl: T('champsT') }) +
+    '<section class="container section" style="max-width:620px">' +'<div class="panel">' +
     '<div id="formErr"></div><div id="formFields">' +
     '<div class="field" data-n="_n" data-t="text" data-r="1"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" id="pfName"></div>' +
     '<div class="frow"><div class="field" data-n="_p" data-t="text" data-r="1"><label class="flabel">' + esc(T('phone')) + ' <span class="req">*</span></label><input type="tel" dir="ltr"></div>' +
@@ -3399,24 +3435,85 @@ window.submitPform = function (ci) {
 
 var schedFilter = '';
 R.sched = function () {
-  var kinds = [['', A('الكل', 'All')], ['🏆', A('البطولات', 'Fixtures')], ['🤸', A('مجتمعية', 'Community')], ['🩺', A('الورش', 'Workshops')], ['🏅', A('التتويج', 'Ceremonies')], ['📝', A('التسجيل', 'Registration')]];
-  var rows = SCHED.filter(function (r) { return !schedFilter || r.k === schedFilter; });
+  var kinds = [
+    ['', A('الكل', 'All')],
+    ['🏆', A('البطولات', 'Fixtures')],
+    ['🤸', A('مجتمعية', 'Community')],
+    ['🩺', A('الورش', 'Workshops')],
+    ['🏅', A('التتويج', 'Ceremonies')],
+    ['📝', A('التسجيل', 'Registration')]
+  ];
+
+  var rows = SCHED.filter(function (r) {
+    return !schedFilter || r.k === schedFilter;
+  });
+
+  var selectedKind = kinds.filter(function (k) {
+    return schedFilter === k[0];
+  })[0] || kinds[0];
+
   return pageHead(
     A('المواعيد', 'FIXTURES'),
     A('الجدول الزمني التفاعلي', 'Interactive Schedule'),
-    A('كل المباريات والفعاليات عبر أيام المهرجان الثمانية — رشّح حسب اليوم أو البطولة.', 'Every match and event across the eight festival days — filter by day or championship.'),
-    { bg: GALLERY[2].src }
+    A(
+      'كل المباريات والفعاليات عبر أيام المهرجان الثمانية — رشّح حسب اليوم أو البطولة.',
+      'Every match and event across the eight festival days — filter by day or championship.'
+    ),
+    {
+      bg: GALLERY[2].src
+    }
   ) +
-    '<section class="container section">' +
-    '<p class="sec-intro">' + esc(A('صفِّ حسب النوع وأضف أي فعالية لتقويمك مع تنبيه قبل 30 دقيقة.', 'Filter by type; add events to your calendar with a 30-min reminder.')) + '</p>' +
-    '<div class="lb-tabs" role="tablist">' + kinds.map(function (k) {
-      return tabBtn(schedFilter === k[0], 'schedFilter=\'' + k[0] + '\';go(\'sched\')', '<span aria-hidden="true">' + (k[0] || '📋') + '</span> ' + esc(k[1]));
-    }).join('') + '</div>' +
-    schedDayJump(rows) +
-    (rows.length ? schedByDay(rows)
-      : '<div class="panel center muted">' + esc(A('لا توجد فعاليات بهذا التصنيف.', 'No events match this filter.')) + '</div>') +
-    '</section>';
-};
+
+  '<section class="container section">' +
+
+    '<p class="sec-intro">' +
+      esc(
+        A(
+          'صفِّ حسب النوع وأضف أي فعالية لتقويمك مع تنبيه قبل 30 دقيقة.',
+          'Filter by type; add events to your calendar with a 30-min reminder.'
+        )
+      ) +
+    '</p>' +
+
+    /* Desktop schedule tabs */
+    '<div class="lb-tabs schedule-desktop-tabs" role="tablist">' +
+      kinds.map(function (k) {
+        return tabBtn(
+          schedFilter === k[0],'schedFilter=\'' + k[0] + '\';go(\'sched\')',
+          esc(k[1]));
+      }).join('') +
+    '</div>' +
+
+    /* Mobile schedule dropdown */
+    '<div class="schedule-mobile-dropdown">' +
+
+      '<button type="button" ' +
+        'class="schedule-dropdown-button" ' +
+        'aria-expanded="false" ' + 'onclick="toggleScheduleDropdown()">' +
+        '<span>' +esc(selectedKind[1]) + '</span>' +
+        '<span class="schedule-dropdown-arrow" aria-hidden="true">⌄</span>' + '</button>' +
+      '<div class="schedule-dropdown-menu">' +
+        kinds.map(function (k) {
+          return (
+            '<button type="button" ' +
+              'class="schedule-dropdown-option' +
+                (schedFilter === k[0] ? ' selected' : '') + '" ' +
+              'onclick="selectScheduleFilter(\'' + k[0] + '\')">' +esc(k[1]) +
+            '</button>');}).join('') +
+      '</div>' + '</div>' + schedDayJump(rows) +
+    (
+      rows.length
+        ? schedByDay(rows)
+        : '<div class="panel center muted">' +
+            esc(
+              A(
+                'لا توجد فعاليات بهذا التصنيف.',
+                'No events match this filter.'
+              )
+            ) +
+          '</div>'
+    ) + '</section>';};
+
 /* An 8-day festival rendered as one flat list forced the reader to parse dates to answer
    "what's on today?". Group under day headings and give each a jump target. */
 var SCHED_MONTHS = { '12': ['ديسمبر', 'Dec'], '11': ['نوفمبر', 'Nov'], '01': ['يناير', 'Jan'] };
@@ -3539,10 +3636,7 @@ function toggleChampDropdown(){
   button.setAttribute('aria-expanded',isOpen ? 'true' : 'false');
 }
 
-function selectChampCategory(value){
-  champFilter = value;
-  go('champs');
-}
+function selectChampCategory(value){champFilter = value;go('champs');}
 
 function liveMatchesHtml() {
   var lbl = {
