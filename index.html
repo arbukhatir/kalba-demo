@@ -922,19 +922,90 @@
   .kmap-pin span:hover { transform: scale(1.15); }
   .kmap-pop { font-family: var(--font); font-size: .95rem; line-height: 1.5; }
   .kmap-pop .kmap-more { display: inline-block; margin-top: 4px; color: var(--sea-dark); font-weight: 700; cursor: pointer; }
-  .pts-table { width: 100%; border-collapse: collapse; }
-  .pts-table th, .pts-table td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: center; }
-  .pts-table th:nth-child(2), .pts-table td:nth-child(2) { text-align: start; }
-  .pts-table tr.t1 { background: rgba(207,167,98,.16); }
-  .pts-table tr.t2 { background: rgba(207,167,98,.09); }
-  .pts-table tr.t3 { background: rgba(207,167,98,.05); }
 
-  /* Final date and location color */
-.hero.hero-live .hero-meta,
-.hero.hero-live .hero-meta span{
-    color:#163B67 !important;
+  /* CREATIVE RESPONSIVE POINTS TABLE */
+  /* Same desktop width as the live-results boxes */
+  .points-board{width:85%;max-width:1500px;margin:0 auto 28px;overflow:hidden;
+  background:#ffffff;border:1px solid #e2e6eb;border-radius:20px;
+  box-shadow:0 8px 26px rgba(22,59,103,.09);}
+  /* Championship title area */
+  .points-board-head{min-height:92px;display:flex;align-items:center;justify-content:space-between;
+  gap:18px;padding:20px 26px;
+  background:linear-gradient(110deg, #183254 0%, #24466e 72%, #2d527e 100%);border-bottom:3px solid #d5a12e;}
+  .points-board-title{margin:0;color:#ffffff;font-size:1.45rem;font-weight:800;}
+  .points-board-count{flex-shrink:0;padding:7px 15px;color:#ffffff;background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.22);border-radius:999px;font-size:.84rem;font-weight:700;}
+  /* Desktop table */
+  .points-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .pts-table{width:100%;min-width:760px;border-collapse:separate;border-spacing:0;color:#183254;font-family:inherit;font-size:1rem;}
+  .pts-table th,.pts-table td{padding:15px 13px;border-bottom:1px solid #e7ebf0;text-align:center;vertical-align:middle;}
+  .pts-table th{color:#657386;background:#f5f7fa;font-size:.9rem;font-weight:700;white-space:nowrap;}
+  .pts-table th:nth-child(2),.pts-table td:nth-child(2){text-align:start;}
+  .pts-table tbody tr{position:relative;background:#ffffff;transition:
+    background .18s ease,transform .18s ease,box-shadow .18s ease;}
+  .pts-table tbody tr:hover{background:#f8fafc;box-shadow:inset 4px 0 0 #1d9bb0;}
+  [dir="rtl"] .pts-table tbody tr:hover{box-shadow:inset -4px 0 0 #1d9bb0;}
+  .pts-table tbody tr:last-child td{border-bottom:0;}
+  /* Top-three rows */
+  .pts-table tr.t1{background:linear-gradient(90deg, rgba(207,167,98,.18), #ffffff 34%);}
+  .pts-table tr.t2{background:linear-gradient(90deg, rgba(184,194,204,.18), #ffffff 34%);}
+  .pts-table tr.t3{background:linear-gradient(90deg, rgba(182,123,61,.12), #ffffff 34%);}
+  [dir="rtl"] .pts-table tr.t1{background:linear-gradient(270deg, rgba(207,167,98,.18), #ffffff 34%);}
+  [dir="rtl"] .pts-table tr.t2{background:linear-gradient(270deg, rgba(184,194,204,.18), #ffffff 34%);}
+  [dir="rtl"] .pts-table tr.t3{background:linear-gradient(270deg, rgba(182,123,61,.12), #ffffff 34%);}
+  .points-rank{white-space:nowrap;font-weight:700;}
+  .rank-medal{  margin-inline-end:5px;}
+  .points-team{color:#183254;  font-size:1.05rem;  font-weight:700;}
+  .points-total strong{display:inline-grid;place-items:center;min-width:42px;height:36px;
+  padding:0 10px;color:#ffffff;background:#183254;border-radius:10px;font-size:1.05rem;font-weight:800;}
+  .points-note{width:85%;max-width:1500px;margin:0 auto 22px;}
+  
+  /* PHONE POINTS CARDS */
+  @media (max-width:700px){
+  .points-board{width:calc(100% - 24px);max-width:none;margin:0 auto 20px;border-radius:17px;}
+  .points-board-head{min-height:auto;padding:16px;align-items:flex-start;}
+  .points-board-title{font-size:1.15rem;}
+  .points-board-count{padding:5px 10px;font-size:.72rem;}
+  .points-table-wrap{overflow:visible;padding:12px;background:#f5f7fa;}
+  .pts-table{display:block;min-width:0;font-size:.9rem;}
+  .pts-table thead{display:none;}
+  .pts-table tbody{display:grid;gap:12px;}
+
+  /* Each team becomes a card */
+  .pts-table tr{position:relative;display:grid;grid-template-columns:repeat(3, minmax(0,1fr));
+    gap:8px;padding:62px 10px 10px;background:#ffffff !important;
+    border:1px solid #e0e5eb;border-radius:14px;box-shadow:0 4px 14px rgba(24,50,84,.06);}
+  .pts-table tr.t1{border-inline-start:4px solid #d5a12e;}
+  .pts-table tr.t2{border-inline-start:4px solid #b8c2cc;}
+  .pts-table tr.t3{border-inline-start:4px solid #b67b3d;}
+  .pts-table tbody tr:hover{transform:none;box-shadow:0 4px 14px rgba(24,50,84,.06);}
+  .pts-table td{min-width:0;min-height:58px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:3px;padding:7px 4px;color:#183254;
+    background:#f6f8fb;border:1px solid #e7ebf0;border-radius:9px;font-size:.88rem;
+    font-weight:700;text-align:center !important;}
+  .pts-table td::before{content:attr(data-label);color:#7a8797;font-size:.67rem;font-weight:600;line-height:1.2;}
+  /* Rank badge */
+  .pts-table td.points-rank{position:absolute;top:13px;inset-inline-start:12px;width:auto;
+    min-width:48px;height:36px;min-height:36px;padding:5px 10px;display:flex;
+    flex-direction:row;gap:4px;color:#ffffff;background:#183254;border:0;border-radius:999px;}
+  .pts-table td.points-rank::before{display:none;}
+  /* Team name across the top */
+  .pts-table td.points-team{position:absolute;top:12px;inset-inline-start:70px;inset-inline-end:12px;
+    height:38px;min-height:38px;display:flex;flex-direction:row;justify-content:flex-start;
+    padding:5px 10px;color:#183254;background:#eef3f8;border:0;border-radius:9px;
+    overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+    font-size:1rem;text-align:start !important;}
+  .pts-table td.points-team::before{display:none;}
+  .pts-table td.points-team strong{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  /* Points are the main highlight */
+  .pts-table td.points-total{color:#ffffff;background:#183254;border-color:#183254;}
+  .pts-table td.points-total::before{color:#cbd7e5;}
+  .pts-table td.points-total strong{min-width:0;height:auto;padding:0;color:#ffffff;
+    background:transparent;border-radius:0;font-size:1rem;}
+  .points-note{width:calc(100% - 30px);margin:0 auto 18px;font-size:.74rem;line-height:1.6;}
 }
-
+  /* Final date and location color */
+.hero.hero-live .hero-meta,.hero.hero-live .hero-meta span{color:#163B67 !important;}
 
 /* MOBILE PHONE DESIGN */
 @media (max-width: 768px){
@@ -3744,19 +3815,75 @@ var body = '';
     }, 5000));
     body = '<div id="resBody">' + liveMatchesHtml() + '</div><p class="hint center">' + esc(A('محاكاة تحديث مباشر أثناء اللعب', 'Simulating live in-play updates')) + '</p>';
   } else if (resTab === 'points') {
-    var heads = [['#', '#'], ['الفريق / اللاعب', 'Team / player'], ['لعب', 'P'], ['فوز', 'W'], ['تعادل', 'D'], ['خسارة', 'L'], ['الفارق', 'GD'], ['النقاط', 'Pts']];
-    body = pointsTables().map(function (pt) {
-      var c = CHAMPS[pt.c];
-      return '<div class="panel"><h2 class="sec-h" style="margin-top:0">' + c.ic + ' ' + esc(champName(c)) + '</h2>' +
-        '<table class="pts-table"><tr>' + heads.map(function (h2) { return '<th>' + esc(A(h2[0], h2[1])) + '</th>'; }).join('') + '</tr>' +
-        pt.rows.map(function (r, i) {
-          return '<tr class="' + (i < 3 ? 't' + (i + 1) : '') + '"><td>' + (i + 1) + ' ' + (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '') + '</td>' +
-            '<td><strong>' + esc(r.n) + '</strong></td><td>' + r.p + '</td><td>' + r.w + '</td><td>' + r.d + '</td><td>' + r.l + '</td>' +
-            '<td dir="ltr">' + (r.gd > 0 ? '+' + r.gd : r.gd) + '</td><td><strong>' + r.pts + '</strong></td></tr>';
-        }).join('') + '</table></div>';
-    }).join('') +
-    '<p class="hint center">' + esc(A('يُحتسب الجدول تلقائياً من المباريات المنتهية — الفوز ' + PTS_CFG.win + ' نقاط، التعادل ' + PTS_CFG.draw + '، الخسارة ' + PTS_CFG.loss + ' (قابلة للتعديل من لوحة التحكم).', 'Computed automatically from finished matches — win ' + PTS_CFG.win + ' pts, draw ' + PTS_CFG.draw + ', loss ' + PTS_CFG.loss + ' (configurable in the CMS).')) + '</p>';
-  } else if (resTab === 'standings') {
+  var heads = [
+    ['#', '#'],['الفريق / اللاعب', 'Team / player'],
+    ['لعب', 'P'],['فوز', 'W'],['تعادل', 'D'],
+    ['خسارة', 'L'],['الفارق', 'GD'],['النقاط', 'Pts']];
+
+  body = pointsTables().map(function (pt) {
+    var c = CHAMPS[pt.c];
+    return (
+      '<section class="points-board">' +
+        '<div class="points-board-head">' +
+          '<div>' + '<h2 class="points-board-title">' +
+              '<span aria-hidden="true">' + c.ic + '</span> ' +
+              esc(champName(c)) +
+            '</h2>' + '</div>' +
+          '<span class="points-board-count">' +
+            pt.rows.length + ' ' +
+            esc(A('فرق', 'Teams')) +
+          '</span>' + '</div>' +
+        '<div class="points-table-wrap">' +
+          '<table class="pts-table">' + '<thead>' + '<tr>' +
+                heads.map(function (h2) {
+                  return (
+                    '<th scope="col">' +
+                      esc(A(h2[0], h2[1])) +
+                    '</th>');}).join('') +
+              '</tr>' + '</thead>' + '<tbody>' +
+              pt.rows.map(function (r, i) {
+                var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+                return (
+                  '<tr class="' +
+                    (i < 3 ? 't' + (i + 1) : '') +'">' +
+                    '<td class="points-rank" data-label="' +
+                      esc(A('الترتيب', 'Rank')) + '">' +
+                      '<span class="rank-medal" aria-hidden="true">' +
+                        medal + '</span>' +
+                      '<strong>' + (i + 1) + '</strong>' +
+                    '</td>' +
+                    '<td class="points-team" data-label="' +
+                      esc(A('الفريق / اللاعب', 'Team / player')) + '">' +
+                      '<strong>' + esc(r.n) + '</strong>' +
+                    '</td>' + '<td data-label="' + esc(A('لعب', 'Played')) + '">' +
+                      r.p + '</td>' + '<td data-label="' + esc(A('فوز', 'Wins')) + '">' +
+                      r.w + '</td>' +
+                    '<td data-label="' + esc(A('تعادل', 'Draws')) + '">' +
+                      r.d + '</td>' + '<td data-label="' + esc(A('خسارة', 'Losses')) + '">' +
+                      r.l + '</td>' +
+                    '<td dir="ltr" data-label="' +
+                      esc(A('الفارق', 'Goal difference')) +
+                    '">' +
+                      (r.gd > 0 ? '+' + r.gd : r.gd) + '</td>' +
+                    '<td class="points-total" data-label="' +
+                      esc(A('النقاط', 'Points')) +
+                    '">' +
+                      '<strong>' + r.pts + '</strong>' + '</td>' +
+                  '</tr>' );}).join('') +
+            '</tbody>' + '</table>' + '</div>' + '</section>');
+  }).join('') +
+
+  '<p class="hint center points-note">' +
+    esc(
+      A(
+        'يُحتسب الجدول تلقائياً من المباريات المنتهية — الفوز ' +
+          PTS_CFG.win + ' نقاط، التعادل ' + PTS_CFG.draw +
+          '، الخسارة ' + PTS_CFG.loss +
+          ' (قابلة للتعديل من لوحة التحكم).', 'Computed automatically from finished matches — win ' +
+          PTS_CFG.win + ' pts, draw ' + PTS_CFG.draw +
+          ', loss ' + PTS_CFG.loss + ' (configurable in the CMS).'
+      )) + '</p>';
+} else if (resTab === 'standings') {
     body = STANDINGS.map(function (s) {
       var c = CHAMPS[s.c];
       return '<div class="panel"><h2 class="sec-h" style="margin-top:0">' + c.ic + ' ' + esc(champName(c)) + '</h2>' +
@@ -3812,7 +3939,6 @@ function toggleChampDropdown(){
 }
 
 function selectChampCategory(value){champFilter = value;go('champs');}
-
 function liveMatchesHtml() {
   var lbl = {
     live: ['مباشر الآن', 'LIVE'],upcoming: ['قادمة', 'Upcoming'],finished: ['انتهت', 'Finished']};
