@@ -1326,6 +1326,141 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
 /* Stat box number: 1, 0, +1, 3 */
 .stat-value{font-size: 2.4rem !important;font-weight: 700;}
 
+/* LIVE RESULTS - NEW SPORTS SCORE DESIGN */
+.live-results-toolbar{width:85%;max-width:1500px;margin:0 auto 22px;padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;background:#ffffff;
+  border:1px solid #e2e6eb;border-radius:16px;box-shadow:0 5px 18px rgba(22,59,103,.06);}
+/* Category navigation */
+.live-category-nav{display:flex;align-items:center;gap:10px;}
+.live-category-title{min-width:90px;text-align:center;color:#183254;font-weight:800;font-size:.9rem;}
+.live-category-arrow{width:40px;height:40px;display:grid;place-items:center;border:1px solid #e1e6ec;
+  border-radius:50%;background:#ffffff;color:#183254;font-size:1.2rem;cursor:pointer;}
+.live-category-arrow:hover{background:#f2f4f7;}
+.live-category-arrow:disabled{opacity:.35;cursor:not-allowed;}
+/* Right toolbar buttons */
+.live-filter-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.live-filter-btn{min-height:42px;display:flex;align-items:center;justify-content:center;
+  gap:7px;padding:7px 16px;background:#ffffff;
+  color:#183254;border:1px solid #dfe5eb;border-radius:999px;font-family:inherit;
+  font-size:.8rem;font-weight:700;cursor:pointer;}
+.live-filter-btn:hover{background:#f2f4f7;}
+.live-filter-btn.live{color:#dc3545;border-color:#dc3545;}
+.live-filter-btn.live.active{color:#ffffff;background:#dc3545;}
+.live-filter-btn.favorite{color:#8a6a33;border-color:#cfa762;}
+.live-filter-btn.favorite.active{color:#183254;background:#cfa762;}
+/* Dropdown */
+.live-filter-menu{position:relative;}
+.live-filter-dropdown{display:none;position:absolute;top:calc(100% + 7px);inset-inline-start:0;min-width:210px;
+  max-height:300px;overflow-y:auto;padding:7px;background:#ffffff;border:1px solid #e1e6ec;
+  border-radius:12px;box-shadow:0 12px 30px rgba(24,50,84,.16);z-index:50;}
+.live-filter-menu.open .live-filter-dropdown{display:block;}
+.live-filter-dropdown button{width:100%;display:block;padding:9px 11px;border:0;border-radius:8px;
+  background:#ffffff;color:#183254;font-family:inherit;font-size:.8rem;font-weight:650;text-align:start;cursor:pointer;}
+.live-filter-dropdown button:hover,.live-filter-dropdown button.selected{background:#f2f4f7;}
+/* Active filter message */
+.live-active-filter{width:85%;max-width:1500px;margin:0 auto 15px;padding:10px 14px;
+  display:flex;align-items:center;gap:7px;background:#f4f6f8;
+  border:1px solid #e2e6eb;border-radius:10px;color:#526174;font-size:.82rem;}
+.live-active-filter strong{color:#183254;}
+.live-active-filter button{margin-inline-start:auto;border:0;background:transparent;color:#6b7280;cursor:pointer;}
+/* Championship box */
+.live-championship{width:85%;max-width:1500px;margin:0 auto 26px;
+  overflow:hidden;background:#ffffff;border:1px solid #e2e6eb;border-radius:20px;
+  box-shadow:0 8px 26px rgba(22,59,103,.09);
+}
+/* Blue championship header */
+.live-championship-header{min-height:88px;display:flex;
+  align-items:center;justify-content:space-between;gap:15px;padding:17px 26px;
+  color:#ffffff;background:linear-gradient(110deg,#183254 0%,#24466e 72%,#2d527e 100%);
+  border-bottom:3px solid #d5a12e;
+}
+.live-championship-info{display:flex;align-items:center;gap:13px;}
+.live-championship-icon{width:58px;height:58px;display:grid;place-items:center;}
+.live-championship-icon .sport-icon{width:58px;height:58px;object-fit:contain;}
+.live-championship-title{color:#ffffff;font-family:"Cairo", sans-serif;font-size:1.8rem;font-weight:800;line-height:1.4;}
+  .live-championship-count{flex-shrink:0;padding:7px 15px;color:#ffffff;
+  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);
+  border-radius:999px;font-size:.78rem;font-weight:700;}
+/* Matches */
+.live-match-list{padding:6px 18px 10px;}
+.live-match{min-height:72px;display:grid;
+  grid-template-columns:
+    45px
+    minmax(140px,1fr)
+    42px
+    45px
+    10px
+    45px
+    42px
+    minmax(140px,1fr)
+    90px;
+  align-items:center;gap:8px;padding:10px 12px;
+  border-bottom:1px solid #e7ebf0;transition:background .15s ease;
+}
+.live-match:last-child{border-bottom:0;}
+.live-match:nth-child(even){background:#f8fafc;}
+.live-match:hover{background:#f2f5f8;}
+/* Favorite */
+.live-star{border:0;background:transparent;color:#d6cfc0;font-size:1.35rem;cursor:pointer;}
+.live-star.active{color:#cfa762;}
+/* Team */
+.live-team{color:#183254;font-size:.9rem;font-weight:700;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.live-team.home{text-align:end;}
+.live-team.away{text-align:start;}
+/* Small team letter */
+.live-team-badge{
+  width:30px;height:30px;display:grid;place-items:center;border-radius:50%;color:#ffffff;
+  background:#24466e;font-size:.7rem;font-weight:800;}
+/* Score */
+.live-score{min-width:40px;height:36px;display:grid;place-items:center;padding:0 8px;
+  color:#ffffff;background:#183254;border-radius:9px;font-size:.95rem;font-weight:800;}
+.live-match.is-live .live-score{background:#d5a12e;color:#ffffff;}
+.live-score-divider{color:#d8dee6;text-align:center;}
+/* Status */
+.live-match-status{justify-self:end;min-width:74px;padding:6px 10px;text-align:center;
+  border-radius:999px;font-size:.72rem;font-weight:800;}
+.live-match-status.live{color:#b42333;background:#fde8eb;}
+.live-match-status.finished{color:#183254;background:#eef2f6;}
+.live-match-status.upcoming{color:#8a6a33;background:#fff4d8;}
+/* Empty */
+.live-results-empty{
+  width:85%;max-width:1500px;margin:0 auto 25px;padding:30px;text-align:center;color:#6b7280;
+  background:#ffffff;border:1px dashed #dfe5eb;border-radius:15px;}
+/* Phone */
+@media(max-width:700px){
+  .live-results-toolbar,.live-championship,.live-active-filter,.live-results-empty{width:calc(100% - 24px);}
+  .live-results-toolbar{padding:11px;}
+  .live-category-nav{width:100%;justify-content:center;}
+  .live-filter-actions{width:100%;justify-content:center;}
+  .live-filter-btn{padding:7px 12px;font-size:.75rem;}
+  .live-championship-header{min-height:70px;padding:12px 15px;}
+  .live-championship-icon,
+  .live-championship-icon .sport-icon{width:46px;height:46px;}
+  .live-championship-title{
+  color:#ffffff;
+  font-family:var(--font-display);
+  font-size:1.45rem;
+  font-weight:800;
+  line-height:1.15;}
+  .live-match-list{padding:5px 9px 8px;}
+  .live-match{
+    grid-template-columns:
+      30px
+      minmax(75px,1fr)
+      34px
+      34px
+      5px
+      34px
+      34px
+      minmax(75px,1fr);
+    gap:5px;padding:10px 4px;}
+
+  .live-team{font-size:.78rem;}
+  .live-team-badge{width:26px;height:26px;font-size:.62rem;}
+  .live-score{min-width:31px;height:31px;font-size:.8rem;}
+  .live-match-status{grid-column:2 / 8;grid-row:2;justify-self:center;margin-top:4px;}
+}
+
 
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -3439,7 +3574,6 @@ R.champs = function () {
       esc(A('تصفية حسب الرياضة', 'Filter by sport')) +
     '">' +
       pill('', A('الكل', 'All'), '', !champFilter) +
-
       used.map(function (cat) {
         return pill(
           cat.k,
@@ -3463,7 +3597,6 @@ R.champs = function () {
           (!champFilter ? ' selected' : '') +
           '" onclick="selectChampCategory(\'\')">' +
           esc(A('الكل', 'All')) + '</button>' +
-
         used.map(function (cat) {
           return (
             '<button type="button" ' +
@@ -3737,8 +3870,7 @@ function schedDayJump(rows) {
         'aria-label="' + esc(A('اليوم التالي', 'Next day')) + '" ' +
         (schedDayIndex === schedVisibleDays.length - 1 ? 'disabled' : '') +
       '>' +
-        '<span aria-hidden="true">›</span>' + '</button>' +'</nav>'
-  );
+        '<span aria-hidden="true">›</span>' + '</button>' +'</nav>');
 }
 
 function updateScheduleDayNavigator() {
@@ -3816,18 +3948,415 @@ function schedByDay(rows) {
 }
 
 var resTab = 'live';
+/* NEW LIVE RESULTS */
+var liveCategory = 'all';
+var liveOnly = false;
+var liveFavoritesOnly = false;
+var liveFavorites = {};
+var liveTeamFilter = null;
+var liveChampFilter = null;
+
+/* Categories used by the arrows */
+function liveCategories(){
+  var arr = [{k:'all',ar:'الكل',en:'All'}];
+  CHAMP_CATS.forEach(function(cat){
+    arr.push({k:cat.k,ar:cat.ar,en:cat.en});});return arr;}
+
+/* Change category using arrows */
+window.liveCategoryMove = function(delta){
+  var cats = liveCategories();
+  var current = 0;
+  for(var i = 0; i < cats.length; i++){
+    if(cats[i].k === liveCategory){current = i;break;}
+  }
+
+  var next = current + delta;
+  if(next < 0 || next >= cats.length){return;}
+  liveCategory = cats[next].k;
+  go('res');
+};
+
+/* LIVE button */
+window.toggleLiveOnly = function(){
+  liveOnly = !liveOnly;
+  go('res');
+};
+
+/* Favorite match */
+window.toggleLiveFavorite = function(index){
+  if(liveFavorites[index]){delete liveFavorites[index];
+  }else{liveFavorites[index] = true;}
+  var body = document.getElementById('resBody');
+  if(body){body.innerHTML = liveResultsHtml();}
+};
+
+/* Favorites filter */
+window.toggleFavoritesOnly = function(){
+  liveFavoritesOnly = !liveFavoritesOnly;
+  go('res');
+};
+
+/* Teams dropdown */
+window.toggleLiveMenu = function(type){
+  var menu = document.getElementById(
+    type === 'teams'
+      ? 'liveTeamsMenu'
+      : 'liveChampMenu'
+  );
+
+  if(!menu){return;}
+  menu.classList.toggle('open');
+};
+
+/* Filter one team */
+window.filterLiveTeam = function(team){
+  liveTeamFilter = team;
+  liveChampFilter = null;
+  go('res');
+};
+
+window.clearLiveTeam = function(){
+  liveTeamFilter = null;
+  go('res');
+};
+
+/* Filter one championship */
+window.filterLiveChamp = function(index){
+  liveChampFilter = index;
+  liveTeamFilter = null;
+  go('res');
+};
+
+window.clearLiveChamp = function(){
+  liveChampFilter = null;
+  go('res');
+};
+
+
+/* Get unique teams */
+function liveTeams(){
+  var found = {};
+  MATCHES.forEach(function(m){
+    found[m.ar] = {ar:m.ar,en:m.en};
+    if(m.ar2){found[m.ar2] = {ar:m.ar2,en:m.en2};}
+  });
+
+  return Object.keys(found).map(function(key){return found[key];});
+}
+
+/* Teams dropdown HTML */
+function liveTeamsMenuHtml(){
+  return liveTeams().map(function(team){
+    return (
+      '<button type="button" ' +
+      'onclick="filterLiveTeam(\'' +
+      team.ar.replace(/'/g, "\\'") +
+      '\')">' +
+      esc(A(team.ar, team.en)) +
+      '</button>'
+    );
+  }).join('');
+}
+
+/* Championships dropdown HTML */
+function liveChampMenuHtml(){
+  return CHAMPS.map(function(c, index){
+    return (
+      '<button type="button" ' +
+      'onclick="filterLiveChamp(' + index + ')">' +
+      esc(champName(c)) +'</button>');
+  }).join('');
+}
+
+/* Active filter */
+function liveActiveFilterHtml(){
+  if(liveTeamFilter){
+    var display = liveTeamFilter;
+    MATCHES.some(function(m){
+      if(m.ar === liveTeamFilter){display = A(m.ar, m.en);return true;}
+      if(m.ar2 === liveTeamFilter){display = A(m.ar2, m.en2);return true;}
+      return false;
+    });
+    return (
+      '<div class="live-active-filter">' +
+      esc(A(
+        'عرض مباريات الفريق:',
+        'Showing matches for:')) +' <strong>' +esc(display) +'</strong>' +
+      '<button type="button" onclick="clearLiveTeam()">✕</button>' + '</div>'
+    );}
+
+  if(liveChampFilter !== null){
+    return (
+      '<div class="live-active-filter">' +
+      esc(A(
+        'عرض مباريات البطولة:',
+        'Showing championship:'
+      )) + ' <strong>' +
+      esc(champName(CHAMPS[liveChampFilter])) +
+      '</strong>' + '<button type="button" onclick="clearLiveChamp()">✕</button>' +
+      '</div>');}
+  return '';
+}
+
+/* Top toolbar */
+function liveToolbarHtml(){
+  var cats = liveCategories();
+  var index = 0;
+  for(var i = 0; i < cats.length; i++){
+    if(cats[i].k === liveCategory){
+      index = i;
+      break;
+    }
+  }
+
+  var current = cats[index];
+  return (
+    '<div class="live-results-toolbar">' +
+      '<div class="live-category-nav">' +
+        '<button class="live-category-arrow" type="button" ' +
+        (index === 0 ? 'disabled ' : '') +
+        'onclick="liveCategoryMove(-1)">‹</button>' +
+        '<span class="live-category-title">' +
+        esc(A(current.ar,current.en)) +
+        '</span>' +
+        '<button class="live-category-arrow" type="button" ' +
+        (index === cats.length - 1 ? 'disabled ' : '') +
+        'onclick="liveCategoryMove(1)">›</button>' +
+      '</div>' +
+
+      '<div class="live-filter-actions">' +
+        '<div class="live-filter-menu" id="liveTeamsMenu">' +
+          '<button type="button" class="live-filter-btn" ' +
+          'onclick="toggleLiveMenu(\'teams\')">' +
+            esc(A('الفرق','Teams')) +
+            ' ▾' +
+          '</button>' +
+          '<div class="live-filter-dropdown">' +
+            liveTeamsMenuHtml() +
+          '</div>' +
+        '</div>' +
+
+        '<div class="live-filter-menu" id="liveChampMenu">' +
+          '<button type="button" class="live-filter-btn" ' +
+          'onclick="toggleLiveMenu(\'champ\')">' +
+            esc(A('المسابقات','Competitions')) +
+            ' ▾' +
+          '</button>' +
+          '<div class="live-filter-dropdown">' +
+            liveChampMenuHtml() +
+          '</div>' +
+        '</div>' +
+        '<button type="button" ' +
+        'class="live-filter-btn live' +
+        (liveOnly ? ' active' : '') +
+        '" onclick="toggleLiveOnly()">' +
+          '● ' +
+          esc(A('مباشر','LIVE')) +
+        '</button>' +
+        '<button type="button" ' +
+        'class="live-filter-btn favorite' +
+        (liveFavoritesOnly ? ' active' : '') +
+        '" onclick="toggleFavoritesOnly()">' +
+          '★ ' +
+          esc(A('المفضلة','Favorites')) +
+        '</button>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+/* Filter matches */
+function filteredLiveMatches(){
+  var result = [];
+  MATCHES.forEach(function(m,index){
+    var champ = CHAMPS[m.c];
+    if(!champ){return;}
+    /* Category */
+    if(
+      liveCategory !== 'all' &&
+      champ.c !== liveCategory
+    ){return;}
+    /* LIVE only */
+    if(
+      liveOnly &&
+      m.st !== 'live'
+    ){return;}
+    /* Favorites */
+    if(
+      liveFavoritesOnly &&
+      !liveFavorites[index]
+    ){return;}
+    /* Team */
+    if(
+      liveTeamFilter &&
+      m.ar !== liveTeamFilter &&
+      m.ar2 !== liveTeamFilter
+    ){return;}
+    /* Championship */
+    if(
+      liveChampFilter !== null &&
+      m.c !== liveChampFilter
+    ){return;}
+    result.push({
+      match:m,
+      index:index
+    });});
+  return result;
+}
+
+/* Matches grouped by championship */
+function liveResultsHtml(){
+  var rows = filteredLiveMatches();
+  if(!rows.length){
+    return (
+      '<div class="live-results-empty">' +
+      esc(A(
+        'لا توجد مباريات مطابقة لهذا الفلتر.',
+        'No matches match this filter.'
+      )) +'</div>'
+    );
+  }
+
+  var grouped = {};
+  rows.forEach(function(item){
+    var key = item.match.c;
+    if(!grouped[key]){
+      grouped[key] = [];
+    }
+    grouped[key].push(item);
+  });
+
+  return Object.keys(grouped).map(function(key){
+    var champIndex = Number(key);
+    var c = CHAMPS[champIndex];
+    var games = grouped[key];
+    return (
+      '<section class="live-championship">' +
+        '<div class="live-championship-header">' +
+          '<div class="live-championship-info">' +
+            '<span class="live-championship-icon">' +
+              c.ic +
+            '</span>' +
+            '<span class="live-championship-title">' +
+              esc(champName(c)) +
+            '</span>' +
+          '</div>' +
+          '<span class="live-championship-count">' +
+            games.length +
+            ' ' +
+            esc(A('مباريات','Matches')) +
+          '</span>' +
+        '</div>' +
+        '<div class="live-match-list">' +
+          games.map(function(item){
+            var m = item.match;
+            var secondTeam = !!m.ar2;
+            var statusClass =
+              m.st === 'live'
+                ? 'live'
+                : m.st === 'finished'
+                ? 'finished'
+                : 'upcoming';
+
+            var statusText =
+              m.st === 'live'
+                ? A('مباشر','LIVE')
+                : m.st === 'finished'
+                ? A('انتهت','Finished')
+                : A('قادمة','Upcoming');
+            var firstLetter =
+              String(A(m.ar,m.en)).charAt(0);
+            var secondLetter =
+              secondTeam
+                ? String(A(m.ar2,m.en2)).charAt(0)
+                : '';
+            return (
+              '<div class="live-match' +
+              (m.st === 'live' ? ' is-live' : '') +
+              '">' +
+                '<button type="button" ' +
+                'class="live-star' +
+                (liveFavorites[item.index] ? ' active' : '') +
+                '" onclick="toggleLiveFavorite(' +
+                item.index +
+                ')">' +
+                  '☆' +
+                '</button>' +
+                '<div class="live-team home">' +
+                  esc(A(m.ar,m.en)) +
+                '</div>' +
+                '<span class="live-team-badge">' +
+                  esc(firstLetter) +
+                '</span>' +
+                '<span class="live-score">' +
+                  (m.a !== null ? m.a : '–') +
+                '</span>' +
+                '<span class="live-score-divider">|</span>' +
+                '<span class="live-score">' +
+                  (secondTeam && m.b !== null
+                    ? m.b
+                    : '–') +
+                '</span>' +
+                '<span class="live-team-badge">' +
+                  esc(secondLetter) +
+                '</span>' +
+                '<div class="live-team away">' +
+                  (secondTeam
+                    ? esc(A(m.ar2,m.en2))
+                    : '—') +
+                '</div>' +
+                '<span class="live-match-status ' +
+                statusClass +
+                '">' +
+                  esc(statusText) +
+                '</span>' +
+              '</div>'
+            );
+          }).join('') +
+        '</div>' +
+      '</section>'
+    );
+  }).join('');
+}
+
+/* Complete Live Results page */
+function newLiveResultsHtml(){
+  return (
+    liveToolbarHtml() +
+    liveActiveFilterHtml() +
+    '<div id="resBody">' +
+      liveResultsHtml() +
+    '</div>');
+}
+
 R.res = function () {
 var tabs = [
   ['live', A('النتائج الفورية', 'Live results')],['points', A('جدول النقاط', 'Points table')],
   ['standings', A('ترتيب البطولات', 'Championship ranking')],['overall', A('الترتيب الكلي والأبطال', 'Overall ranking')]]; 
 var body = '';
-  if (resTab === 'live') {
-    timers.push(setInterval(function () {
-      var m = MATCHES[Math.floor(Math.random() * 2)];
-      if (m.st === 'live') { Math.random() > .5 ? m.a++ : m.b++; var el = document.getElementById('resBody'); if (el) el.innerHTML = liveMatchesHtml(); }
-    }, 5000));
-    body = '<div id="resBody">' + liveMatchesHtml() + '</div><p class="hint center">' + esc(A('محاكاة تحديث مباشر أثناء اللعب', 'Simulating live in-play updates')) + '</p>';
-  } else if (resTab === 'points') {
+if (resTab === 'live') {
+  timers.push(
+    setInterval(function () {
+      var liveGames = MATCHES.filter(function(m){
+        return m.st === 'live';
+      });
+      if(!liveGames.length){return;}
+      var m =
+        liveGames[
+          Math.floor(
+            Math.random() * liveGames.length)];
+      if(Math.random() > .5){m.a++;}else{m.b++;}
+      var el =document.getElementById('resBody');
+      if(el){
+        el.innerHTML =
+          liveResultsHtml();
+      }},5000));
+  body =newLiveResultsHtml() +'<p class="hint center">' +
+      esc(A(
+        'محاكاة تحديث مباشر أثناء اللعب',
+        'Simulating live in-play updates'
+      )) + '</p>';
+} else if (resTab === 'points') {
   var heads = [
     ['#', '#'],['الفريق / اللاعب', 'Team / player'],
     ['لعب', 'P'],['فوز', 'W'],['تعادل', 'D'],
@@ -3883,7 +4412,6 @@ var body = '';
                   '</tr>' );}).join('') +
             '</tbody>' + '</table>' + '</div>' + '</section>');
   }).join('') +
-
   '<p class="hint center points-note">' +
     esc(
       A(
@@ -4186,7 +4714,6 @@ R.about = function () {
     ['🌊', A('طبيعة كلباء', "Kalba's nature"), A('تجربة تمتد من الكورنيش إلى المانغروف والبحر والجبال والمزارع.', 'An experience from the Corniche to the mangrove, sea, mountains and farms.')]
   ];
   return '<div class="defdark">' +
-
     /* full-bleed dark hero — giant uppercase title over a photo, DEF-style */
     '<section class="def-hero def-hero-sm">' +
     '<div class="hero-media" aria-hidden="true"><div class="hm-slide" style="background-image:url(' + GALLERY[2].src + ');opacity:1;animation:none"></div>' +
@@ -4289,7 +4816,6 @@ R.faq = function () {
     '<div class="faq-popular"><span>' + esc(A('الأكثر بحثاً:', 'Popular:')) + '</span> ' +
     popular.map(function (t) { return '<button type="button" class="faq-pop" onclick="faqQuick(\'' + esc(t) + '\')">' + esc(t) + '</button>'; }).join('') +
     '</div></div></section>' +
-
     '<section class="container section faq-wrap">' +
     '<aside class="faq-side"><div class="faq-side-over">' + esc(A('تصفح حسب الموضوع', 'Browse by topic')) + '</div>' + side +
     '<div class="faq-side-cta"><p>' + esc(A('لم تجد إجابتك؟', "Didn't find your answer?")) + '</p>' +
@@ -4297,7 +4823,6 @@ R.faq = function () {
     '<div class="faq-main" id="faqResults">' + faqResultsHtml() + '</div>' +
     '</section>';
 };
-
 R.contact = function () {
   return pageHead(A('تواصل', 'GET IN TOUCH'), A('تواصل معنا', 'Contact Us'), '', {}) +
     '<section class="container section" style="max-width:900px"><div class="grid g2">' +
@@ -4310,7 +4835,6 @@ R.contact = function () {
     '<p>📧 <span dir="ltr">info@kalbasportsfestival.ae</span><br>📞 <span dir="ltr">+971 6 000 0000</span><br>📍 ' + esc(T('loc')) + '</p>' +
     '<div class="btn-row">' + ['Instagram', 'X', 'YouTube', 'Facebook'].map(function (s2) { return '<button class="btn sm ghost" onclick="toast(\'' + s2 + ' — demo\')">' + s2 + '</button>'; }).join('') + '</div></div></div></section>';
 };
-
 R.gallery = function () {
   return pageHead(
     A('الصور والفيديو', 'PHOTOS & VIDEO'),
@@ -4493,9 +5017,7 @@ function kbotAnswer(q) {
         var b = document.createElement('button');
         b.type = 'button'; b.className = 'kbot-chip'; b.textContent = c[0];
         b.onclick = function () { kbotAsk(c[0]); };
-        chips.appendChild(b);
-      });
-    }
+        chips.appendChild(b);});}
   });
   document.getElementById('kbotClose').addEventListener('click', function () { kb.hidden = true; });
   document.getElementById('kbotForm').addEventListener('submit', function (ev) {
@@ -4542,6 +5064,5 @@ document.documentElement.dir = 'rtl';
 render();
 mediaHydrate().then(function () { render(); });
 </script>
-
 </body>
 </html>
