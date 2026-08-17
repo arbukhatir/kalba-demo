@@ -1297,7 +1297,6 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
     45px
     42px
     minmax(140px,1fr);
-
   grid-template-areas:"star nameA badgeA scoreA div scoreB badgeB nameB";align-items:center;
   gap:8px;padding:18px 12px 6px;border-bottom:1px solid #e7ebf0;transition:background .15s ease;
 }
@@ -1335,6 +1334,118 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
   color:#ffffff;background:#183254;border-radius:9px;font-size:.95rem;font-weight:800;}
 .live-match.is-live .live-score{background:#d5a12e;color:#183254;}
 .live-score-divider{color:#d8dee6;text-align:center;}
+/* CHAMPIONSHIP RANKING */
+.rank-hero{width:85%;max-width:1500px;margin:0 auto 26px;border-radius:22px;overflow:hidden;
+  background:linear-gradient(180deg,#fbf3de 0%,#ffffff 100%);border:1px solid #f1e6c8;}
+.rank-hero-inner{display:flex;align-items:center;gap:28px;padding:30px 30px 18px;flex-wrap:wrap;}
+.rank-hero-side{flex:0 0 210px;}
+.rank-hero-meta{display:flex;align-items:center;gap:8px;}
+.rank-hero-title{max-width:100%;margin:0 0 10px;color:#183254;font-family:var(--font-display);font-size:1.55rem;
+  font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rank-hero-label{display:inline-block;margin-bottom:0;padding-bottom:0;color:#8a6a33;border-bottom:0;
+  font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;}
+.rank-hero-label::after{content:"";display:inline-block;width:22px;height:2px;margin-inline-start:7px;
+  background:#d5a12e;border-radius:2px;vertical-align:middle;}
+.rank-hero-viewall{position:relative;display:block;padding:0;padding-inline-start:10px;color:#6b7280;
+  background:none;border:0;font-family:inherit;font-size:.78rem;font-weight:700;text-decoration:none;}
+.rank-hero-viewall::before{content:"";position:absolute;inset-inline-start:0;top:50%;width:3px;
+  height:3px;transform:translateY(-50%);background:#cbd3db;border-radius:50%;}
+/* TOP 3 RANKING CARDS */
+.rank-hero-cards{flex:1;min-width:0;display:flex;align-items:center;gap:10px;}
+.rank-hero-scroll{flex:1;min-width:0;display:flex;justify-content:center;gap:16px;overflow-x:auto;padding:4px 2px 8px;scroll-snap-type:x proximity;}
+.rank-hero-scroll::-webkit-scrollbar{height:5px;}
+.rank-hero-scroll::-webkit-scrollbar-thumb{background:#d8dee6;border-radius:6px}
+.rank-hero-next{width:40px;height:40px;flex-shrink:0;display:grid;place-items:center;
+  color:#183254;background:#ffffff;border:1px solid #e2e6eb;border-radius:50%;font-size:1.1rem;
+  cursor:pointer;box-shadow:0 4px 12px rgba(24,50,84,.1);}
+.rank-hero-next:hover{background:#f6f8fb;}
+.rank-card{flex:0 0 200px;display:flex;flex-direction:column;align-items:center;padding:18px 14px 16px;background:#ffffff;
+  border:1px solid #eef1f5;border-radius:16px;box-shadow:0 6px 18px rgba(24,50,84,.06);scroll-snap-align:start;}
+.rank-card-circle{width:52px;height:52px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-bottom:10px;color:#183254;border-radius:50%;font-size:1.15rem;
+  font-weight:900;box-shadow:0 4px 10px rgba(0,0,0,.14);}
+.rank-card.t1 .rank-card-circle{background:linear-gradient(160deg,#f3d488,#d5a12e);}
+.rank-card.t2 .rank-card-circle{background:linear-gradient(160deg,#eef1f5,#c2c9d3);}
+.rank-card.t3 .rank-card-circle{background:linear-gradient(160deg,#e6c09b,#c98f57);}
+.rank-card-body{width:100%;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;}
+.rank-card-name{max-width:100%;margin:0;color:#183254;font-size:.92rem;font-weight:800;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.rank-card-sub{width:100%;margin-bottom:1px;padding-bottom:6px;color:#9aa4b2;border-bottom:1px solid #eef1f5;font-size:.68rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;}
+.rank-card-score{display:flex;align-items:baseline;justify-content:center;gap:6px;color:#183254;font-size:.85rem;}
+.rank-card-score b{color:#6b7280;font-size:.62rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;}
+.rank-card-score span{font-weight:900;font-variant-numeric:tabular-nums;}
+/* RANKING 4 AND BELOW */
+.standings-list{padding:6px 30px 22px;}
+.standings-row{display:flex;align-items:center;gap:12px;padding:10px 8px;border-bottom:1px solid #eef1f5;transition:background .15s ease;}
+.standings-row:last-child{border-bottom:0;}
+.standings-row:hover{background:#f8fafc;}
+.standings-rank{width:26px;height:26px;flex-shrink:0;display:grid;place-items:center;
+  color:#6b7280;background:#eef1f5;border-radius:50%;font-size:.74rem;font-weight:800;}
+.standings-name{flex:1;min-width:0;color:#183254;font-size:.88rem;font-weight:700;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.standings-value{flex-shrink:0;color:#183254;font-size:.85rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;}
+/* OVERALL RANKING + CHAMPIONS */
+.rank-grid{width:85%;max-width:1500px;margin:0 auto;gap:26px;align-items:start;}
+.rank-panel{padding:26px 26px 10px;background:linear-gradient(180deg,#fbf3de 0%,#ffffff 100%);border:1px solid #f1e6c8;border-radius:22px;}
+.rank-panel-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;color:#183254;font-family:var(--font-display);font-size:1.2rem;font-weight:900;}
+.rank-panel-head .ic{font-size:1.35rem;}
+/* Overall cards */
+.ov-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;}
+.ov-card{display:flex;flex-direction:column;align-items:center;padding:20px 12px 16px;text-align:center;background:#ffffff;border:1px solid #e2e6eb;border-radius:12px;}
+.ov-card-badge{width:50px;height:50px;display:grid;place-items:center;margin-bottom:14px;
+  color:#183254;background:#eef1f5;border-radius:50%;font-size:1.05rem;font-weight:900;}
+.ov-card.t1 .ov-card-badge{background:linear-gradient(160deg,#f3d488,#d5a12e);box-shadow:0 4px 10px rgba(213,161,46,.35);}
+.ov-card.t2 .ov-card-badge{background:linear-gradient(160deg,#eef1f5,#c2c9d3);}
+.ov-card.t3 .ov-card-badge{background:linear-gradient(160deg,#e6c09b,#c98f57);}
+.ov-card-name{max-width:100%;margin-bottom:6px;color:#183254;font-size:.9rem;font-weight:800;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.ov-card-sub{margin-bottom:14px;color:#8a94a3;font-size:.76rem;font-variant-numeric:tabular-nums;}
+.ov-card-btn{padding:7px 16px;color:#183254;background:transparent;
+  border:1px solid #183254;border-radius:8px;font-size:.72rem;font-weight:700;white-space:nowrap;cursor:pointer;}
+/* Champions */
+.champ-grid{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:8px;}
+.champ-grid .champ-card{flex:0 0 92px;min-height:58px;padding:9px 4px;text-align:center;background:#ffffff;
+  border:1px solid #eee0bd;border-radius:9px;box-shadow:0 4px 12px rgba(24,50,84,.08);transition:transform .15s ease;}
+.champ-grid .champ-card:hover{transform:translateY(-2px);}
+.champ-card-badge{width:26px;height:26px;display:grid;place-items:center;margin:0 auto 5px;
+  background:linear-gradient(160deg,#f3d488,#d5a12e);border-radius:50%;font-size:.74rem;box-shadow:0 2px 6px rgba(213,161,46,.3);}
+.champ-card-name{display:block;margin-bottom:2px;color:#183254;font-size:.7rem;font-weight:800;
+  overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.champ-card-sub{display:block;color:#7a8797;font-size:.6rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+/* RANKING PAGES - PHONE */
+@media(max-width:700px){
+  .rank-hero{width:calc(100% - 24px);border-radius:18px;}
+  .rank-hero-inner{padding:20px 16px 6px;gap:14px;}
+  .rank-hero-side{flex:1 1 100%;}
+  .rank-hero-title{margin-bottom:8px;font-size:1.15rem;}
+  .rank-hero-label{font-size:.66rem;}
+  .rank-hero-viewall{font-size:.72rem;}
+  .rank-hero-cards{align-items:stretch;}
+  .rank-hero-scroll{flex-direction:column;gap:8px;max-height:280px;overflow-x:hidden;overflow-y:auto;padding:4px 2px 4px 0;scroll-snap-type:y proximity;}
+  .rank-card{width:70%;max-width:220px;flex:0 0 auto;margin:0 auto;padding:10px 10px 8px;}
+  .rank-card-circle{width:34px;height:34px;margin-bottom:5px;font-size:.85rem;}
+  .rank-card-name{font-size:.8rem;}
+  .rank-card-sub{padding-bottom:4px;font-size:.62rem;}
+  .rank-card-score{font-size:.76rem;}
+  .rank-card-score b{font-size:.58rem;}
+  .rank-hero-next{display:none;}
+  .standings-list{padding:4px 16px 18px;}
+  .standings-row{gap:8px;padding:9px 4px;}
+  .standings-name{font-size:.82rem;}
+  .standings-value{font-size:.8rem;}
+  /* Overall ranking */
+  .rank-grid{width:calc(100% - 24px);}
+  .rank-panel{padding:18px 16px 12px;border-radius:16px;}
+  .rank-panel-head{font-size:1.05rem;}
+  .ov-card-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .ov-card{padding:14px 8px 12px;}
+  .ov-card-badge{width:40px;height:40px;margin-bottom:10px;font-size:.9rem;}
+  .ov-card-name{font-size:.8rem;}
+  .ov-card-sub{margin-bottom:10px;font-size:.68rem;}
+  .ov-card-btn{padding:6px 12px;font-size:.66rem;}
+  .champ-grid{gap:6px;}
+  .champ-grid .champ-card{flex:0 0 80px;min-height:52px;padding:7px 4px;}
+  .champ-card-badge{width:24px;height:24px;font-size:.68rem;}
+  .champ-card-name{font-size:.64rem;}
+  .champ-card-sub{font-size:.54rem;}
+}
 /* 17. EMPTY RESULTS */
 .live-results-empty{width:85%;max-width:1500px;margin:0 auto 25px;padding:30px;text-align:center;
   color:#6B7280;background:#ffffff;border:1px dashed #dfe5eb;border-radius:15px;}
@@ -1411,7 +1522,6 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
 /* Score */
 .live-score{min-width:36px;height:32px;justify-self:end;border:1px solid #e7ebf0;font-size:.85rem;}
 }
-
 /* 19. VERY SMALL PHONES */
 @media (max-width:390px){
   .results-toolbar-row{width:94%;gap:6px;}
@@ -1419,8 +1529,6 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
   .mobile-results-filter-btn .filter-icon{width:18px;height:18px;}
   .results-dropdown-button{padding-inline:11px;font-size:.8rem;}
 }
-
-
 /* CHAMPIONSHIP CATEGORY TABS Desktop */
 .fpills{width:fit-content;max-width:100%;display:flex;align-items:center;justify-content:center;
   gap:4px;margin:0 auto 30px;padding:5px;background:#ffffff;border:1px solid #e2e6eb;border-radius:15px;
@@ -1506,7 +1614,6 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
 /* ENGLISH */
 [dir="ltr"] .results-dropdown-button{flex-direction:row-reverse;}
 [dir="ltr"] .results-dropdown-button > span:last-child{text-align:left;}
-
 
 
 </style>
@@ -5011,98 +5118,206 @@ R.res = function () {
   }
 
   /* CHAMPIONSHIP RANKING */
-  else if (resTab === 'standings') {
-    body = STANDINGS.map(function (s) {
-      var c = CHAMPS[s.c];
-      return (
-        '<div class="panel">' +
-          '<h2 class="sec-h" style="margin-top:0">' +
-            c.ic + ' ' +
-            esc(champName(c)) +
-          '</h2>' +
-          s.rows.map(function (r, i) {
-            return (
-              '<div class="lb-row ' +
-                (i < 3 ? 't' + (i + 1) : '') +
-              '">' +
-                '<span class="lb-rank">' +
-                  (i + 1) +
-                '</span>' +
-                '<span class="lb-name">' +
-                  esc(r[0]) +
-                '</span>' +
-                '<span class="lb-pts" dir="ltr">' +
-                  esc(r[1]) +
-                '</span>' +
-              '</div>'
-            );
-          }).join('') +
-        '</div>'
-      );
-    }).join('');
-  }
+else if (resTab === 'standings') {
+  body = STANDINGS.map(function (s) {
+    var c = CHAMPS[s.c];
+    var podium = s.rows.slice(0, 3);
+    var rest = s.rows.slice(3);
+    var tierClass = ['t1', 't2', 't3'];
 
-  /* OVERALL RANKING*/
-  else {
-    body =
-      '<div class="grid g2">' +
-        '<div class="panel">' +
-          '<h2 class="sec-h" style="margin-top:0">' +
-            '👑 ' +
+    return (
+      '<section class="rank-hero">' +
+        '<div class="rank-hero-inner">' +
+          '<div class="rank-hero-side">' +
+            '<h2 class="rank-hero-title">' +
+              esc(champName(c)) +
+            '</h2>' +
+            '<div class="rank-hero-meta">' +
+              '<span class="rank-hero-label">' +
+                esc(A('التصنيف', 'RANKINGS')) +
+              '</span>' +
+              '<span class="rank-hero-viewall">' +
+                esc(
+                  A(
+                    '' + s.rows.length + ' نتيجة',
+                    s.rows.length + ' results'
+                  )
+                ) +
+              '</span>' +
+            '</div>' +
+          '</div>' +
+
+          (
+            podium.length
+              ? '<div class="rank-hero-cards">' +
+                  '<div class="rank-hero-scroll">' +
+                    podium.map(function (r, i) {
+                      return (
+                        '<div class="rank-card ' +
+                          tierClass[i] +
+                        '">' +
+                          '<span class="rank-card-circle">' +
+                            (i + 1) +
+                          '</span>' +
+                          '<div class="rank-card-body">' +
+                            '<h3 class="rank-card-name">' +
+                              esc(r[0]) +
+                            '</h3>' +
+                            '<span class="rank-card-sub">' +
+                              esc(champName(c)) +
+                            '</span>' +
+                            '<div class="rank-card-score">' +
+                              '<b>' +
+                                esc(A('النتيجة', 'Score')) +
+                              '</b>' +
+                              '<span dir="ltr">' +
+                                esc(r[1]) +
+                              '</span>' +
+                            '</div>' +
+                          '</div>' +
+                        '</div>'
+                      );
+                    }).join('') +
+                  '</div>' +
+                  (
+                    podium.length > 1
+                      ? '<button type="button" ' +
+                          'class="rank-hero-next" ' +
+                          'onclick="scrollRankCards(this)" ' +
+                          'aria-label="' +
+                          esc(A('التالي', 'Next')) +
+                          '">' +
+                          '›' +
+                        '</button>'
+                      : ''
+                  ) +
+                '</div>'
+              : ''
+          ) +
+        '</div>' +
+        (
+          rest.length
+            ? '<div class="standings-list">' +
+                rest.map(function (r, i) {
+                  return (
+                    '<div class="standings-row">' +
+                      '<span class="standings-rank">' +
+                        (i + 4) +
+                      '</span>' +
+                      '<span class="standings-name">' +
+                        esc(r[0]) +
+                      '</span>' +
+                      '<span class="standings-value" dir="ltr">' +
+                        esc(r[1]) +
+                      '</span>' +
+                    '</div>'
+                  );
+                }).join('') +
+              '</div>'
+            : ''
+        ) +
+      '</section>'
+    );
+  }).join('');
+}
+
+/* OVERALL RANKING */
+else {
+  body =
+    '<div class="grid g2 rank-grid">' +
+      /* OVERALL RANKING */
+      '<div class="rank-panel">' +
+        '<div class="rank-panel-head">' +
+          '<span class="ic">👑</span>' +
+          '<span>' +
             esc(
               A(
                 'الترتيب الشامل عبر البطولات',
                 'Overall ranking'
               )
             ) +
-          '</h2>' +
+          '</span>' +
+        '</div>' +
+
+        '<div class="ov-card-grid">' +
           OVERALL.map(function (r, i) {
+            var safeName =
+              r[0].replace(/'/g, "\\'");
             return (
-              '<div class="lb-row ' +
+              '<div class="ov-card ' +
                 (i < 3 ? 't' + (i + 1) : '') +
               '">' +
-                '<span class="lb-rank">' +
+                '<span class="ov-card-badge">' +
                   (i + 1) +
                 '</span>' +
-                '<span class="lb-name">' +
+                '<span class="ov-card-name">' +
                   esc(r[0]) +
                 '</span>' +
-                '<span class="lb-pts">' +
-                  r[1] + ' ' +
+                '<span class="ov-card-sub">' +
+                  r[1] +
+                  ' ' +
                   esc(T('pts')) +
                 '</span>' +
+                '<button type="button" ' +
+                  'class="ov-card-btn" ' +
+                  'onclick="viewOverallDetails(\'' +
+                  safeName +
+                  '\')">' +
+                  esc(
+                    A(
+                      'التفاصيل',
+                      'Details'
+                    )
+                  ) +
+                '</button>' +
               '</div>'
             );
           }).join('') +
         '</div>' +
-        '<div class="panel">' +
-          '<h2 class="sec-h" style="margin-top:0">' +
-            '🏅 ' +
-            esc(A('صفحة الأبطال', 'Champions')) +
-          '</h2>' +
+      '</div>' +
+
+
+      /* CHAMPIONS */
+      '<div class="rank-panel">' +
+        '<div class="rank-panel-head">' +
+          '<span class="ic">🏅</span>' +
+          '<span>' +
+            esc(
+              A(
+                'صفحة الأبطال',
+                'Champions'
+              )
+            ) +
+          '</span>' +
+        '</div>' +
+        '<div class="champ-grid">' +
           CHAMPIONS.map(function (ch) {
             var c = CHAMPS[ch.c];
             return (
-              '<div class="lb-row">' +
-                '<span class="lb-rank">🏆</span>' +
-                '<span class="lb-name">' +
+              '<div class="champ-card">' +
+                '<span class="champ-card-badge">' +
+                  '🏆' +
+                '</span>' +
+                '<span class="champ-card-name">' +
                   esc(ch.n) +
-                  '<small class="muted">' +
-                    c.ic + ' ' +
-                    esc(champName(c)) +
-                    (
-                      ch.m
-                        ? ' — ' + esc(ch.m)
-                        : ''
-                    ) +
-                  '</small>' +
+                '</span>' +
+                '<span class="champ-card-sub">' +
+                  c.ic +
+                  ' ' +
+                  esc(champName(c)) +
+                  (
+                    ch.m
+                      ? ' — ' + esc(ch.m)
+                      : ''
+                  ) +
                 '</span>' +
               '</div>'
             );
           }).join('') +
         '</div>' +
-      '</div>';
-  }
+      '</div>' +
+    '</div>';
+}
 
   /* PAGE OUTPUT*/
   return (
@@ -5182,6 +5397,47 @@ R.res = function () {
     body +
     '</section>'
   );
+};
+
+/* RANKING HELPERS */
+/* Championship Ranking - scroll top cards */
+window.scrollRankCards = function(btn){
+  var container =
+    btn.closest('.rank-hero-cards');
+  if(!container){
+    return;
+  }
+  var scroller =
+    container.querySelector('.rank-hero-scroll');
+  if(!scroller){
+    return;
+  }
+  var amount =
+    Math.round(
+      scroller.clientWidth * 0.8
+    ) || 220;
+  var rtl =
+    getComputedStyle(scroller).direction === 'rtl';
+  scroller.scrollBy({
+    left: rtl ? -amount : amount,
+    behavior:'smooth'
+  });
+};
+
+/* OVERALL RANKING DETAILS*/
+/* Opens Live Results filtered by selected name */
+window.viewOverallDetails = function(name){
+  /* Open Live Results tab */
+  resTab = 'live';
+  /* Use selected ranking name as team filter */
+  liveTeamFilter = name;
+  /* Clear other filters so they do not hide results */
+  liveChampFilter = null;
+  liveCategory = 'all';
+  liveOnly = false;
+  liveFavoritesOnly = false;
+  /* Render Results page */
+  go('res');
 };
 
 function toggleChampDropdown(){
