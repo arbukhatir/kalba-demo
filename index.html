@@ -687,7 +687,6 @@
   .cal-legend { display: flex; align-items: center; gap: 7px; justify-content: center; font-size: .78rem; color: var(--muted);
     margin: 12px 0; }
   .cal-legend .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold-ink); display: inline-block; }
-
   @media (max-width: 900px) {
     .ag-grid { grid-template-columns: 1fr; }
     .ag-side { position: static; order: -1; }
@@ -699,8 +698,10 @@
   }
 
   /* ---- leaderboard: filters toolbar ---- */
-  .lb-toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 22px;background:#fff;
-  border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 5px 18px rgba(22,59,103,.06);width:auto;}
+  .lb-toolbar{width:85%;max-width:1500px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  margin:0 auto 22px;padding:12px;background:#ffffff;border:1px solid var(--line);border-radius:16px;
+  box-shadow:0 5px 18px rgba(22,59,103,.06);}
+
   /* SEARCH */
   .lb-search{position:relative;flex:1 1 0;min-width:160px;order:1;}
   .lb-search input{width:100%;height:46px;padding-inline:16px 44px;border:1px solid var(--line);border-radius:12px;
@@ -737,11 +738,12 @@
   .lb-filter-btn{display:none;}
   /* Desktop shows the filters normally */
   .lb-filters-panel{display:contents;}
-  .lb-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:26px;align-items:start;}
+  .lb-grid{width:85%;max-width:1500px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;
+  align-items:start;margin:0 auto;}
 
   /* podium — 2 · 1 · 3, winner centre and tallest */
-  .lb-podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-items: end;
-    background: linear-gradient(160deg, #14294a, #0a1b33); border-radius: 18px; padding: 26px 18px 0; margin-bottom: 18px; }
+  .lb-podium{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:end;
+  background:linear-gradient(160deg,#14294a,#0a1b33);border-radius:18px;padding:22px 16px 0;margin-bottom:18px;}
   .pod { display: flex; flex-direction: column; align-items: center; gap: 7px; background: none; border: 0; font-family: inherit;
     cursor: pointer; padding: 0; color: #fff; }
   .pod-name { font-size: .92rem; font-weight: 800; color: #fff; text-align: center; line-height: 1.3; }
@@ -812,25 +814,51 @@
     .lb-grid { grid-template-columns: 1fr; }
     .lb-detail { position: static; order: -1; }
   }
-  /* LEADERBOARD - PHONE FILTER TOOLBAR */
-   @media (max-width:640px){
-    .lb-toolbar{padding:10px;gap:8px;width:100%;margin-inline:0;}
-    /* Search stays visible */
-    .lb-search{flex:1 1 0;min-width:0;order:1;}
-    /* Filter button appears beside search */
-    .lb-filter-btn{display:flex;align-items:center;justify-content:center;gap:6px;order:2;flex:0 0 auto;height:46px;
-      padding:0 14px;background:#fff;color:var(--deep);border:1px solid var(--gold);
-      border-radius:12px;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;}
-    /* Active filters button */
-    .lb-filter-btn.active{background:var(--deep);border-color:var(--deep);color:#fff;}
-    /* Ranking + Top10/All are hidden first */
-    .lb-filters-panel{display:none;flex-direction:row;flex-wrap:wrap;gap:8px;width:100%;order:3;margin-top:4px;}
-    /* Show after clicking Filters */
-    .lb-filters-panel.open{display:flex;}
-    .lb-board-dropdown{flex:1 1 0;min-width:130px;}
-    .lb-board-btn{font-size:.8rem;padding-inline:10px;}
-    .lb-toolbar .seg{flex:1 1 0;min-width:130px;display:flex;}
-    .lb-toolbar .seg-btn{flex:1;padding:11px 6px;font-size:.8rem;white-space:nowrap;}
+  @media (max-width:640px){
+    .lb-toolbar{display:flex;align-items:stretch;flex-wrap:wrap;width:88%;max-width:460px;gap:8px;padding:0;
+      margin:50px auto 22px;background:transparent;border:0;box-shadow:none;}
+    /* Arabic: filter on LEFT */
+    [dir="rtl"] .lb-toolbar{flex-direction:row-reverse;}
+    /* English */
+    [dir="ltr"] .lb-toolbar{flex-direction:row-reverse;}
+
+  /* SEARCH */
+  .lb-search{position:relative;flex:1;min-width:0;height:46px;order:2;}
+  .lb-search input{width:100%;height:46px;padding-inline:14px 38px;background:#ffffff;color:#183254;
+    border:1px solid #dce2e9;border-radius:12px;font-family:inherit;font-size:.78rem;outline:none;
+    box-shadow:0 4px 12px rgba(24,50,84,.08);}
+  .lb-search-ic{position:absolute;top:50%;transform:translateY(-50%);font-size:16px;color:#183254;pointer-events:none;}
+  [dir="rtl"] .lb-search-ic{left:13px;right:auto;}
+  [dir="ltr"] .lb-search-ic{right:13px;left:auto;}
+
+  /* FILTER BUTTON */
+  .lb-filter-btn{display:flex;align-items:center;justify-content:center;flex:0 0 96px;width:96px;height:46px;order:1;
+    gap:7px;padding:0 10px;background:#ffffff;color:#183254;border:1px solid #d5a12e;border-radius:12px;
+    font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;
+    box-shadow:0 4px 12px rgba(24,50,84,.08);}
+  /* Arabic: text then icon */
+  [dir="rtl"] .lb-filter-btn{flex-direction:row-reverse;}
+  /* English: icon then text */
+  [dir="ltr"] .lb-filter-btn{flex-direction:row;}
+  .lb-filter-icon{display:block;width:18px;height:18px;flex:0 0 18px;color:#8a6a33;}
+  .lb-filter-btn.active{background:#183254;color:#ffffff;border-color:#183254;}
+  .lb-filter-btn.active .lb-filter-icon{color:#ddbe8a;}
+  /* OPEN FILTER PANEL */
+  .lb-filters-panel{display:none;order:3;flex:0 0 100%;width:100%;grid-template-columns:1fr 1fr;align-items:stretch;
+    gap:8px;margin-top:6px;padding:8px;background:#ffffff;border:1px solid #e1e6ec;border-radius:14px;
+    box-shadow:0 4px 14px rgba(24,50,84,.06);box-sizing:border-box;}
+  .lb-filters-panel.open{display:grid;}
+  /* RANKING DROPDOWN */
+  .lb-board-dropdown{position:relative;width:100%;min-width:0;}
+  .lb-board-btn{width:100%;height:48px;min-height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:#ffffff;
+    color:#183254;border:1px solid #dce2e9;border-radius:10px;font-family:inherit;font-size:.80rem;font-weight:600;box-sizing:border-box;}
+
+  /* TOP 10 / ALL */
+  .lb-toolbar .seg{width:100%;min-width:0;height:48px;display:grid;grid-template-columns:1fr 1fr;
+    margin:0;padding:3px;background:#f1f4f7;border:1px solid #e1e6ec;border-radius:10px;box-sizing:border-box;}
+  .lb-toolbar .seg-btn{width:100%;height:40px;min-height:40px;display:flex;align-items:center;justify-content:center;
+    padding:0 8px;border:0;border-radius:8px;font-family:inherit;font-size:.80rem;font-weight:600;white-space:nowrap;}
+  .lb-toolbar .seg-btn.on{background:#183254;color:#ffffff;box-shadow:0 3px 8px rgba(24,50,84,.16);}
 }
 
   @media (max-width: 520px) {
@@ -3138,51 +3166,45 @@ R.leaderboard = function () {
       'class="lb-board-opt' +
       (lbBoard === 'overall' ? ' sel' : '') +
       '" onclick="lbPickBoard(\'overall\')">' +
-      esc(T('overall')) +
+        esc(T('overall')) +
     '</button>' +
     /* By sport / activity */
-    '<div class="lb-board-group">' +
+    '<div class="lb-board-group-title">' +
       esc(T('byZone')) +
     '</div>' +
-    ACTIVITIES.map(function(a){
-      var v =
-        'sport:' + a.id;
+    ACTIVITIES.map(function (a) {
+      var v = 'sport:' + a.id;
       return (
         '<button type="button" ' +
           'class="lb-board-opt' +
           (lbBoard === v ? ' sel' : '') +
-          '" onclick="lbPickBoard(\'' +
-          v +
-          '\')">' +
-          esc(
-            lang === 'ar'
-              ? a.ar
-              : a.en
-          ) +
+          '" onclick="lbPickBoard(\'' + v + '\')">' +
+            esc(
+              lang === 'ar'
+                ? a.ar
+                : a.en
+            ) +
         '</button>'
       );
     }).join('') +
+
     /* By age */
-    '<div class="lb-board-group">' +
+    '<div class="lb-board-group-title">' +
       esc(T('byAge')) +
     '</div>' +
-    Object.keys(AGES).map(function(g){
-      var v =
-        'age:' + g;
+    Object.keys(AGES).map(function (g) {
+      var v = 'age:' + g;
       return (
         '<button type="button" ' +
           'class="lb-board-opt' +
           (lbBoard === v ? ' sel' : '') +
-          '" onclick="lbPickBoard(\'' +
-          v +
-          '\')">' +
-          esc(
-            tx(AGES[g])
-          ) +
+          '" onclick="lbPickBoard(\'' + v + '\')">' +
+            esc(tx(AGES[g])) +
         '</button>'
       );
     }).join('');
   return (
+    /* PAGE HEADER */
     pageHead(
       A(
         'الترتيب المباشر',
@@ -3197,162 +3219,159 @@ R.leaderboard = function () {
         bg: GALLERY[0].src
       }
     ) +
-    '<section class="container section">' +
-      /* FILTER TOOLBAR */
-      '<div class="lb-toolbar">' +
-        /* SEARCH */
-        '<div class="lb-search">' +
-          '<label class="sr-only" for="lbQ">' +
-            esc(
-              A(
-                'ابحث عن مشارك',
-                'Search a participant'
-              )
-            ) +
-          '</label>' +
-          '<input type="text" ' +
-            'id="lbQ" ' +
-            'value="' +
-            esc(lbQuery) +
-            '" ' +
-            'placeholder="' +
-            esc(
-              A(
-                'ابحث بالاسم…',
-                'Search by name…'
-              )
-            ) +
-            '" ' +
-            'oninput="lbSearch(this)">' +
-          '<span class="lb-search-ic" aria-hidden="true">' +
-            '⌕' +
-          '</span>' +
-        '</div>' +
-        /* MOBILE FILTER BUTTON */
-        '<button type="button" ' +
-          'class="lb-filter-btn" ' +
-          'onclick="toggleLbFilters()" ' +
-          'aria-expanded="false" ' +
-          'aria-controls="lbFiltersPanel">' +
-          '<svg width="16" height="16" ' +
-            'viewBox="0 0 20 20" ' +
-            'fill="none" ' +
-            'aria-hidden="true">' +
-            '<path d="M3 5h14M6 10h8M9 15h5" ' +
-              'stroke="currentColor" ' +
-              'stroke-width="1.8" ' +
-              'stroke-linecap="round"/>' +
-            '<circle cx="7" cy="5" r="1.6" ' +
-              'fill="currentColor" ' +
-              'stroke="#fff" ' +
-              'stroke-width=".5"/>' +
-            '<circle cx="13" cy="10" r="1.6" ' +
-              'fill="currentColor" ' +
-              'stroke="#fff" ' +
-              'stroke-width=".5"/>' +
-            '<circle cx="6" cy="15" r="1.6" ' +
-              'fill="currentColor" ' +
-              'stroke="#fff" ' +
-              'stroke-width=".5"/>' +
-          '</svg>' +
-          '<span>' +
-            esc(
-              A(
-                'فلترة',
-                'Filters'
-              )
-            ) +
-          '</span>' +
-        '</button>' +
-        /* HIDDEN FILTER PANEL ON PHONE */
-        '<div class="lb-filters-panel" ' +
-          'id="lbFiltersPanel">' +
-          /* BOARD DROPDOWN */
-          '<div class="lb-board-dropdown" ' +
-            'id="lbBoardDropdown">' +
-            '<button type="button" ' +
-              'class="lb-board-btn" ' +
-              'onclick="toggleLbBoardMenu()" ' +
-              'aria-expanded="false" ' +
-              'aria-haspopup="listbox">' +
-              '<span>' +
-                esc(
-                  lbBoardLabel()
-                ) +
-              '</span>' +
-              '<span class="lb-board-caret">' +
-                '⌄' +
-              '</span>' +
-            '</button>' +
-            '<div class="lb-board-menu" ' +
-              'role="listbox">' +
-              boardOptions +
-            '</div>' +
-          '</div>' +
-          /* TOP 10 / ALL */
-          '<div class="seg" ' +
-            'role="group" ' +
-            'aria-label="' +
-            esc(
-              A(
-                'عدد المعروضين',
-                'How many to show'
-              )
-            ) +
-            '">' +
-            '<button type="button" ' +
-              'class="seg-btn' +
-              (lbLimit === 10 ? ' on' : '') +
-              '" ' +
-              'aria-pressed="' +
-              (lbLimit === 10) +
-              '" ' +
-              'onclick="lbSetLimit(10)">' +
-              esc(
-                A(
-                  'أفضل 10',
-                  'Top 10'
-                )
-              ) +
-            '</button>' +
-            '<button type="button" ' +
-              'class="seg-btn' +
-              (!lbLimit ? ' on' : '') +
-              '" ' +
-              'aria-pressed="' +
-              (!lbLimit) +
-              '" ' +
-              'onclick="lbSetLimit(0)">' +
-              esc(
-                A(
-                  'الكل',
-                  'All'
-                )
-              ) +
-            '</button>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
 
-      /* EXISTING LEADERBOARD CONTENT */
-      '<div class="lb-grid">' +
-        '<div class="lb-main">' +
-          '<div id="lbPodium">' +
-            lbPodiumHtml() +
+    /* FILTER TOOLBAR */
+    '<section class="lb-toolbar">' +
+      /* FILTER BUTTON */
+      '<button type="button" ' +
+        'class="lb-filter-btn" ' +
+        'onclick="toggleLbFilters()" ' +
+        'aria-expanded="false" ' +
+        'aria-controls="lbFiltersPanel">' +
+
+        /* Same sliders style */
+        '<svg class="lb-filter-icon" ' +
+          'viewBox="0 0 24 24" ' +
+          'fill="none" ' +
+          'aria-hidden="true">' +
+          '<path ' +
+            'd="M4 7h7M15 7h5 ' +
+               'M4 12h3M11 12h9 ' +
+               'M4 17h9M17 17h3" ' +
+            'stroke="currentColor" ' +
+            'stroke-width="2" ' +
+            'stroke-linecap="round"/>' +
+          '<circle cx="13" cy="7" r="2" ' +
+            'stroke="currentColor" ' +
+            'stroke-width="2"/>' +
+          '<circle cx="9" cy="12" r="2" ' +
+            'stroke="currentColor" ' +
+            'stroke-width="2"/>' +
+          '<circle cx="15" cy="17" r="2" ' +
+            'stroke="currentColor" ' +
+            'stroke-width="2"/>' +
+        '</svg>' +
+        '<span>' +
+          esc(
+            A(
+              'فلترة',
+              'Filters'
+            )
+          ) +
+        '</span>' +
+      '</button>' +
+
+      /* SEARCH SECOND */ 
+      '<label class="lb-search">' +
+        '<span class="sr-only">' +
+          esc(
+            A(
+              'ابحث عن مشارك',
+              'Search a participant'
+            )
+          ) +
+        '</span>' +
+        '<input type="text" ' +
+          'id="lbQ" ' +
+          'value="' +
+          esc(lbQuery) +
+          '" ' +
+          'placeholder="' +
+          esc(
+            A(
+              'ابحث بالاسم…',
+              'Search by name…'
+            )
+          ) +
+          '" ' +
+          'oninput="lbSearch(this)">' +
+        '<span class="lb-search-ic" aria-hidden="true">⌕</span>' +
+      '</label>' +
+
+      /* HIDDEN FILTER PANEL */
+      '<div class="lb-filters-panel" ' +
+        'id="lbFiltersPanel">' +
+        /* Ranking dropdown */
+        '<div class="lb-board-dropdown" ' +
+          'id="lbBoardDropdown">' +
+          '<button type="button" ' +
+            'class="lb-board-btn" ' +
+            'onclick="toggleLbBoardMenu()" ' +
+            'aria-expanded="false" ' +
+            'aria-haspopup="listbox">' +
+            '<span>' +
+              esc(lbBoardLabel()) +
+            '</span>' +
+            '<span aria-hidden="true">⌄</span>' +
+          '</button>' +
+          '<div class="lb-board-menu" ' +
+            'role="listbox">' +
+            boardOptions +
           '</div>' +
-          '<div class="lb-list" id="lbList">' +
-            lbListHtml() +
-          '</div>' +
-          '<p class="hint center">' +
-            esc(T('lbAuto')) +
-          '</p>' +
         '</div>' +
-        lbDetailHtml().replace(
-          '<aside class="lb-detail"',
-          '<aside class="lb-detail" id="lbDetail"'
-        ) +
+
+        /* TOP 10 / ALL */
+        '<div class="seg" ' +
+          'role="group" ' +
+          'aria-label="' +
+          esc(
+            A(
+              'عدد المعروضين',
+              'How many to show'
+            )
+          ) +
+          '">' +
+          '<button type="button" ' +
+            'class="seg-btn' +
+            (lbLimit === 10 ? ' on' : '') +
+            '" ' +
+            'aria-pressed="' +
+            (lbLimit === 10) +
+            '" ' +
+            'onclick="lbSetLimit(10)">' +
+            esc(
+              A(
+                'أفضل 10',
+                'Top 10'
+              )
+            ) +
+          '</button>' +
+          '<button type="button" ' +
+            'class="seg-btn' +
+            (!lbLimit ? ' on' : '') +
+            '" ' +
+            'aria-pressed="' +
+            (!lbLimit) +
+            '" ' +
+            'onclick="lbSetLimit(0)">' +
+            esc(
+              A(
+                'الكل',
+                'All'
+              )
+            ) +
+          '</button>' +
+        '</div>' +
       '</div>' +
-    '</section>'
+    '</section>' +
+    /* EXISTING LEADERBOARD CONTENT */
+    '<div class="lb-grid">' +
+      '<div class="lb-main">' +
+        '<div id="lbPodium">' +
+          lbPodiumHtml() +
+        '</div>' +
+        '<div class="lb-list" id="lbList">' +
+          lbListHtml() +
+        '</div>' +
+        '<p class="hint center">' +
+          esc(T('lbAuto')) +
+        '</p>' +
+      '</div>' +
+      lbDetailHtml().replace(
+        '<aside class="lb-detail"',
+        '<aside class="lb-detail" id="lbDetail"'
+      ) +
+    '</div>'
   );
 };
 
@@ -4429,17 +4448,31 @@ var liveTeamFilter = null;
 var liveChampFilter = null;
 function filterIconSvg(){
   return (
-    '<svg class="filter-icon" width="20" height="20" ' +
-      'viewBox="0 0 24 24" fill="none" ' +
-      'stroke="currentColor" stroke-width="2" ' +
-      'stroke-linecap="round" stroke-linejoin="round" ' +
+    '<svg class="filter-icon" ' +
+      'viewBox="0 0 24 24" ' +
+      'fill="none" ' +
       'aria-hidden="true">' +
-      '<line x1="4" y1="6" x2="20" y2="6"></line>' +
-      '<circle cx="15" cy="6" r="2"></circle>' +
-      '<line x1="4" y1="12" x2="20" y2="12"></line>' +
-      '<circle cx="9" cy="12" r="2"></circle>' +
-      '<line x1="4" y1="18" x2="20" y2="18"></line>' +
-      '<circle cx="14" cy="18" r="2"></circle>' +
+
+      '<path ' +
+        'd="M4 7h7M15 7h5 ' +
+           'M4 12h3M11 12h9 ' +
+           'M4 17h9M17 17h3" ' +
+        'stroke="currentColor" ' +
+        'stroke-width="2" ' +
+        'stroke-linecap="round"/>' +
+
+      '<circle cx="13" cy="7" r="2" ' +
+        'stroke="currentColor" ' +
+        'stroke-width="2"/>' +
+
+      '<circle cx="9" cy="12" r="2" ' +
+        'stroke="currentColor" ' +
+        'stroke-width="2"/>' +
+
+      '<circle cx="15" cy="17" r="2" ' +
+        'stroke="currentColor" ' +
+        'stroke-width="2"/>' +
+
     '</svg>'
   );
 }
