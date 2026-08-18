@@ -1698,6 +1698,12 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
 [dir="ltr"] .results-dropdown-button{flex-direction:row-reverse;}
 [dir="ltr"] .results-dropdown-button > span:last-child{text-align:left;}
 
+/* FIX RESULTS EDITOR SPORT ICON */
+.match-row .m-champ .sport-icon {width: 42px !important;height: 42px !important;object-fit: contain !important;display: block;flex-shrink: 0;}
+.match-row .m-champ {display: flex;align-items: center;gap: 10px;}
+
+/* Keep each result row normal size */
+.match-row {min-height: 70px;overflow: hidden;}
 
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
