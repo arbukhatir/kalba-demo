@@ -6,7 +6,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>مهرجان كلباء الرياضي 2026 — عرض تجريبي</title>
-<meta name="description" content="مهرجان كلباء الرياضي 2026 — 8 أيام و13 بطولة معتمدة وفعاليات مجتمعية على كورنيش كلباء، من 10 إلى 17 ديسمبر 2026. التسجيل، الجدول، النتائج ولوحة المتصدرين.">
+<meta name="description" content="مهرجان كلباء الرياضي 2026 — 8 أيام و15 رياضة معتمدة وفعاليات مجتمعية على كورنيش كلباء، من 6 إلى 13 نوفمبر 2026. التسجيل، الجدول، النتائج ولوحة المتصدرين.">
 <!-- inline SVG favicon: the festival's gold star on navy, no extra request -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23183254'/%3E%3Cpath d='M16 6l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L16 20.9 9.9 24.4l1.5-6.8L6.2 13l6.9-.7z' fill='%23cfa762'/%3E%3C/svg%3E">
 <style>
@@ -189,6 +189,21 @@
   .reg-picked + h2.reg-sub { margin-top: 0; padding-top: 0; border-top: 0; }
   /* Short and transform-only, so it reads as the fields arriving rather than as
      decoration; dropped entirely when the viewer asks for less motion. */
+  /* Squad roster: the row number is the visible label, and each input still
+     carries a real one for screen readers rather than leaning on the placeholder. */
+  .pf-roster { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  /* width/min-width override .field's flex:1 + min-width:150px, which otherwise pins
+     the row at 150px and lets the input overflow it. */
+  .pf-player { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 0; width: 100%; min-width: 0; }
+  .pf-num { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; background: #eef1f5; color: var(--muted); font-size: .8rem; font-weight: 700; display: grid; place-items: center; }
+  .pf-player input { flex: 1 1 150px; width: auto; }
+  .pf-del { flex: 0 0 auto; width: 44px; min-height: 44px; border: 1px solid var(--line); background: #fff; border-radius: 10px; color: var(--bad-ink); font-size: 1.15rem; line-height: 1; cursor: pointer; }
+  .pf-del:hover { background: #fff5f5; border-color: var(--bad-ink); }
+  .pf-del:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
+  .pf-player .field-err { flex: 1 0 100%; }
+  /* Squad on the confirmation card, over the navy panel. */
+  .vroster { text-align: start; margin: 12px 0 4px; padding: 12px 16px; background: rgba(255,255,255,.08); border-radius: 12px; }
+  .vroster ol { margin: 6px 0 0; padding-inline-start: 20px; font-size: .88rem; line-height: 1.7; }
   .reg-reveal { animation: regIn .22s ease-out both; }
   @keyframes regIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .reg-reveal { animation: none; } }
@@ -269,6 +284,24 @@
   table.t { width: 100%; border-collapse: collapse; font-size: .88rem; }
   table.t th, table.t td { padding: 8px 9px; border-bottom: 1px solid var(--line); text-align: start; vertical-align: middle; }
   table.t th { color: var(--muted); font-size: .76rem; }
+
+  /* The fixture table leads each sport page, so it reads a step stronger than the
+     generic .t tables: tinted header, the round carried as the emphasised column.
+     It scrolls inside its own box rather than pushing the page sideways. */
+  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table.fx-table { width: 100%; border-collapse: collapse; font-size: .92rem; min-width: 340px; }
+  table.fx-table th, table.fx-table td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: start; vertical-align: middle; }
+  table.fx-table thead th { background: #f8fafc; color: var(--muted); font-size: .78rem; font-weight: 700; border-bottom: 2px solid var(--line); }
+  table.fx-table tbody tr:last-child td { border-bottom: 0; }
+  table.fx-table td:first-child { font-weight: 600; white-space: nowrap; }
+  table.fx-table td strong { color: var(--sea-dark); }
+  /* On a phone the three columns fit if the day label may wrap; the scroll
+     container above stays as the safety net for very narrow screens. */
+  @media (max-width: 560px) {
+    table.fx-table { min-width: 0; font-size: .86rem; }
+    table.fx-table th, table.fx-table td { padding: 9px 8px; }
+    table.fx-table td:first-child { white-space: normal; }
+  }
   .badge { border-radius: 999px; padding: 2px 11px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
   .badge.pending { background: #fef3c7; color: #78350f; } .badge.accepted { background: #dcfce7; color: #14532d; } .badge.rejected { background: #fee2e2; color: #7f1d1d; }
   .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 11px; margin-bottom: 18px; }
@@ -2001,7 +2034,7 @@ var I18N = {
     home: 'الرئيسية', register: 'التسجيل', surveys: 'الاستبيانات', leaderboard: 'المتصدرون',
     map: 'الخريطة', agenda: 'الأجندة', screen: 'الشاشة', admin: 'لوحة التحكم', award: 'واجهة المنظم',
     join: 'انضم لنظام النقاط', langBtn: 'English',
-    dates: '10 – 17 ديسمبر 2026 | يومياً 4 – 10 مساءً',
+    dates: '6 – 13 نوفمبر 2026 | يومياً 4 – 10 مساءً',
     ctaJoin: 'شارك واجمع النقاط', ctaLb: 'شاهد المتصدرين',
     regTitle: 'نموذج التسجيل', regIntro: 'نموذج واحد لجميع أنواع التسجيل — اختر نوع التسجيل أولاً وستظهر لك الحقول المطلوبة له فقط. تراجع اللجنة طلبك (قيد المراجعة / مقبول / مرفوض).',
     svTitle: 'الاستبيانات', svIntro: 'رأيك يصنع المهرجان — ثلاث أدوات قياس: قبل، أثناء وبعد.',
@@ -2026,7 +2059,7 @@ var I18N = {
     activity: 'النشاط', zone: 'الامتداد', points: 'النقاط', subscribed: 'تم تسجيل اشتراكك — ستصلك التنبيهات!',
     subTitle: 'الاشتراك في التنبيهات', subIntro: 'سجّل بريدك أو جوالك لتصلك تنبيهات المهرجان.', subBtn: 'اشترك',
     another: 'زائر آخر', required: 'الرجاء تعبئة الحقول الإلزامية', npsHint: '0 = لن أوصي · 10 = سأوصي بشدة',
-    days: ['الخميس 10 ديسمبر','الجمعة 11 ديسمبر','السبت 12 ديسمبر','الأحد 13 ديسمبر','الاثنين 14 ديسمبر','الثلاثاء 15 ديسمبر','الأربعاء 16 ديسمبر','الخميس 17 ديسمبر'],
+    days: ['الجمعة 6 نوفمبر','السبت 7 نوفمبر','الأحد 8 نوفمبر','الاثنين 9 نوفمبر','الثلاثاء 10 نوفمبر','الأربعاء 11 نوفمبر','الخميس 12 نوفمبر','الجمعة 13 نوفمبر'],
     blocks: [['⛅','05:30','أنشطة الفجر: كاياك المانغروف، هايكنج، جولات المزارع'],['🏟️','16:00','المنطقة الرئيسية: مسابقات، تحدي القوة، منطقة الأطفال'],['🎭','18:00','العروض الجماهيرية + الأكشاك والمأكولات'],['🏆','20:00','مسابقات المساء وإعلان متصدري اليوم']]
   },
   en: {
@@ -2037,7 +2070,7 @@ var I18N = {
     home: 'Home', register: 'Register', surveys: 'Surveys', leaderboard: 'Leaderboard',
     map: 'Map', agenda: 'Agenda', screen: 'Screen', admin: 'Admin', award: 'Organizer',
     join: 'Join the Points Program', langBtn: 'العربية',
-    dates: 'Dec 10 – 17, 2026 | Daily 4 – 10 PM',
+    dates: 'Nov 6 – 13, 2026 | Daily 4 – 10 PM',
     ctaJoin: 'Join & Earn Points', ctaLb: 'View Leaderboard',
     regTitle: 'Registration Form', regIntro: 'One form for every registration type — choose your type first and only its fields appear. The committee reviews your application (under review / accepted / rejected).',
     svTitle: 'Surveys', svIntro: 'Three measurement tools: before, during and after the festival.',
@@ -2062,7 +2095,7 @@ var I18N = {
     activity: 'Activity', zone: 'Zone', points: 'Points', subscribed: 'Subscribed — you will get festival alerts!',
     subTitle: 'Get Notifications', subIntro: 'Leave your email or mobile to receive festival alerts.', subBtn: 'Subscribe',
     another: 'Another visitor', required: 'Please fill the required fields', npsHint: '0 = not at all · 10 = extremely likely',
-    days: ['Thu Dec 10','Fri Dec 11','Sat Dec 12','Sun Dec 13','Mon Dec 14','Tue Dec 15','Wed Dec 16','Thu Dec 17'],
+    days: ['Fri Nov 6','Sat Nov 7','Sun Nov 8','Mon Nov 9','Tue Nov 10','Wed Nov 11','Thu Nov 12','Fri Nov 13'],
     blocks: [['⛅','05:30','Dawn: mangrove kayaking, hiking, farm tours'],['🏟️','16:00','Main zone: competitions, strength challenge, kids zone'],['🎭','18:00','Public shows + kiosks & food'],['🏆','20:00','Evening competitions & daily leaders announcement']]
   }
 };
@@ -2776,6 +2809,13 @@ function regFieldsHtml(k) {
     (emailReq ? ' <span class="req">*</span>' : ' <span class="opt">(' + esc(T('optional')) + ')</span>') + '</label><input type="email" dir="ltr" maxlength="150">' +
     (emailReq ? '<div class="hint">' + esc(A('يُرسل إليه حسابك (الرقم السري PIN) ورمز QR', 'Your account (PIN) and QR code are sent here')) + '</div>' : '') + '</div></div>' +
     '<h2 class="sec-h reg-sub">' + esc(A('تفاصيل الطلب', 'Application details')) + '</h2>' +
+    /* This portal registers one person. Entering a whole squad happens on the sport's
+       own page, so say so here rather than letting a team captain fill in the wrong form. */
+    (k === 'sports'
+      ? '<div class="flash warn" style="margin-top:0">👥 <strong>' + esc(A('تسجل كفريق؟', 'Registering a team?')) + '</strong> ' +
+        esc(A('هذا النموذج للتسجيل الفردي. للألعاب الجماعية افتح صفحة الرياضة واختر «تسجيل كفريق».', 'This form registers one person. For team sports, open the sport\'s page and choose “As a team”.')) +
+        ' <button type="button" class="btn sm gold" onclick="setChampFilter(\'team\')">' + esc(A('الألعاب الجماعية', 'Team sports')) + '</button></div>'
+      : '') +
     f.fields.map(fieldHtml).join('') +
     '<button class="btn primary block" style="margin-top:18px" onclick="submitForm(\'' + k + '\')">' + esc(T('send')) + '</button>' +
     '</div>';
@@ -2820,7 +2860,7 @@ R.surveys = function () {
 R.home = function () {
   timers.push(setInterval(function () { window.winScroll(1); }, 3500));
   timers.push(setInterval(function () {
-    var t = new Date('2026-12-10T16:00:00+04:00').getTime() - Date.now();
+    var t = new Date('2026-11-06T16:00:00+04:00').getTime() - Date.now();
     if (t < 0) t = 0;
     var el = function (id, v) { var x = document.getElementById(id); if (x) x.textContent = v; };
     el('cdD', Math.floor(t / 86400000));
@@ -2840,7 +2880,7 @@ R.home = function () {
     /* ---- full-screen hero ---- */
     '<section class="def-hero">' + heroMediaHtml() +
     '<div class="def-hero-in">' +
-    '<div class="def-kicker">' + esc(A('كلباء — الشارقة | 10–17 ديسمبر 2026', 'KALBA — SHARJAH | DEC 10–17, 2026')) + '</div>' +
+    '<div class="def-kicker">' + esc(A('كلباء — الشارقة | 6–13 نوفمبر 2026', 'KALBA — SHARJAH | NOV 6–13, 2026')) + '</div>' +
     '<h1>' + esc(T('site')) + '</h1>' +
     '<p class="def-sub">' + esc(A('احتفال بالرياضة والمجتمع وروح المنافسة — بطولات معتمدة، تحديات، وفعاليات لكل العائلة على كورنيش كلباء.', 'A celebration of sport, community and competition — official championships, challenges and events for the whole family on the Kalba Corniche.')) + '</p>' +
     '<div class="btn-row" style="justify-content:center">' +
@@ -2852,9 +2892,9 @@ R.home = function () {
     /* ---- big statement + stats ---- */
     '<section class="def-state">' +
     '<h2>' + A('<b>٨ أيام.</b> مدينة واحدة. <b>حماس لا يتوقف!</b>', '<b>8 DAYS.</b> ONE CITY. <b>GAME ON!</b>') + '</h2>' +
-    '<p>' + esc(A('من 10 إلى 17 ديسمبر تتحول كلباء إلى ملعب كبير مفتوح للجميع — منافسات رسمية على الشاطئ، تحديات للمدارس والعائلات، وورش وفعاليات مجتمعية حول كل زاوية. سواء كنت لاعباً أو مشجعاً أو زائراً مع عائلتك، المهرجان صُنع لك.', 'From 10 to 17 December, Kalba becomes one giant open playground — official beach competitions, school and family challenges, and community events around every corner. Player, fan or family visitor: this festival is built for you.')) + '</p>' +
+    '<p>' + esc(A('من 6 إلى 13 نوفمبر تتحول كلباء إلى ملعب كبير مفتوح للجميع — منافسات رسمية على الشاطئ، تحديات للمدارس والعائلات، وورش وفعاليات مجتمعية حول كل زاوية. سواء كنت لاعباً أو مشجعاً أو زائراً مع عائلتك، المهرجان صُنع لك.', 'From 6 to 13 November, Kalba becomes one giant open playground — official beach competitions, school and family challenges, and community events around every corner. Player, fan or family visitor: this festival is built for you.')) + '</p>' +
     '<div class="def-stats">' +
-    '<div class="def-stat"><b>13</b><span>' + esc(A('بطولة معتمدة', 'championships')) + '</span></div>' +
+    '<div class="def-stat"><b>15</b><span>' + esc(A('رياضة معتمدة', 'sports')) + '</span></div>' +
     '<div class="def-stat"><b>10+</b><span>' + esc(A('فعالية مجتمعية', 'community events')) + '</span></div>' +
     '<div class="def-stat"><b>5,000+</b><span>' + esc(A('مشارك', 'participants')) + '</span></div>' +
     '<div class="def-stat"><b>50,000+</b><span>' + esc(A('زائر متوقع', 'expected visitors')) + '</span></div>' +
@@ -2864,7 +2904,7 @@ R.home = function () {
     feat(false,
       '<img src="' + champImg(0) + '" alt="" loading="lazy">',
       A('المنافسات', 'COMPETITIONS'),
-      A('البطولات الـ13 المعتمدة', 'The 13 Official Championships'),
+      A('الرياضات الـ15 المعتمدة', 'The 15 Official Sports'),
       A('من كرة القدم الشاطئية إلى نصف الماراثون والجوجيتسو — منافسات رسمية على كورنيش كلباء بجوائز كبرى، تسجيل إلكتروني فوري واعتماد ميداني برمز QR يُمسح عند كل مباراة.', 'From beach football to the half-marathon and jiu-jitsu — official competitions on the Kalba Corniche with major prizes, instant online registration and QR field accreditation scanned at every game.'),
       A('اعرف المزيد', 'LEARN MORE'), 'champs') +
 
@@ -3528,10 +3568,12 @@ window.doAward = function (aid) {
 /* ---- agenda calendar ----
    Festival runs 10–17 Dec 2026. Days carrying a SCHED entry get a dot; picking a day
    filters the card list. agDay === null means "all days". */
-var AG_Y = 2026, AG_M = 11;              /* month shown, 0-based (11 = December) */
+var FEST_FROM = '2026-11-06', FEST_TO = '2026-11-13';
+/* The calendar opens on the festival month, derived from FEST_FROM rather than
+   written out again — hard-coding it is how it ended up stuck on December. */
+var AG_Y = +FEST_FROM.slice(0, 4), AG_M = +FEST_FROM.slice(5, 7) - 1;   /* 0-based */
 var agDay = null;                        /* 'YYYY-MM-DD' or null */
 var agMonth = { y: AG_Y, m: AG_M };
-var FEST_FROM = '2026-12-10', FEST_TO = '2026-12-17';
 
 function agIso(y, m, d) { return y + '-' + ('0' + (m + 1)).slice(-2) + '-' + ('0' + d).slice(-2); }
 /* SCHED stores 'DD/MM'; the festival is entirely within 2026 */
@@ -3641,9 +3683,9 @@ function agListHtml() {
 }
 R.agenda = function () {
   var ms = [
-    ['🏟️', A('حفل الافتتاح', 'Opening ceremony'), '2026-12-10T16:00:00'],
-    ['🏃', A('انطلاق نصف الماراثون', 'Half-marathon start'), '2026-12-12T06:00:00'],
-    ['🏅', A('حفل التتويج والختام', 'Awards & closing'), '2026-12-17T20:00:00']
+    ['🏟️', A('حفل الافتتاح', 'Opening ceremony'), '2026-11-06T19:00:00'],
+    ['🥾', A('انطلاق الهايك', 'Hike start'), '2026-11-13T06:00:00'],
+    ['🏅', A('الحفل الختامي والتتويج', 'Closing & awards'), '2026-11-13T20:00:00']
   ];
   timers.push(setInterval(function () {
     document.querySelectorAll('.mini-cd[data-target]').forEach(function (el) {
@@ -3732,7 +3774,7 @@ R.admin = function () {
     body = '<div class="panel"><h2 class="sec-h" style="margin-top:0">🖼️ ' + esc(A('صور أنواع التسجيل', 'Registration type images')) + '</h2>' +
       '<p class="sec-intro">' + esc(A('ارفع صورة لأي بطاقة لتحل مكان الرسم الافتراضي فوراً (JPG/PNG/WEBP). تُحفظ الصور في هذا المتصفح وتبقى بعد إعادة تحميل الصفحة.', 'Upload an image for any card to replace its default artwork instantly (JPG/PNG/WEBP). Images are saved in this browser and survive a reload.')) + '</p>' +
       '<div class="cardimg-grid">' + portalRows + '</div></div>' +
-      '<div class="panel"><h2 class="sec-h" style="margin-top:0">🏆 ' + esc(A('صور البطاقات — البطولات الـ13 المعتمدة', 'Card images — the 13 championships')) + '</h2>' +
+      '<div class="panel"><h2 class="sec-h" style="margin-top:0">🏆 ' + esc(A('صور البطاقات — الرياضات الـ15', 'Card images — the 15 sports')) + '</h2>' +
       '<p class="sec-intro">' + esc(A('تظهر الصورة على بطاقة البطولة وفي «البطولات المميزة» بالرئيسية.', 'The image appears on the championship card and the homepage featured cards.')) + '</p>' +
       '<div class="cardimg-grid">' + champRows + '</div></div>' +
       '<div class="panel"><h2 class="sec-h" style="margin-top:0">🖼️ ' + esc(A('خلفية البانر الرئيسي (الهيرو)', 'Hero landing background')) + '</h2>' +
@@ -3826,35 +3868,96 @@ function A(a, b) { return lang === 'ar' ? a : b; }
 /* c = category (drives the grouped sections + filter pills on R.champs)
    img = 880px 16:9 WebP in champs/; beach-football has no dedicated shot, so it falls
    back to the gallery's beach-football frame (see champImg). */
+/* Categories exactly as the official fixture table groups them (فئات الألعاب). */
 var CHAMP_CATS = [
-  { k: 'football',   ar: 'كرة القدم',            en: 'Football' },
-  { k: 'volleyball', ar: 'الكرة الطائرة',        en: 'Volleyball' },
-  { k: 'endurance',  ar: 'التحمل والسباقات',     en: 'Endurance & Races' },
-  { k: 'challenge',  ar: 'القوة والتحدي',        en: 'Strength & Challenge' },
-  { k: 'combat',     ar: 'الرياضات القتالية',    en: 'Combat Sports' },
-  { k: 'court',      ar: 'رياضات الملاعب',       en: 'Court Sports' },
-  { k: 'water',      ar: 'الرياضات المائية',     en: 'Water Sports' }
+  { k: 'team',   ar: 'الألعاب الجماعية',      en: 'Team Sports' },
+  { k: 'solo',   ar: 'الألعاب الفردية',       en: 'Individual Sports' },
+  { k: 'marine', ar: 'الألعاب البحرية',       en: 'Marine Sports' },
+  { k: 'esport', ar: 'الألعاب الإلكترونية', en: 'Esports' }
 ];
+/* Round names live here once, so a round reads identically wherever it is shown. */
+var ROUNDS = {
+  m4:  { ar: '4 مباريات',              en: '4 matches' },
+  gr:  { ar: 'دور المجموعات',        en: 'Group stage' },
+  qf:  { ar: 'دور ربع النهائي',       en: 'Quarter-finals' },
+  sf:  { ar: 'دور نصف النهائي',       en: 'Semi-finals' },
+  fin: { ar: 'الأدوار النهائية',       en: 'Finals' },
+  wch: { ar: 'نهائيات الكراسي المتحركة', en: 'Wheelchair finals' },
+  wom: { ar: 'منافسات السيدات',        en: "Women's competition" },
+  men: { ar: 'نهائيات الرجال',         en: "Men's finals" },
+  sco: { ar: 'نهائيات المدارس',        en: 'Schools finals' }
+};
+/* The official roster and fixture grid for 6–13 November 2026. `sch` holds
+   [day, time, round] straight from the fixture table; the programme, the calendar
+   and every championship page are generated from it, so there is exactly one place
+   the schedule is written down. `img` names the photo: several sports have none of
+   their own yet and borrow the nearest, and champImg falls back again if a file is
+   missing, so a sport can never render as a broken image. */
 var CHAMPS = [
-  { s: 'beach-football', c: 'football', ic: '<img src="portals/BeachSoccer.png" class="sport-icon" alt="">', ar: 'كرة القدم الشاطئية', en: 'Beach Football', f: '' },
-  { s: 'community-football', c: 'football', ic: '<img src="portals/BeachSoccer.png" class="sport-icon" alt="">', ar: 'كرة القدم المجتمعية', en: 'Community Football', f: '7 ضد 7' },
-  { s: 'beach-volleyball', c: 'volleyball', ic: '<img src="portals/BeachVolleyball.png" class="sport-icon" alt="">', ar: 'الطائرة الشاطئية', en: 'Beach Volleyball', f: '2 ضد 2' },
-  { s: 'community-volleyball', c: 'volleyball', ic: '<img src="portals/BeachVolleyball.png" class="sport-icon" alt="">', ar: 'الطائرة المجتمعية', en: 'Community Volleyball', f: '6 ضد 6' },
-  { s: 'obstacles', c: 'challenge', ic: '🧗', ar: 'الحواجز والموانع', en: 'Obstacle Course', f: '' },
-  { s: 'half-marathon', c: 'endurance', ic: '🏃', ar: 'نصف ماراثون مهرجان كلباء', en: 'Kalba Half Marathon', f: '' },
-  { s: 'cycling', c: 'endurance', ic: '🚴', ar: 'سباق الدراجات الهوائية', en: 'Cycling Race', f: '' },
-  { s: 'basketball', c: 'court', ic: '<img src="portals/Basketball.png" class="sport-icon" alt="">', ar: 'كرة السلة', en: 'Basketball', f: '' },
-  { s: 'kayak', c: 'water', ic: '🛶', ar: 'بطولة الكاياك', en: 'Kayak Championship', f: '' },
-  { s: 'patrol', c: 'challenge', ic: '🛡️', ar: 'مسابقة الباترول', en: 'Patrol Challenge', f: '' },
-  { s: 'jiujitsu', c: 'combat', ic: '🥋', ar: 'بطولة الجوجيتسو', en: 'Jiu-Jitsu', f: '' },
-  { s: 'crossfit', c: 'challenge', ic: '🏋️', ar: 'بطولة الكروسفت (الإيروسوفت)', en: 'CrossFit', f: '' },
-  { s: 'boxing', c: 'combat', ic: '🥊', ar: 'بطولة الملاكمة', en: 'Boxing', f: '' }
+  { s: 'football', c: 'team', ic: '<img src="portals/BeachSoccer.png" class="sport-icon" alt="">', ar: 'كرة القدم', en: 'Football', f: '', img: GALLERY[3].src,
+    sch: [['06/11', '16:00–21:00', 'm4'], ['07/11', '16:00–21:00', 'm4'], ['08/11', '16:00–21:00', 'm4'], ['09/11', '16:00–21:00', 'm4'], ['10/11', '16:00–21:00', 'm4'], ['11/11', '16:00–21:00', 'm4'], ['12/11', '16:00–22:00', 'qf'], ['13/11', '16:00–22:00', 'sf']] },
+  { s: 'beach-volleyball', c: 'team', ic: '<img src="portals/BeachVolleyball.png" class="sport-icon" alt="">', ar: 'الكرة الطائرة الشاطئية', en: 'Beach Volleyball', f: '', img: 'champs/beach-volleyball.webp',
+    sch: [['06/11', '16:00–21:00', 'm4'], ['07/11', '16:00–21:00', 'm4'], ['08/11', '16:00–21:00', 'm4'], ['09/11', '16:00–21:00', 'm4'], ['10/11', '16:00–21:00', 'm4'], ['11/11', '16:00–21:00', 'm4'], ['12/11', '16:00–22:00', 'qf'], ['13/11', '16:00–22:00', 'sf']] },
+  { s: 'basketball-3x3', c: 'team', ic: '<img src="portals/Basketball.png" class="sport-icon" alt="">', ar: 'كرة السلة 3X3', en: '3x3 Basketball', f: '', img: 'champs/basketball.webp',
+    sch: [['07/11', '16:00', 'wch'], ['08/11', '16:00–22:00', 'wom'], ['09/11', '16:00–22:00', 'men'], ['10/11', '16:00–22:00', 'sco']] },
+  { s: 'padel', c: 'team', ic: '🎾', ar: 'البادل تنس', en: 'Padel Tennis', f: '', img: 'champs/basketball.webp',
+    sch: [['07/11', '16:00–22:00', 'gr'], ['08/11', '16:00–22:00', 'gr'], ['09/11', '16:00–22:00', 'fin']] },
+  { s: 'crossfit', c: 'team', ic: '🏋️', ar: 'الكروس فيت', en: 'CrossFit', f: '', img: 'champs/crossfit.webp',
+    sch: [['10/11', '16:00–22:00', 'fin']] },
+  { s: 'paintball', c: 'team', ic: '🎯', ar: 'البينت بول', en: 'Paintball', f: '', img: 'champs/patrol.webp',
+    sch: [['11/11', '16:00–22:00', 'gr'], ['12/11', '16:00–22:00', 'gr'], ['13/11', '16:00–22:00', 'fin']] },
+  { s: 'boxing', c: 'solo', ic: '🥊', ar: 'الملاكمة', en: 'Boxing', f: '', img: 'champs/boxing.webp',
+    sch: [['12/11', '16:00–22:00', 'gr'], ['13/11', '16:00–22:00', 'fin']] },
+  { s: 'taekwondo', c: 'solo', ic: '🥋', ar: 'التايكواندو', en: 'Taekwondo', f: '', img: 'champs/jiujitsu.webp',
+    sch: [['12/11', '16:00–22:00', 'gr'], ['13/11', '16:00–22:00', 'fin']] },
+  { s: 'jiujitsu', c: 'solo', ic: '🥋', ar: 'الجوجيتسو', en: 'Jiu-Jitsu', f: '', img: 'champs/jiujitsu.webp',
+    sch: [['12/11', '16:00–22:00', 'gr'], ['13/11', '16:00–22:00', 'fin']] },
+  { s: 'running', c: 'solo', ic: '🏃', ar: 'سباق الجري', en: 'Running Race', f: '', img: 'champs/half-marathon.webp',
+    sch: [['07/11', '16:00–22:00', 'fin']] },
+  { s: 'cycling', c: 'solo', ic: '🚴', ar: 'سباق الدراجات', en: 'Cycling Race', f: '', img: 'champs/cycling.webp',
+    sch: [['08/11', '16:00–22:00', 'fin']] },
+  { s: 'obstacles', c: 'solo', ic: '🧗', ar: 'الحواجز والموانع', en: 'Obstacle Course', f: '', img: 'champs/obstacles.webp',
+    sch: [['13/11', '16:00–22:00', 'fin']] },
+  { s: 'hike', c: 'solo', ic: '🥾', ar: 'الهايك', en: 'Hike', f: '', img: 'champs/obstacles.webp',
+    sch: [['13/11', '06:00', 'fin']] },
+  { s: 'kayak', c: 'marine', ic: '🛶', ar: 'الكاياك', en: 'Kayak', f: '', img: 'champs/kayak.webp',
+    sch: [['12/11', '16:00–22:00', 'fin']] },
+  { s: 'schools-challenge', c: 'esport', ic: '🎮', ar: 'تحدي المدارس', en: 'Schools Challenge', f: '', img: GALLERY[2].src,
+    sch: [['09/11', '16:00–22:00', 'gr'], ['10/11', '16:00–22:00', 'gr'], ['11/11', '16:00–22:00', 'fin']] }
 ];
-/* Admin upload wins, then the shipped photo, then the gallery fallback. */
+/* Keep the competition picker in the registration form tied to the official roster,
+   so adding a sport above cannot leave the form listing last year's line-up. */
+if (FORMS.sports) FORMS.sports.fields[0].o = CHAMPS.map(function (c) { return { ar: c.ar, en: c.en }; });
+/* Admin upload wins, then the sport's own photo, then a festival photo — a sport
+   whose file has not shipped yet must never render as a broken image. */
 function champImg(i) {
   if (CARD_IMG.champs[i]) return CARD_IMG.champs[i];
-  if (CHAMPS[i].s === 'beach-football') return GALLERY[3].src;
-  return 'champs/' + CHAMPS[i].s + '.webp';
+  return CHAMPS[i].img || GALLERY[0].src;
+}
+/* '06/11' -> 'the Friday 6 November' label, taken from the translated day list so
+   both languages stay in step. The festival runs 6–13 Nov, hence the -6 offset. */
+function festDayLabel(d) {
+  var days = T('days'), i = +String(d).split('/')[0] - 6;
+  return days[i] || d;
+}
+/* Arabic counted nouns do not pluralise with a suffix: 1 is singular, 2 is dual,
+   3–10 takes the broken plural, and 11 upwards returns to the singular. Both
+   helpers below return the whole phrase so no caller has to know the rule. */
+function playersLabel(n) {
+  if (lang !== 'ar') return n + (n === 1 ? ' player' : ' players');
+  if (n === 1) return 'لاعب واحد';
+  if (n === 2) return 'لاعبان';
+  return n + (n <= 10 ? ' لاعبين' : ' لاعباً');
+}
+function eventsLabel(n) {
+  if (lang !== 'ar') return n + (n === 1 ? ' event' : ' events');
+  if (n === 1) return 'فعالية واحدة';
+  if (n === 2) return 'فعاليتان';
+  return n + (n <= 10 ? ' فعاليات' : ' فعالية');
+}
+function daysLabel(n) {
+  if (lang !== 'ar') return n + (n === 1 ? ' day' : ' days');
+  return n === 1 ? 'يوم واحد' : n === 2 ? 'يومان' : n + ' أيام';
 }
 function champCatName(k) {
   var c = CHAMP_CATS.filter(function (x) { return x.k === k; })[0];
@@ -3862,30 +3965,46 @@ function champCatName(k) {
 }
 function champName(c) { return (lang === 'ar' ? c.ar : c.en) + (c.f ? ' ' + c.f : ''); }
 var NEWS = [
-  { u: 1, ar: 'افتتاح باب التسجيل في البطولات الـ13 المعتمدة', en: 'Registration opens for the 13 approved championships' },
-  { u: 0, ar: 'الكشف عن مسار نصف ماراثون كلباء على الكورنيش', en: 'Kalba half-marathon route revealed along the Corniche' },
+  { u: 1, ar: 'افتتاح باب التسجيل في الرياضات الـ15 المعتمدة', en: 'Registration opens for the 15 approved sports' },
+  { u: 0, ar: 'الكشف عن مسار سباق الجري على الكورنيش', en: 'Running race route revealed along the Corniche' },
   { u: 0, ar: 'ورش صحية مجانية بمقاعد محدودة — احجز مبكراً', en: 'Free health workshops, limited seats — book early' }
 ];
-var SCHED = [
-  { d: '10/12', t: '15:00', k: '📝', ar: 'التسجيل والاعتماد الميداني', en: 'Registration & accreditation', v: 'نقطة التسجيل' },
-  { d: '11/12', t: '16:30', k: '🩺', ar: 'ورشة: أساسيات اللياقة العامة', en: 'Workshop: fitness basics', v: 'خيمة الورش', ws: 1, cap: 30, left: 14 },
-  { d: '11/12', t: '17:00', k: '🤸', ar: 'التحديات اليومية والكالستينكس', en: 'Daily challenges & calisthenics', v: 'ساحة الكورنيش' },
-  { d: '11/12', t: '18:00', k: '🏆', ar: 'الطائرة الشاطئية — دور المجموعات', en: 'Beach volleyball — groups', v: 'ملعب الطائرة' },
-  { d: '12/12', t: '06:00', k: '🏆', ar: 'انطلاق نصف الماراثون', en: 'Half-marathon start', v: 'الكورنيش' },
-  { d: '12/12', t: '16:30', k: '🩺', ar: 'ورشة: التغذية الرياضية الصحية', en: 'Workshop: sports nutrition', v: 'خيمة الورش', ws: 1, cap: 30, left: 6 },
-  { d: '12/12', t: '17:00', k: '🤸', ar: 'الألعاب الشعبية (الكيرم وشد الحبل)', en: 'Traditional games', v: 'المنطقة المجتمعية' },
-  { d: '13/12', t: '18:00', k: '🏆', ar: 'كرة القدم الشاطئية — نصف النهائي', en: 'Beach football — semifinal', v: 'الملعب الشاطئي' },
-  { d: '17/12', t: '20:00', k: '🏅', ar: 'حفل التتويج والتكريم', en: 'Awards ceremony', v: 'المسرح الرئيسي' }
+/* Only the non-competition entries are written by hand; every fixture below is
+   generated from the roster's `sch`, so the programme and the calendar cannot drift
+   away from the championships. */
+var SCHED_FIXED = [
+  { d: '06/11', t: '15:00', k: '📝', ar: 'التسجيل والاعتماد الميداني', en: 'Registration & accreditation', v: 'نقطة التسجيل' },
+  { d: '06/11', t: '19:00', k: '🏅', ar: 'حفل الافتتاح', en: 'Opening ceremony', v: 'المسرح الرئيسي' },
+  { d: '07/11', t: '16:30', k: '🩺', ar: 'ورشة: أساسيات اللياقة العامة', en: 'Workshop: fitness basics', v: 'خيمة الورش', ws: 1, cap: 30, left: 14 },
+  { d: '08/11', t: '16:30', k: '🩺', ar: 'ورشة: التغذية الرياضية الصحية', en: 'Workshop: sports nutrition', v: 'خيمة الورش', ws: 1, cap: 30, left: 6 },
+  { d: '09/11', t: '17:00', k: '🤸', ar: 'التحديات اليومية والكالستينكس', en: 'Daily challenges & calisthenics', v: 'ساحة الكورنيش' },
+  { d: '10/11', t: '17:00', k: '🤸', ar: 'الألعاب الشعبية (الكيرم وشد الحبل)', en: 'Traditional games', v: 'المنطقة المجتمعية' },
+  { d: '11/11', t: '16:30', k: '🩺', ar: 'ورشة: الوقاية من الإصابات', en: 'Workshop: injury prevention', v: 'خيمة الورش', ws: 1, cap: 30, left: 22 },
+  { d: '13/11', t: '20:00', k: '🏅', ar: 'الحفل الختامي', en: 'Closing ceremony', v: 'المسرح الرئيسي' }
 ];
+/* التتويجات run every day from the second to the last, per the fixture table. */
+['07/11', '08/11', '09/11', '10/11', '11/11', '12/11', '13/11'].forEach(function (d) {
+  SCHED_FIXED.push({ d: d, t: '21:30', k: '🏅', ar: 'التتويجات', en: 'Award ceremonies', v: 'منصة التتويج' });
+});
+var SCHED = CHAMPS.reduce(function (rows, c, i) {
+  return rows.concat(c.sch.map(function (x) {
+    return { d: x[0], t: x[1], k: '🏆', c: i, r: x[2],
+      ar: c.ar + ' — ' + ROUNDS[x[2]].ar, en: c.en + ' — ' + ROUNDS[x[2]].en,
+      v: 'كورنيش كلباء' };
+  }));
+}, []).concat(SCHED_FIXED).sort(function (a, b) {
+  var x = a.d.split('/'), y = b.d.split('/');
+  return (x[1] - y[1]) || (x[0] - y[0]) || (a.t < b.t ? -1 : a.t > b.t ? 1 : 0);
+});
 var MATCHES = [
   { c: 0, ar: 'فريق الساحل', en: 'Coast Team', ar2: 'نوارس كلباء', en2: 'Kalba Gulls', a: 3, b: 2, st: 'live' },
-  { c: 2, ar: 'ثنائي المانغروف', en: 'Mangrove Duo', ar2: 'أمواج الخليج', en2: 'Gulf Waves', a: 21, b: 18, st: 'live' },
-  { c: 5, ar: 'سباق الفئة العامة — 21 كم', en: 'Open category — 21 km', ar2: '', en2: '', a: null, b: null, st: 'upcoming' },
-  { c: 7, ar: 'صقور الشارقة', en: 'Sharjah Falcons', ar2: 'عمالقة كلباء', en2: 'Kalba Giants', a: 64, b: 71, st: 'finished' },
-  { c: 12, ar: 'نزال الوزن المتوسط — النهائي', en: 'Middleweight final', ar2: '', en2: '', a: null, b: null, st: 'upcoming' },
+  { c: 1, ar: 'ثنائي المانغروف', en: 'Mangrove Duo', ar2: 'أمواج الخليج', en2: 'Gulf Waves', a: 21, b: 18, st: 'live' },
+  { c: 9, ar: 'سباق الفئة العامة', en: 'Open category', ar2: '', en2: '', a: null, b: null, st: 'upcoming' },
+  { c: 2, ar: 'صقور الشارقة', en: 'Sharjah Falcons', ar2: 'عمالقة كلباء', en2: 'Kalba Giants', a: 64, b: 71, st: 'finished' },
+  { c: 6, ar: 'نزال الوزن المتوسط — النهائي', en: 'Middleweight final', ar2: '', en2: '', a: null, b: null, st: 'upcoming' },
   { c: 0, ar: 'فريق الساحل', en: 'Coast Team', ar2: 'صقور الخليج', en2: 'Gulf Falcons', a: 2, b: 1, st: 'finished' },
   { c: 0, ar: 'نوارس كلباء', en: 'Kalba Gulls', ar2: 'صقور الخليج', en2: 'Gulf Falcons', a: 3, b: 3, st: 'finished' },
-  { c: 2, ar: 'ثنائي المانغروف', en: 'Mangrove Duo', ar2: 'رمال كلباء', en2: 'Kalba Sands', a: 21, b: 15, st: 'finished' }
+  { c: 1, ar: 'ثنائي المانغروف', en: 'Mangrove Duo', ar2: 'رمال كلباء', en2: 'Kalba Sands', a: 21, b: 15, st: 'finished' }
 ];
 /* Match points system — computed live from finished matches (win 3 / draw 1 / loss 0, configurable in the CMS) */
 var PTS_CFG = { win: 3, draw: 1, loss: 0 };
@@ -3910,11 +4029,11 @@ function pointsTables() {
   });
 }
 var STANDINGS = [
-  { c: 5, rows: [['أحمد المنصوري', '1:12:44'], ['سالم الكتبي', '1:14:02'], ['خالد النقبي', '1:15:37']] },
-  { c: 8, rows: [['فريق المد البحري', '3 انتصارات'], ['كاياك الشرقية', '2'], ['مجداف كلباء', '1']] }
+  { c: 9, rows: [['أحمد المنصوري', '1:12:44'], ['سالم الكتبي', '1:14:02'], ['خالد النقبي', '1:15:37']] },
+  { c: 13, rows: [['فريق المد البحري', '3 انتصارات'], ['كاياك الشرقية', '2'], ['مجداف كلباء', '1']] }
 ];
 var OVERALL = [['أحمد المنصوري', 160], ['فريق المد البحري', 140], ['سالم الكتبي', 120], ['نوارس كلباء', 100], ['خالد النقبي', 80]];
-var CHAMPIONS = [{ c: 5, n: 'أحمد المنصوري', m: '1:12:44' }, { c: 8, n: 'فريق المد البحري', m: '' }];
+var CHAMPIONS = [{ c: 9, n: 'أحمد المنصوري', m: '1:12:44' }, { c: 13, n: 'فريق المد البحري', m: '' }];
 
 var VENUE = [
   { f: 'fields', e: '⚽', col: '#24466e', x: 90, y: 120, ar: 'الملعب الشاطئي', en: 'Beach pitch' },
@@ -4078,15 +4197,15 @@ function tickerHtml() {
     '</div></div>';
 }
 function statsHtml() {
-  var s = [['🏆', 13, A('بطولة معتمدة', 'championships')], ['🤸', 4, A('فعاليات مجتمعية', 'community events')], ['🩺', 6, A('ورش صحية', 'workshops')], ['📝', 87, A('مشارك مسجل', 'participants')], ['🎫', 342, A('تصريح زيارة', 'visitor passes')]];
+  var s = [['🏆', 15, A('رياضة معتمدة', 'sports')], ['🤸', 4, A('فعاليات مجتمعية', 'community events')], ['🩺', 6, A('ورش صحية', 'workshops')], ['📝', 87, A('مشارك مسجل', 'participants')], ['🎫', 342, A('تصريح زيارة', 'visitor passes')]];
   return '<section class="container section" style="padding-bottom:6px"><div class="stat-grid">' +
     s.map(function (x) { return '<div class="stat"><div class="n">' + x[0] + ' ' + x[1] + '</div><div class="l">' + esc(x[2]) + '</div></div>'; }).join('') +
     '</div></section>';
 }
 function featuredHtml() {
   return '<section class="container section"><h2 class="sec-title">' + esc(A('أبرز البطولات', 'Featured Championships')) + '</h2><div class="ev-grid">' +
-    [0, 2, 5, 12].map(function (i) { return champCard(CHAMPS[i], i); }).join('') +
-    '</div><div class="btn-row" style="justify-content:center"><button class="btn ghost" onclick="go(\'champs\')">' + esc(A('كل البطولات الـ13', 'All 13 championships')) + '</button></div></section>';
+    [0, 1, 2, 13].map(function (i) { return champCard(CHAMPS[i], i); }).join('') +
+    '</div><div class="btn-row" style="justify-content:center"><button class="btn ghost" onclick="go(\'champs\')">' + esc(A('كل الرياضات الـ15', 'All 15 sports')) + '</button></div></section>';
 }
 
 var champFilter = '';
@@ -4188,19 +4307,28 @@ R.champs = function () {
   return (
     pageHead(
       A('المنافسات', 'COMPETITIONS'),
-      A('البطولات الـ13 المعتمدة', 'The 13 Official Championships'),
+      A('الرياضات الـ15 المعتمدة', 'The 15 Official Sports'),
       A(
         'منافسات رسمية معتمدة على كورنيش كلباء — اضغط أي بطولة للتفاصيل والتسجيل.',
         'Official accredited competitions on the Kalba Corniche — tap any championship for details and registration.'
       ),{bg: champImg(0)}) +
     '<section class="container section">' + pills + body +'</section>');
 };
+/* The card used to read "10–17 December" for every sport, which was the festival
+   window rather than that sport's dates. It now carries the sport's own run — the
+   two facts a visitor scanning the grid actually wants. */
+function champDates(c) {
+  var first = +c.sch[0][0].split('/')[0], last = +c.sch[c.sch.length - 1][0].split('/')[0];
+  var mon = A('نوفمبر', 'Nov');
+  return (first === last ? first : first + '–' + last) + ' ' + mon;
+}
 function champCard(c, i) {
   return '<button type="button" class="ev-card" onclick="go(\'champ\',' + i + ')">' +
-    '<span class="ev-media"><img src="' + champImg(i) + '" alt="" loading="lazy" width="880" height="495">' +
+    '<span class="ev-media"><img src="' + champImg(i) + '" alt="" loading="lazy" width="880" height="495"' +
+    ' onerror="this.onerror=null;this.src=\'' + GALLERY[0].src + '\'">' +
     '<span class="ev-tag">' + esc(champCatName(c.c)) + '</span></span>' +
     '<span class="ev-body"><span class="ev-title">' + esc(champName(c)) + '</span>' +
-    '<span class="ev-meta">' + esc(A('كورنيش كلباء', 'Kalba Corniche')) + ' · ' + esc(A('10–17 ديسمبر', '10–17 Dec')) + '</span>' +
+    '<span class="ev-meta">' + esc(champDates(c)) + ' · ' + esc(daysLabel(c.sch.length)) + '</span>' +
     '<span class="ev-open">' + esc(A('التسجيل مفتوح', 'Registration open')) + '</span></span></button>';
 }
 
@@ -4209,11 +4337,23 @@ R.champ = function () {
   var blocks = [
     ['🎯', A('الفئات وشروط المشاركة', 'Categories & conditions'), A('أشبال / ناشئون / كبار / سيدات — التفاصيل تُدار من لوحة التحكم.', 'Cubs / juniors / seniors / women — details managed from the admin panel.')],
     ['📋', A('اللوائح والقواعد', 'Rules & regulations'), A('تُطبّق لوائح الاتحاد المعتمدة ويلتزم المشاركون بقرارات الحكام.', 'Official federation regulations apply.')],
-    ['🗓️', A('الجدول والمواعيد', 'Schedule'), A('تُعرض مواعيد هذه البطولة في الجدول التفاعلي.', 'Fixtures appear in the interactive schedule.')],
     ['🏅', A('الجوائز والتكريم', 'Prizes'), A('كأس وميداليات للمراكز الثلاثة الأولى وشهادات للجميع.', 'Cup & medals for the top three, certificates for all.')]
   ];
+  /* The page used to say only "fixtures appear in the interactive schedule", which
+     made the reader go and find them. The sport's own rounds are the reason to open
+     this page, so they lead it. */
+  var fixtures = '<section class="container section" style="padding-bottom:0"><div class="panel">' +
+    '<h2 class="sec-h" style="margin-top:0">🗓️ ' + esc(A('جدول المنافسات', 'Fixture schedule')) + '</h2>' +
+    '<p class="sec-intro">' + esc(daysLabel(c.sch.length)) + ' · ' + esc(champDates(c)) + ' · ' + esc(A('كورنيش كلباء', 'Kalba Corniche')) + '</p>' +
+    '<div class="tbl-wrap"><table class="fx-table"><caption class="sr-only">' + esc(A('جدول منافسات ', 'Fixture schedule for ') + champName(c)) + '</caption>' +
+    '<thead><tr><th scope="col">' + esc(A('اليوم', 'Day')) + '</th><th scope="col">' + esc(A('التوقيت', 'Time')) + '</th><th scope="col">' + esc(A('الدور', 'Round')) + '</th></tr></thead><tbody>' +
+    c.sch.map(function (x) {
+      return '<tr><td>' + esc(festDayLabel(x[0])) + '</td><td dir="ltr">' + esc(x[1]) + '</td>' +
+        '<td><strong>' + esc(A(ROUNDS[x[2]].ar, ROUNDS[x[2]].en)) + '</strong></td></tr>';
+    }).join('') + '</tbody></table></div></div></section>';
+
   return pageHead(
-    A('بطولة معتمدة', 'OFFICIAL CHAMPIONSHIP'),
+    A('رياضة معتمدة', 'OFFICIAL SPORT'),
     champName(c),
     A('منافسة رسمية معتمدة ضمن مهرجان كلباء الرياضي 2026.', 'An official accredited competition at Kalba Sports Festival 2026.'),
     {
@@ -4221,7 +4361,7 @@ R.champ = function () {
       bg: champImg(viewArg || 0),
       actions: '<button class="btn gold def" onclick="go(\'pform\',' + (viewArg || 0) + ')">' + esc(A('سجّل الآن', 'REGISTER NOW')) + '</button>'
     }
-  ) +
+  ) + fixtures +
     '<section class="container section">' +
     '<div class="grid g2">' + blocks.map(function (b) {
       return '<div class="panel"><h2 class="sec-h" style="margin-top:0">' + b[0] + ' ' + esc(b[1]) + '</h2><p class="muted">' + esc(b[2]) + '</p></div>';
@@ -4235,15 +4375,106 @@ if(champDropdown &&!champDropdown.contains(event.target)){
   if(champButton){champButton.setAttribute('aria-expanded', 'false');}
 }
 
+/* Team sports may enter a whole squad. The mode, the team name and the roster are
+   held outside the render so switching mode or adding a player never wipes what has
+   already been typed — only the team block is redrawn, never the applicant fields. */
+var pfFor = null, pfMode = 'solo', pfTeamName = '', pfRoster = ['', ''];
+function pfIsTeamSport(c) { return c.c === 'team'; }
+function pfWhoLabel() {
+  return pfMode === 'team'
+    ? A('بيانات قائد الفريق — نقطة التواصل', 'Team captain — contact person')
+    : A('بيانات المشارك', 'Participant details');
+}
+function pfTeamHtml() {
+  if (pfMode !== 'team') return '';
+  return '<div class="reg-reveal">' +
+    '<h2 class="sec-h reg-sub" style="margin-top:0;padding-top:0;border-top:0">' + esc(A('بيانات الفريق', 'Team details')) + '</h2>' +
+    '<div class="field" data-n="_tn" data-t="text" data-r="1"><label class="flabel" for="pfTeamName">' + esc(A('اسم الفريق', 'Team name')) + ' <span class="req">*</span></label>' +
+    '<input type="text" id="pfTeamName" maxlength="80" value="' + esc(pfTeamName) + '"></div>' +
+    '<span class="flabel" id="pfRosterLbl">' + esc(A('قائمة اللاعبين', 'Squad list')) + ' <span class="req">*</span></span>' +
+    '<div class="pf-roster" role="group" aria-labelledby="pfRosterLbl">' +
+    pfRoster.map(function (n, i) {
+      return '<div class="field pf-player" data-n="_pl' + i + '" data-t="text" data-r="1" data-player="1">' +
+        '<span class="pf-num" aria-hidden="true">' + (i + 1) + '</span>' +
+        '<label class="flabel sr-only" for="pfPl' + i + '">' + esc(A('اسم اللاعب ', 'Player name ') + (i + 1)) + '</label>' +
+        '<input type="text" id="pfPl' + i + '" maxlength="80" value="' + esc(n) + '" placeholder="' + esc(A('اسم اللاعب', 'Player name')) + '">' +
+        (pfRoster.length > 2
+          ? '<button type="button" class="pf-del" onclick="pfRemovePlayer(' + i + ')" aria-label="' + esc(A('حذف اللاعب ', 'Remove player ') + (i + 1)) + '">\u00d7</button>'
+          : '') +
+        '</div>';
+    }).join('') +
+    '</div>' +
+    '<button type="button" class="btn sm ghost" onclick="pfAddPlayer()">+ ' + esc(A('إضافة لاعب', 'Add player')) + '</button>' +
+    '<div class="hint" style="margin-top:8px">' + esc(A('أضف كل لاعب في الفريق — لاعبان على الأقل. تراجع اللجنة القائمة قبل الاعتماد.', 'List every player in the squad — at least two. The committee reviews the list before accreditation.')) + '</div>' +
+    '</div>';
+}
+/* Read what is on screen back into state before any redraw. */
+function pfReadTeam() {
+  var t = document.getElementById('pfTeamName');
+  if (t) pfTeamName = t.value;
+  var ins = document.querySelectorAll('#pfTeam [data-player] input');
+  if (ins.length) pfRoster = [].map.call(ins, function (x) { return x.value; });
+}
+function pfRenderTeam() {
+  var box = document.getElementById('pfTeam');
+  if (!box) return;
+  box.innerHTML = pfTeamHtml();
+  var who = document.getElementById('pfWho');
+  if (who) who.textContent = pfWhoLabel();
+  /* injected markup misses render()'s passes, so run them over the new subtree */
+  associateLabels(box);
+  hideDecorativeEmoji(box);
+}
+window.pfSetMode = function (m) {
+  if (pfMode === m) return;
+  pfReadTeam();
+  pfMode = m;
+  document.querySelectorAll('#formFields .seg .seg-btn').forEach(function (b) {
+    var on = b.dataset.mode === m;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  clearFormErrors(document.getElementById('formFields'));
+  pfRenderTeam();
+};
+window.pfAddPlayer = function () {
+  pfReadTeam();
+  pfRoster.push('');
+  pfRenderTeam();
+  var last = document.querySelector('#pfTeam .pf-player:last-child input');
+  if (last) last.focus();
+};
+window.pfRemovePlayer = function (i) {
+  pfReadTeam();
+  if (pfRoster.length <= 2) return;
+  pfRoster.splice(i, 1);
+  pfRenderTeam();
+};
 R.pform = function () {
-  var c = CHAMPS[viewArg || 0];
+  var ci = viewArg || 0, c = CHAMPS[ci];
+  /* a different sport is a different entry — do not carry the last squad into it */
+  if (pfFor !== ci) { pfFor = ci; pfMode = 'solo'; pfTeamName = ''; pfRoster = ['', '']; }
+  var teamSport = pfIsTeamSport(c);
+  var segBtn = function (m, label) {
+    return '<button type="button" class="seg-btn' + (pfMode === m ? ' on' : '') + '" data-mode="' + m + '"' +
+      ' aria-pressed="' + (pfMode === m ? 'true' : 'false') + '" onclick="pfSetMode(\'' + m + '\')">' + esc(label) + '</button>';
+  };
+  var modes = teamSport
+    ? '<div class="seg" role="group" aria-label="' + esc(A('طريقة التسجيل', 'Registration mode')) + '">' +
+        segBtn('solo', A('👤 تسجيل فردي', '👤 As an individual')) +
+        segBtn('team', A('👥 تسجيل كفريق', '👥 As a team')) +
+      '</div>' +
+      '<div class="hint" style="margin:0 0 14px">' + esc(A('رياضة جماعية — يمكنك التسجيل بمفردك ويُضمّك المنظمون إلى فريق، أو تسجيل فريقك كاملاً.', 'A team sport — register on your own and the organisers will place you in a squad, or enter your full team.')) + '</div>'
+    : '';
   return pageHead(
     A('تسجيل مشارك', 'PARTICIPANT REGISTRATION'),
     champName(c),
     A('ستحصل على رقم تسجيل فريد ورمز QR للاعتماد الميداني.', 'You will get a unique registration number and a QR code for field accreditation.'),
     { back: 'champs', backLbl: T('champsT') }) +
-    '<section class="container section" style="max-width:620px">' +'<div class="panel">' +
-    '<div id="formErr"></div><div id="formFields">' +
+    '<section class="container section" style="max-width:620px">' + '<div class="panel">' +
+    '<div id="formErr"></div><div id="formFields">' + modes +
+    '<div id="pfTeam">' + pfTeamHtml() + '</div>' +
+    (teamSport ? '<h2 class="sec-h reg-sub" id="pfWho">' + esc(pfWhoLabel()) + '</h2>' : '') +
     '<div class="field" data-n="_n" data-t="text" data-r="1"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" id="pfName"></div>' +
     '<div class="frow"><div class="field" data-n="_p" data-t="text" data-r="1"><label class="flabel">' + esc(T('phone')) + ' <span class="req">*</span></label><input type="tel" dir="ltr"></div>' +
     '<div class="field" data-n="_e" data-t="text" data-r="1"><label class="flabel">' + esc(T('email')) + ' <span class="req">*</span></label><input type="email" id="pfEmail" dir="ltr">' +
@@ -4252,7 +4483,7 @@ R.pform = function () {
     '<select><option value="">' + esc(T('choose')) + '</option><option>' + esc(A('ناشئون', 'Juniors')) + '</option><option>' + esc(A('كبار', 'Seniors')) + '</option><option>' + esc(A('سيدات', 'Women')) + '</option></select></div>' +
     '<div class="field" data-n="_i" data-t="text" data-r="1"><label class="flabel">' + esc(A('رقم الحساب المصرفي IBAN (لصرف الجوائز)', 'IBAN (for prize payouts)')) + ' <span class="req">*</span></label><input type="text" dir="ltr" placeholder="AE07 0331 2345 6789 0123 456"></div>' +
     '<div class="field" data-n="_d" data-t="file" data-r="0"><label class="flabel">' + esc(A('صورة الهوية', 'ID copy')) + ' <span class="opt">(' + esc(A('تجريبي', 'demo')) + ')</span></label><input type="file"></div>' +
-    '</div><button class="btn gold block" onclick="submitPform(' + (viewArg || 0) + ')">📝 ' + esc(A('سجّل — يُنشأ حسابك ويصلك الرقم السري ورمز QR بالبريد', 'Register — account created; PIN + QR arrive by email')) + '</button></div></section>';
+    '</div><button class="btn gold block" onclick="submitPform(' + ci + ')">📝 ' + esc(A('سجّل — يُنشأ حسابك ويصلك الرقم السري ورمز QR بالبريد', 'Register — account created; PIN + QR arrive by email')) + '</button></div></section>';
 };
 window.submitPform = function (ci) {
   var root = document.getElementById('formFields');
@@ -4261,14 +4492,23 @@ window.submitPform = function (ci) {
     showFormErrors(missing);
     return;
   }
+  var team = pfMode === 'team';
+  if (team) pfReadTeam();
   var name = document.getElementById('pfName').value.trim();
   var email = document.getElementById('pfEmail').value.trim();
-  var reg = 'P-000' + (40 + Math.floor(Math.random() * 50));
+  var squad = team ? pfRoster.map(function (n) { return n.trim(); }).filter(Boolean) : [];
+  /* a team entry gets its own series so the reference alone says what was entered */
+  var reg = (team ? 'T-000' : 'P-000') + (40 + Math.floor(Math.random() * 50));
   var c = CHAMPS[ci];
+  APPS.unshift({ id: APPS[0].id + 1, type: c.s, name: team ? pfTeamName.trim() : name, status: 'pending' });
   document.getElementById('app').innerHTML =
     '<section class="container section" style="max-width:520px">' +
     '<div class="flash ok">' + esc(A('تم استلام تسجيلك وإنشاء حسابك تلقائياً! أرسلنا الرقم السري (PIN) ورمز QR إلى ', 'Registered — your account was created automatically! We emailed your PIN and QR code to ')) + '<b dir="ltr">' + esc(email) + '</b> — ' + esc(A('يُمسح الرمز عند كل مباراة.', 'the QR is scanned at each game.')) + '</div>' +
-    '<div class="vcard"><div class="vh">' + c.ic + ' ' + esc(champName(c)) + '</div><h2>' + esc(name) + '</h2>' +
+    '<div class="vcard"><div class="vh">' + c.ic + ' ' + esc(champName(c)) + '</div>' +
+    '<h2>' + esc(team ? pfTeamName.trim() : name) + '</h2>' +
+    (team ? '<div class="vage">' + esc(A('قائد الفريق: ', 'Captain: ') + name) + ' · ' + esc(playersLabel(squad.length)) + '</div>' : '') +
+    (team ? '<div class="vroster"><strong>' + esc(A('قائمة اللاعبين', 'Squad list')) + '</strong><ol>' +
+      squad.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ol></div>' : '') +
     '<div class="vqr" id="pQr"></div>' +
     '<div class="vcode">' + esc(A('رقم التسجيل', 'Reg no.')) + ': <b dir="ltr">' + reg + '</b></div>' +
     '<div class="vstats"><div class="vstat"><div class="n" style="font-size:1rem"><span class="badge pending">' + esc(T('pending')) + '</span></div><div class="l">' + esc(A('حالة الطلب', 'Status')) + '</div></div>' +
@@ -4276,7 +4516,10 @@ window.submitPform = function (ci) {
     '<p class="hint" style="color:#94a3b8">' + esc(A('يمسحه المنظم عند نقطة الاعتماد يوم البطولة.', 'Scanned by an organizer at the accreditation point.')) + '</p></div>' +
     '<div class="btn-row" style="justify-content:center"><button class="btn primary" onclick="go(\'admin\',\'apps\')">' + esc(T('admin')) + ' ←</button>' +
     '<button class="btn ghost" onclick="go(\'champs\')">' + esc(T('champsT')) + '</button></div></section>';
-  document.getElementById('pQr').innerHTML = QR.svg('https://kalba2026.example/p/' + reg, { ecl: 'M', margin: 2 });
+  document.getElementById('pQr').innerHTML = QR.svg('https://kalba2026.example/' + (team ? 't' : 'p') + '/' + reg, { ecl: 'M', margin: 2 });
+  /* The entry is filed. Without this the squad stays in memory and the next visit to
+     the same sport's form opens pre-filled with a team that has already registered. */
+  pfFor = null; pfMode = 'solo'; pfTeamName = ''; pfRoster = ['', ''];
 };
 
 var schedFilter = '';
@@ -4409,11 +4652,7 @@ function schedDayJump(rows) {
           esc(schedDayLabel(currentDay)) +
         '</span>' +
         '<span class="schedule-current-count">' +
-          eventCount + ' ' +
-          esc(
-            A(
-              'فعالية',
-              eventCount === 1 ? 'event' : 'events')) +'</span>' +'</button>' +
+          esc(eventsLabel(eventCount)) +'</span>' +'</button>' +
       '<button type="button" ' +
         'class="schedule-day-arrow schedule-day-next" ' +
         'onclick="changeScheduleDay(1)" ' +
@@ -4436,12 +4675,7 @@ function updateScheduleDayNavigator() {
       schedDayLabel(currentDay);
   }
   if (countElement) {
-    countElement.textContent =
-      eventCount + ' ' +
-      A(
-        'فعالية',
-        eventCount === 1 ? 'event' : 'events'
-      );
+    countElement.textContent = eventsLabel(eventCount);
   }
   if (previousButton) {
     previousButton.disabled =
@@ -4484,7 +4718,7 @@ function schedByDay(rows) {
   return g.order.map(function (d) {
     return '<section class="day-group" id="day-' + d.replace('/', '-') + '">' +
       '<h2 class="sec-h day-head"><span class="day-name">' + esc(schedDayLabel(d)) + '</span>' +
-      '<span class="day-count">' + g.byDay[d].length + ' ' + esc(A('فعالية', g.byDay[d].length === 1 ? 'event' : 'events')) + '</span></h2>' +
+      '<span class="day-count">' + esc(eventsLabel(g.byDay[d].length)) + '</span></h2>' +
       '<div class="panel" style="margin-bottom:0">' + g.byDay[d].map(function (r) {
         return '<div class="sched-row"><span aria-hidden="true">' + r.k + '</span><span class="sched-time" dir="ltr">' + r.t + '</span>' +
           '<span style="flex:1">' + esc(A(r.ar, r.en)) + ' <small class="muted"><span aria-hidden="true">📍</span> ' + esc(r.v) + '</small>' +
@@ -6086,14 +6320,14 @@ R.news = function () {
     '<section class="container section" style="max-width:640px">' +
     NEWS.map(function (n) {
       return '<div class="panel">' + (n.u ? '<span class="badge rejected">' + esc(A('عاجل', 'Urgent')) + '</span> ' : '') +
-        '<strong>' + esc(A(n.ar, n.en)) + '</strong><div class="muted" style="font-size:.8rem" dir="ltr">2026-12-0' + (Math.floor(Math.random() * 0) + 8) + '</div></div>';
+        '<strong>' + esc(A(n.ar, n.en)) + '</strong><div class="muted" style="font-size:.8rem" dir="ltr">2026-11-0' + (Math.floor(Math.random() * 0) + 4) + '</div></div>';
     }).join('') + '</section>';
 };
 
 /* ============ v3: about / faq / contact / gallery / policies ============ */
 R.about = function () {
   var pillars = [
-    ['🏆', A('منافسة رسمية معتمدة', 'Official competition'), A('13 بطولة معتمدة بإشراف مجلس الشارقة الرياضي، بلوائح رسمية وجوائز وتتويج.', '13 accredited championships supervised by Sharjah Sports Council.')],
+    ['🏆', A('منافسة رسمية معتمدة', 'Official competition'), A('15 رياضة معتمدة بإشراف مجلس الشارقة الرياضي، بلوائح رسمية وجوائز وتتويج.', '15 accredited sports supervised by Sharjah Sports Council.')],
     ['🤸', A('مجتمع مشارك', 'A participating community'), A('فعاليات مجتمعية وورش صحية مفتوحة للجميع، ونظام نقاط يكافئ المشاركة.', 'Community events and health workshops open to everyone, with a rewarding points system.')],
     ['🌊', A('طبيعة كلباء', "Kalba's nature"), A('تجربة تمتد من الكورنيش إلى المانغروف والبحر والجبال والمزارع.', 'An experience from the Corniche to the mangrove, sea, mountains and farms.')]
   ];
@@ -6116,7 +6350,7 @@ R.about = function () {
       'Kalba Sports Festival 2026 is a community sports festival organized by the Experience & Events Committee under Sharjah Sports Council in Kalba, Emirate of Sharjah — combining official competitions with open community events on the Corniche.')) + '</p>' +
     '<div class="def-stats">' +
     '<div class="def-stat"><b>8</b><span>' + esc(A('أيام', 'days')) + '</span></div>' +
-    '<div class="def-stat"><b>13</b><span>' + esc(A('بطولة معتمدة', 'championships')) + '</span></div>' +
+    '<div class="def-stat"><b>15</b><span>' + esc(A('رياضة معتمدة', 'sports')) + '</span></div>' +
     '<div class="def-stat"><b>4</b><span>' + esc(A('فعاليات مجتمعية', 'community events')) + '</span></div>' +
     '<div class="def-stat"><b>6</b><span>' + esc(A('ورش صحية', 'health workshops')) + '</span></div>' +
     '</div></section>' +
@@ -6145,7 +6379,7 @@ var FAQS = [
   { c: 'reg', q: A('ما المستندات المطلوبة؟', 'What documents are required?'), a: A('صورة الهوية للمشاركين الرياضيين وشهادة طبية عند الحاجة، وشهادة السلامة والتأمين لموردي ألعاب الأطفال.', 'ID for athletes and a medical certificate when required; safety certificate and insurance for kids-zone suppliers.') },
   { c: 'reg', q: A('هل يمكن للمدارس المشاركة؟', 'Can schools take part?'), a: A('نعم — تحدي مدارس كلباء يمتد خمسة أيام بتحديات معرفية ورياضية وإبداعية، مع لوحات متصدرين يومية وكأس للمدرسة الأعلى نقاطاً.', 'Yes — the Kalba Schools Challenge runs five days of knowledge, sports and creative challenges, with daily leaderboards and a cup for the top school.') },
   { c: 'pass', q: A('ما هو تصريح الزيارة؟', 'What is the visitor pass?'), a: A('تصريح رقمي مجاني برمز QR يُمسح عند الدخول ويجمع نقاطك، مع خيار عائلي موحد حتى 12 فرداً.', 'A free digital QR pass scanned at entry that also collects your points, with a family option up to 12 people.') },
-  { c: 'pass', q: A('متى وأين يقام المهرجان؟', 'When and where is the festival?'), a: A('من 10 إلى 17 ديسمبر 2026 على كورنيش كلباء بإمارة الشارقة، وتمتد الفعاليات إلى مواقع أخرى في المدينة.', 'From 10 to 17 December 2026 on the Kalba Corniche, Emirate of Sharjah, with events extending to other sites across the city.') },
+  { c: 'pass', q: A('متى وأين يقام المهرجان؟', 'When and where is the festival?'), a: A('من 6 إلى 13 نوفمبر 2026 على كورنيش كلباء بإمارة الشارقة، وتمتد الفعاليات إلى مواقع أخرى في المدينة.', 'From 6 to 13 November 2026 on the Kalba Corniche, Emirate of Sharjah, with events extending to other sites across the city.') },
   { c: 'points', q: A('كيف يعمل نظام النقاط؟', 'How do points work?'), a: A('يمسح المنظم رمز QR الخاص بك بعد كل نشاط فتضاف النقاط فوراً وتظهر على لوحة المتصدرين وشاشات المهرجان.', 'An organizer scans your QR after each activity; points appear instantly on the leaderboard and screens.') },
   { c: 'points', q: A('أين أجد النتائج والجوائز؟', 'Where are results and prizes?'), a: A('صفحة النتائج تعرض النتائج الفورية وترتيب البطولات والأبطال. الجوائز كؤوس وميداليات للمراكز الثلاثة الأولى.', 'The Results page shows live scores, standings and champions. Cups and medals for the top three.') },
   { c: 'events', q: A('كيف أحجز مقعد ورشة؟', 'How do I book a workshop seat?'), a: A('من صفحة المجتمع والورش — المقاعد محدودة والحجز المسبق يضمن مقعدك.', 'From the Community page — seats are limited and pre-registration guarantees yours.') }
@@ -6347,10 +6581,10 @@ function kbotAnswer(q) {
      A('يمكنك التسجيل مباشرة من هنا:', 'Register directly here:'),
      [[A('🏆 تسجيل المشاركين', '🏆 Participants'), 'champs'], [A('📝 نموذج التسجيل', '📝 Registration form'), 'register'], [A('🎫 تصريح الزيارة', '🎫 Visitor pass'), 'join']]],
     [['بطول', 'مسابق', 'championship', 'competition'],
-     A('لدينا 13 بطولة معتمدة — لكل بطولة صفحة بالشروط والجوائز والتسجيل المباشر.', '13 accredited championships, each with rules, prizes and direct registration.'),
+     A('لدينا 15 رياضة معتمدة — لكل رياضة صفحة بالشروط والجوائز والتسجيل المباشر.', '15 accredited sports, each with rules, prizes and direct registration.'),
      [[A('🏆 تصفح البطولات', '🏆 Championships'), 'champs']]],
     [['جدول', 'موعد', 'متى', 'وقت', 'schedule', 'when', 'time'],
-     A('المهرجان 10–17 ديسمبر 2026، الفعاليات الرئيسية 4–10 مساءً.', 'Dec 10–17, 2026 — main events 4–10 PM.'),
+     A('المهرجان 6–13 نوفمبر 2026، الفعاليات الرئيسية 4–10 مساءً.', 'Nov 6–13, 2026 — main events 4–10 PM.'),
      [[A('🗓️ الجدول الزمني', '🗓️ Schedule'), 'sched'], [A('📆 الأجندة', '📆 Agenda'), 'agenda']]],
     [['ورش', 'صحي', 'workshop', 'health'],
      A('6 ورش صحية مجانية بمقاعد محدودة — احجز مسبقاً.', '6 free health workshops with limited seats — pre-register.'),
