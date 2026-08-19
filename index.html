@@ -49,7 +49,7 @@
      paragraph sizes. Tightened tracking because Cairo 800 sets wide by default. */
   h1, h2, h3,
   .pagehead h1, .def-hero h1, .def-state h2, .cat-head, .faq-hero h1, .faq-cat-head,
-  .ag-card-title, .cal-title b, .day-name, .pod-rank, .def-stat b, .lbd-stat b,
+  .cal-title b, .day-name, .pod-rank, .def-stat b, .lbd-stat b,
   .stat .n, .ev-title, .sec-title, .ph-kicker, .def-kicker, .def-over, .ev-tag, .ag-tag {
     font-family: var(--font-display); font-weight: 800; letter-spacing: -0.01em;
   }
@@ -793,25 +793,6 @@
   /* ---- agenda: event cards + month calendar sidebar ---- */
   .ag-grid { display: grid; grid-template-columns: minmax(0,1fr) 330px; gap: 30px; align-items: start; }
 
-  .ag-card { display: grid; grid-template-columns: 240px 1fr; gap: 0; border: 1px solid var(--line); background: #fff;
-    border-radius: 14px; overflow: hidden; margin-bottom: 18px; }
-  .ag-card-media { background: #e8edf3; aspect-ratio: 4/3; }
-  .ag-card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .ag-card-body { padding: 20px 22px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-  .ag-tag { background: var(--ok-ink); color: #fff; font-size: .8rem; font-weight: 800; letter-spacing: .6px;
-    padding: 6px 13px; border-radius: 4px; margin-bottom: 6px; }
-  .ag-card-title { font-size: 1.2rem; font-weight: 800; color: var(--ink); margin: 0 0 10px; line-height: 1.35; }
-  .ag-field { margin-bottom: 8px; }
-  .ag-lbl { display: block; font-size: .76rem; font-weight: 800; color: var(--ink); margin-bottom: 2px; }
-  .ag-val { display: block; font-size: .92rem; color: var(--muted); }
-  .ag-val.gold { color: var(--gold-ink); font-weight: 700; }
-  .btn-outline { margin-top: 10px; background: none; border: 1px solid var(--deep); color: var(--deep); font-family: inherit;
-    font-size: .84rem; font-weight: 700; letter-spacing: .4px; padding: 12px 22px; min-height: 44px; border-radius: 4px;
-    cursor: pointer; transition: background .16s, color .16s; }
-  .btn-outline:hover { background: var(--deep); color: #fff; }
-  .btn-outline:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
-  .ag-empty { text-align: center; padding: 40px 16px; background: #fff; border: 1px dashed var(--line); border-radius: 14px; color: var(--muted); }
-  /* month calendar */
   .ag-side { position: sticky; top: 76px; }
   /* 10px side padding keeps the 7 day cells at 44px inside a 330px sidebar */
   .cal { border: 1px solid var(--gold); background: #fff; border-radius: 4px; padding: 18px 10px 0; }
@@ -856,8 +837,6 @@
     .cal { max-width: 360px; margin: 0 auto; }
   }
   @media (max-width: 560px) {
-    .ag-card { grid-template-columns: 1fr; }
-    .ag-card-media { aspect-ratio: 16/9; }
   }
 
   /* ---- leaderboard: filters toolbar ---- */
@@ -2208,7 +2187,7 @@ var I18N = {
     dash: 'لوحة المتابعة', apps: 'الطلبات', matrix: 'مصفوفة النقاط', svRes: 'نتائج الاستبيانات',
     committee: 'لجنة التجربة والفعاليات — النسخة الأولى', name: 'الاسم', status: 'الحالة', portal: 'البوابة',
     pending: 'قيد المراجعة', accepted: 'مقبول', rejected: 'مرفوض', review: 'مراجعة',
-    activity: 'النشاط', zone: 'الامتداد', points: 'النقاط', subscribed: 'تم تسجيل اشتراكك — ستصلك التنبيهات!',
+    activity: 'النشاط', zone: 'الامتداد', points: 'النقاط', subscribed: 'حُفظ بريدك للنشرة — يظهر في لوحة التحكم',
     subTitle: 'الاشتراك في التنبيهات', subIntro: 'سجّل بريدك أو جوالك لتصلك تنبيهات المهرجان.', subBtn: 'اشترك',
     another: 'زائر آخر', required: 'الرجاء تعبئة الحقول الإلزامية', npsHint: '0 = لن أوصي · 10 = سأوصي بشدة',
     days: ['الجمعة 6 نوفمبر','السبت 7 نوفمبر','الأحد 8 نوفمبر','الاثنين 9 نوفمبر','الثلاثاء 10 نوفمبر','الأربعاء 11 نوفمبر','الخميس 12 نوفمبر','الجمعة 13 نوفمبر'],
@@ -2243,7 +2222,7 @@ var I18N = {
     dash: 'Dashboard', apps: 'Applications', matrix: 'Points Matrix', svRes: 'Survey Results',
     committee: 'Experience & Events Committee — First edition', name: 'Name', status: 'Status', portal: 'Portal',
     pending: 'Under review', accepted: 'Accepted', rejected: 'Rejected', review: 'Review',
-    activity: 'Activity', zone: 'Zone', points: 'Points', subscribed: 'Subscribed — you will get festival alerts!',
+    activity: 'Activity', zone: 'Zone', points: 'Points', subscribed: 'Saved to the newsletter list — it appears in the admin panel',
     subTitle: 'Get Notifications', subIntro: 'Leave your email or mobile to receive festival alerts.', subBtn: 'Subscribe',
     another: 'Another visitor', required: 'Please fill the required fields', npsHint: '0 = not at all · 10 = extremely likely',
     days: ['Fri Nov 6','Sat Nov 7','Sun Nov 8','Mon Nov 9','Tue Nov 10','Wed Nov 11','Thu Nov 12','Fri Nov 13'],
@@ -2537,7 +2516,24 @@ function renderChrome() {
   nlIn.setAttribute('aria-label', A('البريد الإلكتروني للنشرة البريدية', 'Email for the newsletter'));
   var nlB = document.getElementById('nlBtn');
   nlB.textContent = A('اشترك', 'Subscribe');
-  nlB.onclick = function () { toast(T('subscribed')); document.getElementById('nlEmail').value = ''; };
+  /* It used to announce a subscription without checking the address or keeping it. */
+  nlB.onclick = function () {
+    var input = document.getElementById('nlEmail'), v = input.value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v)) {
+      toast(A('أدخل بريداً إلكترونياً صحيحاً', 'Enter a valid email address'));
+      input.focus();
+      return;
+    }
+    var list = store('subscribers') || [];
+    if (list.indexOf(v) > -1) {
+      toast(A('هذا البريد مشترك بالفعل', 'That address is already subscribed'));
+      return;
+    }
+    list.push(v);
+    store('subscribers', list);
+    input.value = '';
+    toast(T('subscribed'));
+  };
   document.getElementById('kbotIn').placeholder = A('اكتب سؤالك...', 'Type your question...');
   document.getElementById('footLinks').innerHTML = [
   ['about', A('عن المهرجان', 'About')], ['gallery', A('المعرض', 'Gallery')], ['faq', A('الأسئلة الشائعة', 'FAQ')],
@@ -2786,10 +2782,31 @@ function showFormErrors(missing) {
   try { box.focus({ preventScroll: true }); } catch (e) { box.focus(); }
   box.scrollIntoView({ behavior: (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth', block: 'center' });
 }
+/* The inputs already write into MATCHES on change, so the old button did nothing at
+   all while claiming the score was now on the homepage. It is true only if it lasts. */
+window.saveScores = function () {
+  store('matches', MATCHES.map(function (m) { return { a: m.a, b: m.b, st: m.st }; }));
+  toast(A('حُفظت النتيجة — تظهر في الرئيسية وتبقى بعد إعادة التحميل',
+           'Score saved — it shows on the homepage and survives a reload'));
+};
+function scoresLoad() {
+  var saved = store('matches');
+  if (!saved || saved.length !== MATCHES.length) return;
+  saved.forEach(function (v, i) { MATCHES[i].a = v.a; MATCHES[i].b = v.b; MATCHES[i].st = v.st; });
+}
 window.submitContact = function () {
-  var m = validateFields(document.getElementById('formFields'));
+  var root = document.getElementById('formFields');
+  var m = validateFields(root);
   if (m.length) { showFormErrors(m); return; }
-  toast(A('وصلتنا رسالتك — سيتواصل معك الفريق قريباً 🙏', 'Message received 🙏'));
+  /* A static site cannot email anyone, so rather than promise a reply the message is
+     kept and shown in the admin panel - which is what "we received it" has to mean
+     here for the sentence to be true. */
+  var vals = [].map.call(root.querySelectorAll('input,textarea,select'), function (c) { return c.value.trim(); });
+  var list = store('messages') || [];
+  list.unshift({ name: vals[0] || '', body: vals[vals.length - 1] || '', at: new Date().toISOString().slice(0, 10) });
+  store('messages', list.slice(0, 30));
+  toast(A('وصلتنا رسالتك — تظهر في لوحة التحكم',
+           'Message received — it appears in the admin panel'));
   go('home');
 };
 function clearFormErrors(root) {
@@ -3301,6 +3318,8 @@ window.submitSurvey = function () {
   var missing = validateFields(root);
   if (missing.length) { showFormErrors(missing); return; }
   clearFormErrors(root);
+  /* so the dashboard can report a number it actually counted */
+  store('surveys', (store('surveys') || 0) + 1);
   document.getElementById('app').innerHTML =
     '<section class="container section" style="max-width:600px"><div class="panel success-panel">' +
     '<div class="be">🙏</div><h2>' + esc(T('svOk')) + '</h2>' +
@@ -3964,8 +3983,6 @@ function schedDayOf(iso) { return iso ? iso.slice(8, 10) + '/' + iso.slice(5, 7)
 function agRepaint() {
   var c = document.getElementById('agCal');
   if (c) c.outerHTML = agCalendarHtml().replace('<aside class="ag-side"', '<aside class="ag-side" id="agCal"');
-  var l = document.getElementById('agList');
-  if (l) l.innerHTML = agListHtml();
 }
 window.agPick = function (iso) {
   agDay = iso;
@@ -3978,47 +3995,6 @@ window.agMonthShift = function (n) {
   agMonth = { y: y, m: m };
   var c = document.getElementById('agCal'); if (c) c.outerHTML = agCalendarHtml().replace('<aside class="ag-side"', '<aside class="ag-side" id="agCal"');
 };
-var AG_KIND = {
-  '📝': { ar: 'التسجيل', en: 'Registration' },
-  '🩺': { ar: 'ورشة', en: 'Workshop' },
-  '🤸': { ar: 'مجتمعية', en: 'Community' },
-  '🏆': { ar: 'بطولة', en: 'Championship' },
-  '🏅': { ar: 'تتويج', en: 'Ceremony' }
-};
-/* Card artwork: fixtures borrow a championship photo, everything else a gallery frame. */
-function agImg(r, i) {
-  if (r.k === '🏆') return champImg([0, 2, 7, 12][i % 4]);
-  return GALLERY[[2, 4, 0, 3][i % 4]].src;
-}
-function agDateLabel(iso) {
-  var p = iso.split('-');
-  return (+p[2]) + ' ' + AG_MONTHS[lang][+p[1] - 1] + ' ' + p[0];
-}
-function agListHtml() {
-  /* Same filter state as the timeline above — day, type and search — so the two
-     views of the programme can never show different subsets of it at once. */
-  var rows = schedRowsNow().map(function (r) { return { r: r, i: r.i, iso: agSchedIso(r) }; });
-  if (!rows.length) {
-    return '<div class="ag-empty"><p>' + esc(A('لا توجد فعاليات مطابقة للتصفية الحالية.', 'No events match the current filters.')) +
-      '</p><button class="btn sm ghost" onclick="schedClear()">' + esc(A('مسح التصفية', 'Clear filters')) + '</button></div>';
-  }
-  return rows.map(function (x) {
-    var r = x.r;
-    var kind = AG_KIND[r.k] || { ar: 'فعالية', en: 'Event' };
-    return '<article class="ag-card">' +
-      '<div class="ag-card-media"><img src="' + agImg(r, x.i) + '" alt="" loading="lazy"></div>' +
-      '<div class="ag-card-body">' +
-      '<span class="ag-tag">' + esc(tx(kind)) + '</span>' +
-      '<h3 class="ag-card-title">' + esc(A(r.ar, r.en)) + '</h3>' +
-      '<div class="ag-field"><span class="ag-lbl">' + esc(A('متى', 'When')) + '</span>' +
-      '<span class="ag-val gold" dir="auto">' + esc(agDateLabel(x.iso)) + ' · <span dir="ltr">' + esc(r.t) + '</span></span></div>' +
-      '<div class="ag-field"><span class="ag-lbl">' + esc(A('أين', 'Where')) + '</span>' +
-      '<span class="ag-val">' + esc(r.v) + '</span></div>' +
-      (r.ws ? '<div class="ag-field"><span class="ag-lbl">' + esc(A('المقاعد', 'Seats')) + '</span>' +
-        '<span class="ag-val ' + (r.left > 0 ? 'ok-text' : 'bad-text') + '">' + r.left + '/' + r.cap + '</span></div>' : '') +
-      '</div></article>';
-  }).join('');
-}
 R.agenda = function () {
   var ms = [
     ['🏟️', A('حفل الافتتاح', 'Opening ceremony'), '2026-11-06T19:00:00'],
@@ -4075,9 +4051,8 @@ R.agenda = function () {
     timeline +
     '<section class="container section" style="padding-top:8px">' +
     addAll +
-    msHtml +
     '<div class="ag-grid">' +
-    '<div class="ag-main"><div id="agList">' + agListHtml() + '</div></div>' +
+    '<div class="ag-main">' + msHtml + '</div>' +
     agCalendarHtml().replace('<aside class="ag-side"', '<aside class="ag-side" id="agCal"') +
     '</div></section>';
 };
@@ -4103,8 +4078,21 @@ R.admin = function () {
       '<div class="stat k"><div class="n">' + acc + '</div><div class="l">' + esc(T('accepted')) + '</div></div>' +
       '<div class="stat"><div class="n">' + VISITORS.length + '</div><div class="l">' + esc(lang === 'ar' ? 'الزوار المسجلون' : 'Visitors') + '</div></div>' +
       '<div class="stat g"><div class="n">' + totPts + '</div><div class="l">' + esc(lang === 'ar' ? 'نقاط ممنوحة' : 'Points awarded') + '</div></div>' +
-      '<div class="stat"><div class="n">312</div><div class="l">' + esc(lang === 'ar' ? 'ردود الاستبيانات' : 'Survey responses') + '</div></div></div>' +
-      '<div class="panel"><h2 class="sec-h" style="margin-top:0">' + esc(lang === 'ar' ? 'أحدث الطلبات' : 'Latest applications') + '</h2>' + appsTable(APPS.slice(0, 5)) + '</div>';
+      '<div class="stat"><div class="n">' + (store('surveys') || 0) + '</div><div class="l">' + esc(lang === 'ar' ? 'ردود الاستبيانات' : 'Survey responses') + '</div></div>' +
+      '<div class="stat"><div class="n">' + ((store('subscribers') || []).length) + '</div><div class="l">' + esc(lang === 'ar' ? 'مشتركو النشرة' : 'Newsletter') + '</div></div></div>' +
+      '<div class="panel"><h2 class="sec-h" style="margin-top:0">' + esc(lang === 'ar' ? 'أحدث الطلبات' : 'Latest applications') + '</h2>' + appsTable(APPS.slice(0, 5)) + '</div>' +
+      (function () {
+        var msgs = store('messages') || [];
+        if (!msgs.length) return '';
+        return '<div class="panel"><h2 class="sec-h" style="margin-top:0">✉️ ' +
+          esc(A('رسائل من نموذج التواصل', 'Messages from the contact form')) + '</h2>' +
+          msgs.slice(0, 5).map(function (x) {
+            return '<div class="sched-row" style="display:block;padding:9px 0;border-top:1px dashed var(--line)">' +
+              '<strong>' + esc(x.name || A('بلا اسم', 'No name')) + '</strong> ' +
+              '<small class="muted" dir="ltr">' + esc(x.at) + '</small>' +
+              '<div class="muted" style="font-size:.88rem">' + esc((x.body || '').slice(0, 140)) + '</div></div>';
+          }).join('') + '</div>';
+      })();
   } else if (adminTab === 'apps') {
     body = '<div class="panel">' + appsTable(APPS) + '<p class="hint">' + esc(lang === 'ar' ? 'في النسخة الحقيقية: عرض تفاصيل الطلب كاملة مع المرفقات (شهادات السلامة، التأمين، الرخص) وتصدير CSV لبرنامج Excel.' : 'Real version: full application details with attachments (safety certs, insurance, licenses) and CSV export for Excel.') + '</p></div>';
   } else if (adminTab === 'scores') {
@@ -4120,7 +4108,7 @@ R.admin = function () {
           '<select style="width:auto;padding:5px 8px" onchange="MATCHES[' + i + '].st=this.value">' +
           ['upcoming', 'live', 'finished'].map(function (st) { return '<option value="' + st + '"' + (m.st === st ? ' selected' : '') + '>' + esc(lbl[st]) + '</option>'; }).join('') +
           '</select>' +
-          '<button class="btn sm primary" onclick="toast(A(\'تم حفظ النتيجة — تظهر الآن في الرئيسية ✔\',\'Score saved — now on the homepage ✔\'))">💾</button></div>';
+          '<button class="btn sm primary" onclick="saveScores()" aria-label="' + esc(A('حفظ النتيجة', 'Save score')) + '">💾</button></div>';
       }).join('') + '</div>';
   } else if (adminTab === 'settings') {
     var portalRows = Object.keys(FORMS).map(function (k) {
@@ -4351,14 +4339,18 @@ var WORKSHOPS = [
 ];
 /* Seats held by this browser. localStorage rather than IndexedDB: a handful of keys,
    and it must be readable synchronously while the page renders. */
+/* One place to read and write the small amount of state this demo keeps, so every
+   caller fails the same quiet way when storage is unavailable (private windows). */
+function store(key, val) {
+  try {
+    if (val === undefined) return JSON.parse(localStorage.getItem('kalba.' + key) || 'null');
+    localStorage.setItem('kalba.' + key, JSON.stringify(val));
+  } catch (e) {}
+  return null;
+}
 var WS_BOOKED = {};
-function wsLoad() {
-  try { WS_BOOKED = JSON.parse(localStorage.getItem('kalba.workshops') || '{}') || {}; }
-  catch (e) { WS_BOOKED = {}; }
-}
-function wsSave() {
-  try { localStorage.setItem('kalba.workshops', JSON.stringify(WS_BOOKED)); } catch (e) {}
-}
+function wsLoad() { WS_BOOKED = store('workshops') || {}; }
+function wsSave() { store('workshops', WS_BOOKED); }
 function wsById(k) { return WORKSHOPS.filter(function (w) { return w.k === k; })[0]; }
 function wsHas(k) { return !!WS_BOOKED[k]; }
 /* The seat the visitor is holding comes off the counter, so the number they read
@@ -7223,6 +7215,7 @@ document.documentElement.dir = 'rtl';
 /* Paint immediately with defaults, then repaint once saved media comes back from
    IndexedDB — an async read shouldn't hold the first frame hostage. */
 wsLoad();
+scoresLoad();
 kbotAutoTuck();
 render();
 mediaHydrate().then(function () { render(); });
