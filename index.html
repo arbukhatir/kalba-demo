@@ -185,7 +185,7 @@
   .field { margin-bottom: 14px; flex: 1; min-width: 150px; }
   .flabel { display: block; font-weight: 600; font-size: .88rem; margin-bottom: 5px; }
   .req { color: var(--bad); } .opt { color: var(--muted); font-weight: 400; font-size: .78rem; }
-  input[type=text], input[type=email], input[type=tel], input[type=number], select, textarea, input[type=file] {
+  input[type=text], input[type=email], input[type=tel], input[type=number], input[type=password], select, textarea, input[type=file] {
     width: 100%; padding: 10px 12px; border: 1px solid #3a4145; border-radius: 10px;
     font-family: inherit; font-size: .93rem; background: #141414; color: var(--ink);
     min-height: 44px;   /* was 42px — under the touch-target minimum */
@@ -2624,7 +2624,103 @@ function closeMobileNav(){
 
 /* ============ router & chrome ============ */
 var view = 'home', viewArg = null, timers = [];
+/* ============ operations access control ============
+   One table says what each role may hold: the router guard, the admin tabs, the
+   action guards and the post-login landing all read it. The nav dropdown's labels
+   still live in ROLE_MENUS (renderChrome) — keep the two in step when granting a
+   tool. `tabs: null` means every admin tab; a list restricts the role to just
+   those. `home` is the [view, arg] a fresh login lands on. */
+var OPS_ACCESS = {
+  admin:     { views: { admin: 1, award: 1, screen: 1 }, tabs: null,       home: ['admin'] },
+  organizer: { views: { award: 1, screen: 1 },           tabs: [],         home: ['award'] },
+  results:   { views: { admin: 1, screen: 1 },           tabs: ['scores'], home: ['admin', 'scores'] }
+};
+/* Admin holds every tool by definition, so its view set IS the set of guarded
+   views — derived, not restated, so a new ops view can never fall open through
+   a forgotten second list. */
+var OPS_GUARDED = OPS_ACCESS.admin.views;
+var opsReturnTo = null;   /* where a logged-out visitor was headed, restored after login */
+/* hasOwnProperty lookup: a tampered role like 'constructor' must read as no role,
+   not as an inherited Object member that crashes the first render */
+function opsAcc() {
+  return window.opsRole && Object.prototype.hasOwnProperty.call(OPS_ACCESS, window.opsRole)
+    ? OPS_ACCESS[window.opsRole] : null;
+}
+function opsCan(v) {
+  if (!OPS_GUARDED[v]) return true;
+  var acc = opsAcc();
+  return !!(acc && acc.views[v]);
+}
+/* Tab-level check for the mutating actions themselves, not just the buttons that
+   reach them — the buttons are presentation, this is the authorization. */
+function opsCanAct(tab) {
+  var acc = opsAcc();
+  return !!(acc && acc.views.admin && (!acc.tabs || acc.tabs.indexOf(tab) !== -1));
+}
+/* The session lives in sessionStorage: it survives a reload mid-shift but dies with
+   the tab, and logout removes it explicitly. */
+function setOpsRole(role, user) {
+  if (role && !Object.prototype.hasOwnProperty.call(OPS_ACCESS, role)) role = null;
+  window.opsRole = role || null;
+  window.opsUser = role ? (user || null) : null;
+  try {
+    if (role) {
+      sessionStorage.setItem('kalba.opsRole', role);
+      sessionStorage.setItem('kalba.opsUser', user || '');
+    } else {
+      sessionStorage.removeItem('kalba.opsRole');
+      sessionStorage.removeItem('kalba.opsUser');
+    }
+  } catch (e) {}
+}
+/* Audit trail for sensitive operations — newest first, capped, held in memory and
+   written through to localStorage instead of re-parsed on every event. A burst of
+   the same event on the same target (a points spinner, a replayed denial) collapses
+   into one row with a count, so it cannot flush real entries out of the cap. */
+var AUDIT = store('audit') || [];
+function auditNow() {
+  function p(n) { return (n < 10 ? '0' : '') + n; }
+  var d = new Date();   /* local time — the log is read by operators on site */
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' +
+         p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+}
+function auditLog(ev, detail) {
+  var d = detail == null ? '' : String(detail);
+  var by = window.opsUser || '-';
+  var top = AUDIT[0];
+  /* the target is the text before ' → ', so "Cycling → 51" and "Cycling → 52" coalesce */
+  if (top && top.ev === ev && top.by === by &&
+      String(top.d).split(' → ')[0] === d.split(' → ')[0]) {
+    top.d = d; top.at = auditNow(); top.n = (top.n || 1) + 1;
+  } else {
+    AUDIT.unshift({ at: auditNow(), ev: ev, by: by, d: d });
+    if (AUDIT.length > 200) AUDIT.length = 200;
+  }
+  store('audit', AUDIT);
+}
+
 function go(v, arg, fromPop) {
+  /* Route guard: ops views render only for a role the access table grants them to.
+     Hiding the menu entries alone protected nothing — any visitor could navigate
+     straight to the admin panel. */
+  if (!opsCan(v)) {
+    /* A replayed history entry is redirected silently — only a fresh attempt is a
+       denial worth recording, toasting about, or returning to after login. */
+    if (!fromPop) {
+      auditLog('access.denied', v);
+      if (!window.opsRole) {
+        opsReturnTo = { v: v, arg: arg === undefined ? null : arg };
+        toast(A('سجّل الدخول أولاً', 'Log in first'));
+      } else {
+        toast(A('هذه الأداة ليست ضمن صلاحيات دورك', "This tool is outside your role's privileges"));
+      }
+    }
+    v = window.opsRole ? 'home' : 'gate';
+    arg = undefined;
+  }
+  /* a remembered destination lives only while the visitor stays on the gate —
+     browsing away means the eventual login should land on the role's own home */
+  if (v !== 'gate') opsReturnTo = null;
   closeMobileNav();
   view = v;
   viewArg = arg === undefined ? null : arg;
@@ -2637,6 +2733,9 @@ function go(v, arg, fromPop) {
   /* keep browser back/forward working across views */
   if (!fromPop) {
     try { history.pushState({ v: view, arg: viewArg }, ''); } catch (e) {}
+  } else {
+    /* keep the entry honest when a denied replay was rewritten to gate/home */
+    try { history.replaceState({ v: view, arg: viewArg }, ''); } catch (e) {}
   }
 }
 window.addEventListener('popstate', function (ev) {
@@ -2723,7 +2822,7 @@ function renderChrome() {
   nav.querySelectorAll('a[data-v]').forEach(function (a) {
   a.addEventListener('click', function (ev) {ev.preventDefault();ev.stopPropagation();
     var v = a.dataset.v;closeMobileNav();
-    if (v === 'logout') {window.opsRole = null;toast(A('تم تسجيل الخروج', 'Logged out'));go('home');}
+    if (v === 'logout') {auditLog('logout', '');setOpsRole(null);toast(A('تم تسجيل الخروج', 'Logged out'));go('home');}
     else if (v === 'ops:scores') {go('admin', 'scores');}
     else {go(v);}});});
 
@@ -2942,9 +3041,11 @@ function showFormErrors(missing) {
 /* The editors can add and remove matches, so the whole objects persist rather than
    scores overlaid by index. Older saves (index-keyed {a,b,st}) still load. */
 window.saveScores = function () {
+  if (!opsCanAct('scores')) return;
   store('matches', MATCHES.map(function (m) {
     return { c: m.c, d: m.d, ar: m.ar, en: m.en, ar2: m.ar2, en2: m.en2, a: m.a, b: m.b, st: m.st };
   }));
+  auditLog('scores.save', String(MATCHES.length));
   seDirty(false);
   toast(A('حُفظت النتائج — تظهر في الرئيسية وتبقى بعد إعادة التحميل',
            'Results saved — they show on the homepage and survive a reload'));
@@ -4310,6 +4411,11 @@ function seRender() {
 R.admin = function () {
   if (viewArg) { adminTab = viewArg; viewArg = null; }
   var tabs = [['dash', T('dash'), 'chart'], ['apps', T('apps'), 'inbox'], ['scores', A('إدخال النتائج', 'Results Entry'), 'trophy'], ['surveys', T('svRes'), 'pulse'], ['matrix', T('matrix'), 'target'], ['settings', A('الإعدادات', 'Settings'), 'gear']];
+  /* A role sees only the tabs its access entry lists — a results editor gets the
+     results editor, not the applications inbox or the settings. */
+  var allowedTabs = (opsAcc() || {}).tabs;
+  if (allowedTabs) tabs = tabs.filter(function (t) { return allowedTabs.indexOf(t[0]) !== -1; });
+  if (!tabs.some(function (t) { return t[0] === adminTab; })) adminTab = tabs.length ? tabs[0][0] : null;
   var tabBar = '<div class="lb-tabs" role="tablist">' + tabs.map(function (t) {
     return tabBtn(adminTab === t[0], 'setAdminTab(\'' + t[0] + '\')', scIcon(t[2]) + ' ' + esc(t[1]));
   }).join('') + '</div>';
@@ -4340,6 +4446,25 @@ R.admin = function () {
               '<strong>' + esc(x.name || A('بلا اسم', 'No name')) + '</strong> ' +
               '<small class="muted" dir="ltr">' + esc(x.at) + '</small>' +
               '<div class="muted" style="font-size:.88rem">' + esc((x.body || '').slice(0, 140)) + '</div></div>';
+          }).join('') + '</div>';
+      })() +
+      (function () {
+        var log = AUDIT;
+        if (!log.length) return '';
+        var evName = {
+          'login.ok': A('دخول ناجح', 'Login'), 'login.fail': A('محاولة دخول فاشلة', 'Failed login'),
+          'logout': A('خروج', 'Logout'), 'access.denied': A('وصول مرفوض', 'Access denied'),
+          'scores.save': A('حفظ النتائج', 'Results saved'), 'app.status': A('تحديث حالة طلب', 'Application status'),
+          'points.set': A('تعديل نقاط نشاط', 'Points changed')
+        };
+        return '<div class="panel"><h2 class="sec-h" style="margin-top:0">🛡️ ' + esc(A('سجل التدقيق', 'Audit log')) + '</h2>' +
+          '<p class="hint">' + esc(A('آخر العمليات الحساسة — الدخول والخروج والتعديلات، الأحدث أولاً.', 'Recent sensitive operations — logins, logouts and edits, newest first.')) + '</p>' +
+          log.slice(0, 10).map(function (x) {
+            return '<div class="sched-row" style="padding:7px 0;border-top:1px dashed var(--line)">' +
+              '<strong>' + esc(evName[x.ev] || x.ev) + '</strong>' +
+              (x.n > 1 ? ' <span class="muted" dir="ltr">×' + x.n + '</span>' : '') +
+              (x.d ? ' <span class="muted">' + esc(x.d) + '</span>' : '') +
+              ' <small class="muted" dir="ltr">' + esc(x.by !== '-' ? x.by + ' · ' : '') + esc(x.at) + '</small></div>';
           }).join('') + '</div>';
       })();
   } else if (adminTab === 'apps') {
@@ -4422,9 +4547,11 @@ R.admin = function () {
 };
 window.setAdminTab = function (t) { adminTab = t; go('admin'); };
 window.setPts = function (id, v) {
+  if (!opsCanAct('matrix')) return;
   var a = ACTIVITIES.find(function (x) { return x.id === id; });
   a.pts = Math.max(1, Math.min(1000, parseInt(v, 10) || a.pts));
   store('activityPts', ACTIVITIES.map(function (x) { return { id: x.id, pts: x.pts }; }));
+  auditLog('points.set', a.en + ' → ' + a.pts);
   toast((lang === 'ar' ? 'تم تحديث ' : 'Updated ') + (lang === 'ar' ? a.ar : a.en) + ' → ' + a.pts);
 };
 function appsTable(rows) {
@@ -4441,12 +4568,14 @@ function appsTable(rows) {
     }).join('') + '</table></div>';
 }
 window.setStatus = function (id, s) {
+  if (!opsCanAct('apps')) return;
   var a = APPS.find(function (x) { return x.id === id; });
   if (!a) return;
   /* Reject sits next to Accept and isn't obviously undoable — confirm it. */
   if (s === 'rejected' && !confirm(A('رفض طلب «' + a.name + '»؟', 'Reject the application from "' + a.name + '"?'))) return;
   a.status = s;
   store('appStatus', APPS.map(function (x) { return { id: x.id, status: x.status }; }));
+  auditLog('app.status', '#' + a.id + ' → ' + s);
   render(); toast(T(s));
 };
 
@@ -7587,22 +7716,62 @@ R.gate = function () {
   return '<section class="container section" style="max-width:430px"><div class="panel" style="text-align:center">' +
     '<div style="font-size:2.4rem">🔒</div><h2>' + esc(A('تسجيل الدخول', 'Log in')) + '</h2>' +
     '<p class="sec-intro">' + esc(A('للمصرح لهم فقط — تظهر لك الأدوات حسب دورك بعد الدخول.', 'Authorized staff only — your tools appear based on your role.')) + '</p>' +
-    '<div class="field" style="text-align:start"><label class="flabel">' + esc(A('اسم المستخدم', 'Username')) + '</label><input type="text" id="gUser" dir="ltr" value=""></div>' +
-    '<div class="field" style="text-align:start"><label class="flabel">' + esc(A('كلمة المرور', 'Password')) + '</label><input type="password" id="gPass" dir="ltr" value=""></div>' +
-    '<div class="field" style="text-align:start"><label class="flabel">' + esc(A('الدور', 'Role')) + '</label>' +
-    '<select id="gRole"><option value="admin">' + esc(A('🛡️ مدير النظام — كل الأدوات', '🛡️ Admin — all tools')) + '</option>' +
-    '<option value="organizer">' + esc(A('🎯 منظم — المسح وإضافة النقاط', '🎯 Organizer — scan & award')) + '</option>' +
-    '<option value="results">' + esc(A('⚡ محرر النتائج — إدخال النتائج والترتيب', '⚡ Results editor — scores & standings')) + '</option></select></div>' +
+    '<div class="field" style="text-align:start"><label class="flabel" for="gUser">' + esc(A('اسم المستخدم', 'Username')) + '</label><input type="text" id="gUser" dir="ltr" autocomplete="username" value=""></div>' +
+    '<div class="field" style="text-align:start"><label class="flabel" for="gPass">' + esc(A('كلمة المرور', 'Password')) + '</label><input type="password" id="gPass" dir="ltr" autocomplete="current-password" value="" onkeydown="if(event.key===\'Enter\')doGateLogin()"></div>' +
+    '<div id="gErr" role="alert" hidden style="text-align:start"></div>' +
     '<button class="btn primary block" onclick="doGateLogin()">' + esc(A('تسجيل الدخول', 'Log in')) + '</button>' +
     '</div></section>';
 };
+/* The gate used to be decorative: it never read the username or password, and the
+   visitor picked their own role — including Admin — from a dropdown. Accounts now
+   carry the role, and passwords are checked as SHA-256 digests so no plaintext
+   sits in the source. This is still a client-side demo gate: a production
+   deployment needs real server-side authentication and authorization. */
+var GATE_ACCOUNTS = {
+  admin:     { role: 'admin',     hash: 'd18ca0dc9587f31a4ab4996c11b5f1d2ca9d9bcc17f5487d6d443e34d045bb1a' },
+  organizer: { role: 'organizer', hash: '050a4deefa3dd9c5ec1c4a5e4577e65ecf4c36b676cdb9b9d64549c5029408bf' },
+  results:   { role: 'results',   hash: 'ee0de22cad28454c1fcb91d6706820bc217cf58be0e040fb1daef89ba3695ce9' }
+};
+function sha256Hex(s) {
+  if (!(window.crypto && crypto.subtle)) return Promise.reject(new Error('crypto.subtle unavailable'));
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)).then(function (buf) {
+    return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+      return ('0' + b.toString(16)).slice(-2);
+    }).join('');
+  });
+}
+var gateBusy = false;   /* one login in flight at a time — Enter plus a click is one attempt */
 window.doGateLogin = function () {
-  var role = document.getElementById('gRole').value;
-  window.opsRole = role;
-  toast(A('تم تسجيل الدخول ✔ — تظهر أدواتك في القائمة العلوية', 'Logged in ✔ — your tools are in the top menu'));
-  if (role === 'organizer') go('award');
-  else if (role === 'results') go('admin', 'scores');
-  else go('admin');
+  if (gateBusy) return;
+  var u = (document.getElementById('gUser').value || '').trim().toLowerCase();
+  var p = document.getElementById('gPass').value || '';
+  var err = document.getElementById('gErr');
+  function fail(msg) {
+    if (err) { err.innerHTML = '<div class="flash err">' + esc(msg) + '</div>'; err.hidden = false; }
+  }
+  var acc = Object.prototype.hasOwnProperty.call(GATE_ACCOUNTS, u) ? GATE_ACCOUNTS[u] : null;
+  gateBusy = true;
+  /* two-arg then: the rejection handler covers only the digest itself, so a
+     rendering error after a successful login can never read as a crypto failure */
+  sha256Hex(p).then(function (h) {
+    gateBusy = false;
+    if (!acc || h !== acc.hash) {
+      auditLog('login.fail', u || '(empty)');
+      fail(A('اسم المستخدم أو كلمة المرور غير صحيحة', 'Wrong username or password'));
+      return;
+    }
+    setOpsRole(acc.role, u);
+    auditLog('login.ok', u);
+    toast(A('تم تسجيل الدخول ✔ — تظهر أدواتك في القائمة العلوية', 'Logged in ✔ — your tools are in the top menu'));
+    var dest = opsReturnTo;
+    opsReturnTo = null;
+    if (dest && opsCan(dest.v)) { go(dest.v, dest.arg); return; }
+    var home = OPS_ACCESS[acc.role].home;
+    go(home[0], home[1]);
+  }, function () {
+    gateBusy = false;
+    fail(A('المتصفح لا يدعم التحقق الآمن — افتح الموقع عبر HTTPS', 'This browser cannot verify securely — open the site over HTTPS'));
+  });
 };
 
 /* ============ festival assistant chatbot (feedback #4) ============ */
@@ -7722,6 +7891,10 @@ function focusViewHeading(app) {
   try { h1.focus({ preventScroll: true }); } catch (e) { h1.focus(); }
 }
 function render() {
+  /* Last-line guard at the actual dispatch: however `view` was set — go(), a
+     language toggle, a re-render after a role change — a guarded view never
+     materializes without the privilege for it. */
+  if (!opsCan(view)) { view = window.opsRole ? 'home' : 'gate'; viewArg = null; }
   renderChrome();
   var app = document.getElementById('app');
   app.innerHTML = R[view] ? R[view]() : R.home();
@@ -7740,6 +7913,15 @@ appsLoad();
 actsLoad();
 scoresLoad();
 kbotAutoTuck();
+/* Restore an ops session started in this tab — a reload mid-shift no longer logs
+   the operator out. Roles not in the access table are ignored. */
+(function () {
+  try {
+    var r = sessionStorage.getItem('kalba.opsRole');
+    /* setOpsRole owns the storage contract and rejects unknown roles */
+    if (r) setOpsRole(r, sessionStorage.getItem('kalba.opsUser') || '');
+  } catch (e) {}
+})();
 render();
 mediaHydrate().then(function () { render(); });
 </script>
