@@ -44,6 +44,10 @@
        for large fills and only reach ~3.2:1 on white, under the 4.5:1 needed for text. */
     --ok-ink: #4cc276; --warn-ink: #fbbf24; --bad-ink: #f87171;
     --radius: 8px; --shadow: 0 4px 18px rgba(15,23,42,.08);
+    /* Stock CSS easings are too weak to read as intentional. One strong out-curve
+       for things arriving, one strong in-out for things morphing in place. */
+    --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
     --font: 'Poppins', "Sakkal Majalla", "Segoe UI", Tahoma, "Noto Sans Arabic", "Geeza Pro", Arial, sans-serif;
     --font-display: 'Oswald', "Cairo", "Sakkal Majalla", "Segoe UI", Tahoma, sans-serif;
   }
@@ -124,13 +128,13 @@
 
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px;
     padding: 11px 22px; border-radius: 5px; border: 0; background: #242a2e;
-    color: var(--ink); font-size: .93rem; cursor: pointer; font-family: inherit; transition: filter .15s, transform .06s; }
+    color: var(--ink); font-size: .93rem; cursor: pointer; font-family: inherit; transition: filter .15s, transform 160ms var(--ease-out-strong); }
   .btn:hover { filter: brightness(1.07); }
   .btn:active { transform: scale(.98); }
   .btn:focus-visible, a:focus-visible, .award-btn:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
-  .btn.primary { background: linear-gradient(135deg, var(--sea), var(--sea-dark)); color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(0,0,0,.28); transition: transform .12s, box-shadow .12s; }
+  .btn.primary { background: linear-gradient(135deg, var(--sea), var(--sea-dark)); color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(0,0,0,.28); transition: transform 160ms var(--ease-out-strong), box-shadow 160ms var(--ease-out-strong); }
   .btn.primary:hover { transform: translateY(-1px); box-shadow: 0 7px 18px rgba(0,0,0,.38); }
-  .btn.gold { background: linear-gradient(135deg, var(--gold-soft), var(--gold)); color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(26,113,90,.35); transition: transform .12s, box-shadow .12s; }
+  .btn.gold { background: linear-gradient(135deg, var(--gold-soft), var(--gold)); color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(26,113,90,.35); transition: transform 160ms var(--ease-out-strong), box-shadow 160ms var(--ease-out-strong); }
   .btn.gold:hover { transform: translateY(-1px); box-shadow: 0 7px 18px rgba(26,113,90,.45); }
   .btn.ghost { background: transparent; border: 1px solid var(--sea); color: var(--gold-soft); }
   .hero .btn.ghost { border-color: #64748b; color: #242a2e; }
@@ -221,7 +225,7 @@
   /* Squad on the confirmation card, over the navy panel. */
   .vroster { text-align: start; margin: 12px 0 4px; padding: 12px 16px; background: rgba(255,255,255,.08); border-radius: 12px; }
   .vroster ol { margin: 6px 0 0; padding-inline-start: 20px; font-size: .88rem; line-height: 1.7; }
-  .reg-reveal { animation: regIn .22s ease-out both; }
+  .reg-reveal { animation: regIn .22s var(--ease-out-strong) both; }
   @keyframes regIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .reg-reveal { animation: none; } }
   .checks { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -377,11 +381,14 @@
   .car-dot { width: 24px; height: 24px; background: transparent; border: 0; cursor: pointer; padding: 0; position: relative; }
   .car-dot::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.45); }
   .car-dot.on::after { background: var(--gold); }
-  .toast { position: fixed; bottom: 22px; inset-inline-start: 50%; transform: translateX(50%); background: var(--deep); color: #fff;
+  /* Enters rising with a strong out-curve; leaves faster than it arrived, and the
+     base rule IS the exit state, so exit timing lives here and enter timing on .show. */
+  .toast { position: fixed; bottom: 22px; inset-inline-start: 50%; transform: translateX(50%) translateY(12px); background: var(--deep); color: #fff;
            padding: 12px 22px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.35); z-index: 100; font-size: .9rem;
-           opacity: 0; transition: opacity .25s; pointer-events: none; max-width: 92vw; }
-  [dir=ltr] .toast { transform: translateX(-50%); }
-  .toast.show { opacity: 1; }
+           opacity: 0; transition: opacity 150ms ease, transform 150ms ease; pointer-events: none; max-width: 92vw; }
+  [dir=ltr] .toast { transform: translateX(-50%) translateY(12px); }
+  .toast.show { opacity: 1; transform: translateX(50%) translateY(0); transition: opacity 220ms var(--ease-out-strong), transform 220ms var(--ease-out-strong); }
+  [dir=ltr] .toast.show { transform: translateX(-50%) translateY(0); }
   .backlink { display: inline-block; margin-bottom: 10px; font-size: .88rem; }
   .hint { font-size: .8rem; color: var(--muted); }
   .success-panel { text-align: center; padding: 40px 20px; }
@@ -693,7 +700,11 @@
   .gallery-item:hover img { transform: scale(1.04); opacity: .92; }
   .gallery-item:focus-visible { outline: 3px solid var(--sea); outline-offset: 3px; }
   .gallery-cap { position: absolute; bottom: 0; inset-inline: 0; background: linear-gradient(transparent, rgba(15,23,42,.85)); color: #fff; font-size: .8rem; padding: 20px 11px 8px; }
-  .lightbox { position: fixed; inset: 0; background: rgba(10,18,32,.92); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4vh 4vw; cursor: pointer; }
+  /* A modal is the one popover that keeps a centered origin - nothing anchors it. */
+  .lightbox { position: fixed; inset: 0; background: rgba(10,18,32,.92); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4vh 4vw; cursor: pointer;
+    transition: opacity 200ms var(--ease-out-strong); }
+  .lightbox img { transition: transform 200ms var(--ease-out-strong); }
+  @starting-style { .lightbox { opacity: 0; } .lightbox img { transform: scale(.97); } }
   .lightbox img { max-width: 92vw; max-height: 80vh; border-radius: 10px; }
   .lb-cap { color: #242a2e; margin-top: 10px; }
   .lb-close { position: absolute; top: 16px; inset-inline-end: 16px; width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.1); color: #fff; font-size: 1.7rem; line-height: 1; cursor: pointer; display: grid; place-items: center; }
@@ -731,7 +742,15 @@
   /* footer.footer, not footer: the .footer class sets a padding shorthand and would
      otherwise win on specificity, leaving the last line of the page under the button. */
   footer.footer { padding-bottom: 84px; }
-  #kbot { position: fixed; bottom: 86px; inset-inline-end: 20px; z-index: 150; width: 330px; max-width: calc(100vw - 32px); max-height: 70vh; background: #141414; border-radius: 16px; box-shadow: 0 18px 50px rgba(15,23,42,.35); display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); }
+  /* A popover scales from its trigger, and the launcher sits at the panel's
+     bottom-end corner - so that is the origin, not center. allow-discrete lets the
+     hidden attribute keep driving it with no JS; entry state via @starting-style. */
+  #kbot { position: fixed; bottom: 86px; inset-inline-end: 20px; z-index: 150; width: 330px; max-width: calc(100vw - 32px); max-height: 70vh; background: #141414; border-radius: 16px; box-shadow: 0 18px 50px rgba(15,23,42,.35); display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line);
+    transform-origin: bottom right; opacity: 1; transform: scale(1) translateY(0);
+    transition: opacity 200ms var(--ease-out-strong), transform 200ms var(--ease-out-strong), display 200ms allow-discrete, overlay 200ms allow-discrete; }
+  [dir=rtl] #kbot { transform-origin: bottom left; }
+  #kbot[hidden] { display: none; opacity: 0; transform: scale(.95) translateY(8px); transition-duration: 150ms; }
+  @starting-style { #kbot { opacity: 0; transform: scale(.95) translateY(8px); } }
   .kbot-head { background: var(--deep); color: #fff; padding: 11px 15px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
   .kbot-head button { background: none; border: 0; color: #cbd5e1; font-size: 1rem; cursor: pointer; }
   .kbot-msgs { padding: 13px; overflow-y: auto; flex: 1; min-height: 170px; max-height: 42vh; display: flex; flex-direction: column; gap: 8px; background: var(--sand); }
@@ -1135,7 +1154,7 @@
   .sc-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
   .sc-chips::-webkit-scrollbar { height: 6px; }
   .sc-chips::-webkit-scrollbar-thumb { background: #2b3134; border-radius: 99px; }
-  .sc-chip { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 8px 15px; background: #141414; border: 1px solid var(--line); border-radius: 999px; font-family: inherit; font-size: .85rem; font-weight: 600; color: var(--ink); cursor: pointer; white-space: nowrap; transition: background .18s, border-color .18s, color .18s, box-shadow .18s; }
+  .sc-chip { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 8px 15px; background: #141414; border: 1px solid var(--line); border-radius: 999px; font-family: inherit; font-size: .85rem; font-weight: 600; color: var(--ink); cursor: pointer; white-space: nowrap; transition: background .18s, border-color .18s, color .18s, box-shadow .18s, transform 160ms var(--ease-out-strong); }
   .sc-chip:hover { border-color: var(--sea); background: #181d1f; }
   .sc-chip:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
   .sc-chip.on { background: var(--gold); border-color: var(--gold); color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
@@ -1170,11 +1189,11 @@
   .sc-node .sc-i { width: 17px; height: 17px; }
   .sc-time { display: block; font-size: .76rem; font-weight: 700; letter-spacing: .02em; font-variant-numeric: tabular-nums; margin-bottom: 2px; }
   .sc-title { display: block; font-size: .93rem; font-weight: 600; color: var(--ink); line-height: 1.45; }
-  .sc-caret { display: grid; place-items: center; color: var(--muted); transition: transform .24s ease, color .18s; }
+  .sc-caret { display: grid; place-items: center; color: var(--muted); transition: transform 240ms var(--ease-in-out-strong), color .18s; }
   .sc-caret .sc-i { width: 18px; height: 18px; }
   .sc-item.open .sc-caret { transform: rotate(180deg); color: var(--sea); }
   /* 0fr -> 1fr animates a height the browser computes, so nothing has to be measured */
-  .sc-detail { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .24s ease; }
+  .sc-detail { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 240ms var(--ease-in-out-strong); }
   .sc-item.open .sc-detail { grid-template-rows: 1fr; }
   .sc-detail > div { overflow: hidden; visibility: hidden; transition: visibility .24s; }
   .sc-item.open .sc-detail > div { visibility: visible; }
@@ -1200,7 +1219,7 @@
   .sc-empty .sc-i { width: 34px; height: 34px; color: var(--muted); margin-bottom: 10px; }
   .sc-empty p { margin: 0 0 14px; color: var(--muted); }
   /* Short, small-offset, and capped so the tail of a long day is not left waiting. */
-  .sc-item { animation: scIn .28s ease-out both; animation-delay: calc(var(--sc-i, 0) * .03s); }
+  .sc-item { animation: scIn .28s var(--ease-out-strong) both; animation-delay: calc(var(--sc-i, 0) * .03s); }
   @keyframes scIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) {
     .sc-item { animation: none; }
@@ -1902,6 +1921,27 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
 /* Keep each result row normal size */
 .match-row {min-height: 70px;overflow: hidden;}
 
+  /* ---- press feedback on the remaining pressables; positioning transforms
+     composed in so :active never undoes them ---- */
+  .sc-chip:active, .fpill:active, .lb-tab:active, .seg-btn:active, .sc-reset:active { transform: scale(.96); }
+  .hx-nav:active { transform: translateY(-50%) scale(.92); }
+  #kbotBtn:active { transform: scale(.94); }
+
+  /* ---- hover lifts fire on tap on touch screens; ground them there and keep the
+     color/shadow feedback, which does not move ---- */
+  @media (hover: none) {
+    .btn.primary:hover, .btn.gold:hover, .card.link:hover,
+    .champ-grid .champ-card:hover, .wv-card:hover, .nw-card:hover, .sc-item:hover { transform: none; }
+    .ev-card:hover .ev-media img { transform: none; }
+  }
+
+  /* ---- reduced motion: keep the fades that aid comprehension, drop the travel ---- */
+  @media (prefers-reduced-motion: reduce) {
+    .toast, .toast.show, [dir=ltr] .toast, [dir=ltr] .toast.show { transform: translateX(50%); transition: opacity 150ms ease; }
+    [dir=ltr] .toast, [dir=ltr] .toast.show { transform: translateX(-50%); }
+    #kbot, #kbot[hidden] { transform: none; transition: opacity 150ms ease, display 150ms allow-discrete; }
+    .lightbox img { transition: none; }
+  }
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
