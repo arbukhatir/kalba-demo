@@ -1936,6 +1936,8 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
   .se-round-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; color: var(--gold-soft); font-weight: 700; font-size: .85rem; }
   .se-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 9px 0 4px; border-top: 1px dashed var(--line); margin-top: 8px; }
   input.se-name { flex: 1 1 140px; min-width: 120px; width: auto; }
+  .se-team { flex: 1 1 140px; min-width: 120px; font-size: .92rem; font-weight: 600; }
+  .se-team.empty { color: var(--muted); font-weight: 400; font-size: .85rem; }
   input.se-score { width: 74px; flex: 0 0 auto; text-align: center; font-variant-numeric: tabular-nums; }
   .se-vs { color: var(--muted); font-weight: 800; }
   select.se-st { width: auto; flex: 0 0 auto; }
@@ -2633,7 +2635,7 @@ var view = 'home', viewArg = null, timers = [];
 var OPS_ACCESS = {
   admin:     { views: { admin: 1, award: 1, screen: 1 }, tabs: null,       home: ['admin'] },
   organizer: { views: { award: 1, screen: 1 },           tabs: [],         home: ['award'] },
-  results:   { views: { admin: 1, screen: 1 },           tabs: ['scores'], home: ['admin', 'scores'] }
+  results:   { views: { admin: 1, screen: 1 },           tabs: ['matches', 'scores'], home: ['admin', 'matches'] }
 };
 /* Admin holds every tool by definition, so its view set IS the set of guarded
    views — derived, not restated, so a new ops view can never fall open through
@@ -2659,20 +2661,27 @@ function opsCanAct(tab) {
 }
 /* The session lives in sessionStorage: it survives a reload mid-shift but dies with
    the tab, and logout removes it explicitly. */
-function setOpsRole(role, user) {
+function setOpsRole(role, user, sport) {
   if (role && !Object.prototype.hasOwnProperty.call(OPS_ACCESS, role)) role = null;
   window.opsRole = role || null;
   window.opsUser = role ? (user || null) : null;
+  /* a results account may be scoped to a single sport (a CHAMPS index); null = all */
+  window.opsSport = (role && typeof sport === 'number' && CHAMPS[sport]) ? sport : null;
   try {
     if (role) {
       sessionStorage.setItem('kalba.opsRole', role);
       sessionStorage.setItem('kalba.opsUser', user || '');
+      if (window.opsSport != null) sessionStorage.setItem('kalba.opsSport', String(window.opsSport));
+      else sessionStorage.removeItem('kalba.opsSport');
     } else {
       sessionStorage.removeItem('kalba.opsRole');
       sessionStorage.removeItem('kalba.opsUser');
+      sessionStorage.removeItem('kalba.opsSport');
     }
   } catch (e) {}
 }
+/* Sport scope: a per-sport results account may only touch its own CHAMPS index. */
+function opsSportOk(ci) { return window.opsSport == null || window.opsSport === ci; }
 /* Audit trail for sensitive operations — newest first, capped, held in memory and
    written through to localStorage instead of re-parsed on every event. A burst of
    the same event on the same target (a points spinner, a replayed denial) collapses
@@ -2801,9 +2810,9 @@ function renderChrome() {
   ['news', T('newsT')],['faq', A('الأسئلة الشائعة', 'FAQ')],['contact', A('تواصل معنا', 'Contact')]]]];
 
   var ROLE_MENUS = {
-    admin: [['admin', '🛡️ ' + T('admin')], ['ops:scores', A('⚡ إدخال النتائج', '⚡ Results Entry')], ['award', '🎯 ' + T('award')], ['screen', '📺 ' + T('screen')]],
+    admin: [['admin', '🛡️ ' + T('admin')], ['ops:matches', A('🆚 إعداد المباريات', '🆚 Match Setup')], ['ops:scores', A('⚡ إدخال النتائج', '⚡ Results Entry')], ['award', '🎯 ' + T('award')], ['screen', '📺 ' + T('screen')]],
     organizer: [['award', '🎯 ' + T('award')], ['screen', '📺 ' + T('screen')]],
-    results: [['ops:scores', A('⚡ إدخال النتائج', '⚡ Results Entry')], ['screen', '📺 ' + T('screen')]]
+    results: [['ops:matches', A('🆚 إعداد المباريات', '🆚 Match Setup')], ['ops:scores', A('⚡ إدخال النتائج', '⚡ Results Entry')], ['screen', '📺 ' + T('screen')]]
   };
   var ROLE_NAMES = { admin: A('مدير النظام', 'Admin'), organizer: A('منظم', 'Organizer'), results: A('محرر النتائج', 'Results editor') };
   var nav = document.getElementById('mainNav');
@@ -2814,7 +2823,7 @@ function renderChrome() {
         '</div></div>';}).join('') +
     (!window.opsRole
       ? '<a class="nav-login" data-v="gate"> ' + esc(A('تسجيل الدخول', 'Log in')) + '</a>'
-      : '<div class="menu"><button type="button" class="menu-btn nav-login"> ' + esc(ROLE_NAMES[window.opsRole]) + ' <span class="caret">▾</span></button><div class="dropdown">' +
+      : '<div class="menu"><button type="button" class="menu-btn nav-login"> ' + esc(ROLE_NAMES[window.opsRole] + (window.opsSport != null ? ' — ' + champName(CHAMPS[window.opsSport]) : '')) + ' <span class="caret">▾</span></button><div class="dropdown">' +
         ROLE_MENUS[window.opsRole].map(function (it) { return '<a data-v="' + it[0] + '">' + esc(it[1]) + '</a>'; }).join('') +
         '<a data-v="logout">🚪 ' + esc(A('تسجيل الخروج', 'Log out')) + '</a></div></div>') +
     '<a class="lang" data-lang="1">' + esc(T('langBtn')) + '</a>';
@@ -2824,6 +2833,7 @@ function renderChrome() {
     var v = a.dataset.v;closeMobileNav();
     if (v === 'logout') {auditLog('logout', '');setOpsRole(null);toast(A('تم تسجيل الخروج', 'Logged out'));go('home');}
     else if (v === 'ops:scores') {go('admin', 'scores');}
+    else if (v === 'ops:matches') {go('admin', 'matches');}
     else {go(v);}});});
 
   nav.querySelector('a[data-lang]').onclick = function () { setLang(lang === 'ar' ? 'en' : 'ar'); };
@@ -3040,15 +3050,19 @@ function showFormErrors(missing) {
    all while claiming the score was now on the homepage. It is true only if it lasts. */
 /* The editors can add and remove matches, so the whole objects persist rather than
    scores overlaid by index. Older saves (index-keyed {a,b,st}) still load. */
-window.saveScores = function () {
-  if (!opsCanAct('scores')) return;
+window.saveScores = function (mode) {
+  var setup = mode === 'setup';
+  if (!opsCanAct(setup ? 'matches' : 'scores')) return;
   store('matches', MATCHES.map(function (m) {
     return { c: m.c, d: m.d, ar: m.ar, en: m.en, ar2: m.ar2, en2: m.en2, a: m.a, b: m.b, st: m.st };
   }));
-  auditLog('scores.save', String(MATCHES.length));
+  auditLog(setup ? 'matches.save' : 'scores.save', String(MATCHES.length));
   seDirty(false);
-  toast(A('حُفظت النتائج — تظهر في الرئيسية وتبقى بعد إعادة التحميل',
-           'Results saved — they show on the homepage and survive a reload'));
+  toast(setup
+    ? A('حُفظت المباريات — أدخل نتائجها من «إدخال النتائج»',
+        'Matches saved — enter their scores in Results Entry')
+    : A('حُفظت النتائج — تظهر في الرئيسية وتبقى بعد إعادة التحميل',
+        'Results saved — they show on the homepage and survive a reload'));
 };
 function appsLoad() {
   var saved = store('appStatus');
@@ -4317,13 +4331,14 @@ var adminTab = 'dash';
    the sport's fixture grid, so a match can only ever live under a scheduled round -
    the schedule and the results cannot drift apart. */
 var scoresSport = '';   /* '' = master view, else a CHAMPS index */
+var seMode = 'results'; /* 'setup' pairs the sides; 'results' enters scores only */
 function seDirty(on) {
   var b = document.getElementById('seBar');
   if (b) b.classList.toggle('dirty', on !== false);
 }
 window.scField = function (i, f, v) {
   var m = MATCHES[i];
-  if (!m) return;
+  if (!m || !opsSportOk(m.c)) return;
   if (f === 'a' || f === 'b') m[f] = v === '' ? null : (parseInt(v, 10) || 0);
   else if (f === 'st') m.st = v;
   else {
@@ -4336,29 +4351,48 @@ window.scField = function (i, f, v) {
   seDirty(true);
 };
 window.scAddMatch = function (ci, d) {
+  if (!opsSportOk(ci)) return;
   MATCHES.push({ c: ci, d: d, ar: '', en: '', ar2: '', en2: '', a: null, b: null, st: 'upcoming' });
   seDirty(true);
   seRender();
 };
 window.scDelMatch = function (i) {
+  var m = MATCHES[i];
+  if (!m || !opsSportOk(m.c)) return;
   MATCHES.splice(i, 1);
   seDirty(true);
   seRender();
 };
-window.setScoresSport = function (i) { scoresSport = i; seRender(); };
+window.setScoresSport = function (i) {
+  if (i !== '' && !opsSportOk(i)) return;
+  if (i === '' && window.opsSport != null) return;
+  scoresSport = i;
+  seRender();
+};
 function seRow(i) {
   var m = MATCHES[i];
+  /* Match Setup pairs the sides; Results Entry takes them as read and only asks
+     for scores and status — two windows, one duty each. */
+  if (seMode === 'setup') {
+    return '<div class="se-row">' +
+      '<input type="text" class="se-name" value="' + esc(A(m.ar, m.en)) + '" placeholder="' + esc(A('الطرف الأول', 'Side one')) + '" aria-label="' + esc(A('الطرف الأول', 'Side one')) + '" oninput="scField(' + i + ',\'n1\',this.value)">' +
+      '<span class="se-vs" aria-hidden="true">×</span>' +
+      '<input type="text" class="se-name" value="' + esc(A(m.ar2, m.en2)) + '" placeholder="' + esc(A('الطرف الثاني — اتركه فارغاً لسباق', 'Side two — empty for a race')) + '" aria-label="' + esc(A('الطرف الثاني', 'Side two')) + '" oninput="scField(' + i + ',\'n2\',this.value)">' +
+      '<button type="button" class="se-del" onclick="scDelMatch(' + i + ')" aria-label="' + esc(A('حذف المباراة', 'Remove match')) + '">' + scIcon('trash') + '</button>' +
+      '</div>';
+  }
   var lbl = { live: A('🔴 مباشر', '🔴 LIVE'), upcoming: A('قادمة', 'Upcoming'), finished: A('انتهت', 'Finished') };
+  var n1 = A(m.ar, m.en), n2 = A(m.ar2, m.en2);
+  var unnamed = esc(A('بلا اسم — من «إعداد المباريات»', 'Unnamed — set in Match Setup'));
   return '<div class="se-row">' +
-    '<input type="text" class="se-name" value="' + esc(A(m.ar, m.en)) + '" placeholder="' + esc(A('الطرف الأول', 'Side one')) + '" aria-label="' + esc(A('الطرف الأول', 'Side one')) + '" oninput="scField(' + i + ',\'n1\',this.value)">' +
+    '<span class="se-team' + (n1 ? '' : ' empty') + '">' + (n1 ? esc(n1) : unnamed) + '</span>' +
     '<input type="number" class="se-score" value="' + (m.a !== null ? m.a : '') + '" dir="ltr" min="0" aria-label="' + esc(A('نتيجة الطرف الأول', 'Side one score')) + '" oninput="scField(' + i + ',\'a\',this.value)">' +
     '<span class="se-vs" aria-hidden="true">:</span>' +
     '<input type="number" class="se-score" value="' + (m.b !== null ? m.b : '') + '" dir="ltr" min="0" aria-label="' + esc(A('نتيجة الطرف الثاني', 'Side two score')) + '" oninput="scField(' + i + ',\'b\',this.value)">' +
-    '<input type="text" class="se-name" value="' + esc(A(m.ar2, m.en2)) + '" placeholder="' + esc(A('الطرف الثاني — اتركه فارغاً لسباق', 'Side two — empty for a race')) + '" aria-label="' + esc(A('الطرف الثاني', 'Side two')) + '" oninput="scField(' + i + ',\'n2\',this.value)">' +
+    '<span class="se-team' + (n2 ? '' : ' empty') + '">' + (n2 ? esc(n2) : '<span aria-hidden="true">—</span>') + '</span>' +
     '<select class="se-st" aria-label="' + esc(A('حالة المباراة', 'Match status')) + '" onchange="scField(' + i + ',\'st\',this.value)">' +
     ['upcoming', 'live', 'finished'].map(function (st) { return '<option value="' + st + '"' + (m.st === st ? ' selected' : '') + '>' + esc(lbl[st]) + '</option>'; }).join('') +
     '</select>' +
-    '<button type="button" class="se-del" onclick="scDelMatch(' + i + ')" aria-label="' + esc(A('حذف المباراة', 'Remove match')) + '">' + scIcon('trash') + '</button>' +
     '</div>';
 }
 function seSection(ci, full) {
@@ -4370,16 +4404,22 @@ function seSection(ci, full) {
     if (!full && !idxs.length) return '';
     return '<div class="se-round"><div class="se-round-h">' +
       '<span>' + esc(festDayLabel(rd.d)) + ' · <span dir="ltr">' + esc(rd.t) + '</span> · ' + esc(A(ROUNDS[rd.r].ar, ROUNDS[rd.r].en)) + '</span>' +
-      (full ? '<button type="button" class="btn sm ghost" onclick="scAddMatch(' + ci + ',\'' + rd.d + '\')">' + scIcon('plus') + ' ' + esc(A('أضف مباراة', 'Add match')) + '</button>' : '') +
+      (full && seMode === 'setup' ? '<button type="button" class="btn sm ghost" onclick="scAddMatch(' + ci + ',\'' + rd.d + '\')">' + scIcon('plus') + ' ' + esc(A('أضف مباراة', 'Add match')) + '</button>' : '') +
       '</div>' +
-      (idxs.length ? idxs.map(seRow).join('') : '<p class="se-empty">' + esc(A('لا مباريات في هذا الدور بعد', 'No matches in this round yet')) + '</p>') +
+      (idxs.length ? idxs.map(seRow).join('')
+        : '<p class="se-empty">' + esc(seMode === 'setup'
+            ? A('لا مباريات في هذا الدور بعد', 'No matches in this round yet')
+            : A('لا مباريات بعد — تُكوَّن من «إعداد المباريات»', 'No matches yet — pair them in Match Setup')) + '</p>') +
       '</div>';
   }).join('');
   return '<div class="se-sport">' + c.ic + ' <b>' + esc(champName(c)) + '</b>' +
     '<span class="se-count">' + MATCHES.filter(function (m) { return m.c === ci; }).length + '</span></div>' + body;
 }
 function scoresEditorHtml() {
-  var chips = '<div class="sc-chips" role="group" aria-label="' + esc(A('اختر رياضة', 'Choose a sport')) + '">' +
+  /* a sport-scoped account is pinned to its own editor — no master, no other sports */
+  if (window.opsSport != null) scoresSport = window.opsSport;
+  var chips = window.opsSport != null ? '' :
+    '<div class="sc-chips" role="group" aria-label="' + esc(A('اختر رياضة', 'Choose a sport')) + '">' +
     '<button type="button" class="sc-chip' + (scoresSport === '' ? ' on' : '') + '" aria-pressed="' + (scoresSport === '' ? 'true' : 'false') + '" onclick="setScoresSport(\'\')">' +
     esc(A('المحرر الرئيسي', 'Master')) + ' <span class="sc-n">' + MATCHES.length + '</span></button>' +
     CHAMPS.map(function (c, i) {
@@ -4392,13 +4432,16 @@ function scoresEditorHtml() {
     body = CHAMPS.map(function (c, i) {
       return MATCHES.some(function (m) { return m.c === i; }) ? seSection(i, false) : '';
     }).join('');
-    body += '<p class="se-note">' + esc(A('المحرر الرئيسي يعدّل المباريات القائمة في كل الرياضات. لإضافة مباراة افتح محرر الرياضة نفسها من الأعلى.', 'The master edits existing matches across every sport. To add a match, open that sport’s own editor above.')) + '</p>';
+    if (seMode === 'setup') body += '<p class="se-note">' + esc(A('المحرر الرئيسي يعدّل المباريات القائمة في كل الرياضات. لإضافة مباراة افتح محرر الرياضة نفسها من الأعلى.', 'The master edits existing matches across every sport. To add a match, open that sport’s own editor above.')) + '</p>';
   } else {
     body = seSection(scoresSport, true);
   }
   return chips + body +
     '<div class="se-bar" id="seBar"><span class="se-dirty">' + esc(A('تغييرات غير محفوظة', 'Unsaved changes')) + '</span>' +
-    '<button type="button" class="btn primary" onclick="saveScores()">' + scIcon('save') + ' ' + esc(A('حفظ النتائج', 'Save results')) + '</button></div>';
+    (seMode === 'setup'
+      ? '<button type="button" class="btn primary" onclick="saveScores(\'setup\')">' + scIcon('save') + ' ' + esc(A('حفظ المباريات', 'Save matches')) + '</button>'
+      : '<button type="button" class="btn primary" onclick="saveScores()">' + scIcon('save') + ' ' + esc(A('حفظ النتائج', 'Save results')) + '</button>') +
+    '</div>';
 }
 function seRender() {
   var el = document.getElementById('scoreEd');
@@ -4410,7 +4453,7 @@ function seRender() {
 }
 R.admin = function () {
   if (viewArg) { adminTab = viewArg; viewArg = null; }
-  var tabs = [['dash', T('dash'), 'chart'], ['apps', T('apps'), 'inbox'], ['scores', A('إدخال النتائج', 'Results Entry'), 'trophy'], ['surveys', T('svRes'), 'pulse'], ['matrix', T('matrix'), 'target'], ['settings', A('الإعدادات', 'Settings'), 'gear']];
+  var tabs = [['dash', T('dash'), 'chart'], ['apps', T('apps'), 'inbox'], ['matches', A('إعداد المباريات', 'Match Setup'), 'users'], ['scores', A('إدخال النتائج', 'Results Entry'), 'trophy'], ['surveys', T('svRes'), 'pulse'], ['matrix', T('matrix'), 'target'], ['settings', A('الإعدادات', 'Settings'), 'gear']];
   /* A role sees only the tabs its access entry lists — a results editor gets the
      results editor, not the applications inbox or the settings. */
   var allowedTabs = (opsAcc() || {}).tabs;
@@ -4454,7 +4497,8 @@ R.admin = function () {
         var evName = {
           'login.ok': A('دخول ناجح', 'Login'), 'login.fail': A('محاولة دخول فاشلة', 'Failed login'),
           'logout': A('خروج', 'Logout'), 'access.denied': A('وصول مرفوض', 'Access denied'),
-          'scores.save': A('حفظ النتائج', 'Results saved'), 'app.status': A('تحديث حالة طلب', 'Application status'),
+          'scores.save': A('حفظ النتائج', 'Results saved'), 'matches.save': A('حفظ المباريات', 'Matches saved'),
+          'app.status': A('تحديث حالة طلب', 'Application status'),
           'points.set': A('تعديل نقاط نشاط', 'Points changed')
         };
         return '<div class="panel"><h2 class="sec-h" style="margin-top:0">🛡️ ' + esc(A('سجل التدقيق', 'Audit log')) + '</h2>' +
@@ -4469,10 +4513,17 @@ R.admin = function () {
       })();
   } else if (adminTab === 'apps') {
     body = '<div class="panel">' + appsTable(APPS) + '<p class="hint">' + esc(A('اقبل أو علّق أو ارفض من الأزرار — تُحفظ الحالة وتبقى بعد إعادة التحميل.', 'Accept, hold or reject from the buttons — the status is saved and survives a reload.')) + '</p></div>';
-  } else if (adminTab === 'scores') {
+  } else if (adminTab === 'matches') {
+    seMode = 'setup';
     body = '<div class="panel"><p class="sec-intro">' +
-      esc(A('محرر لكل رياضة ومحرر رئيسي للجميع — الأدوار مأخوذة من جدول المنافسات نفسه، والنتائج تظهر فوراً في الرئيسية وصفحة النتائج.',
-             'An editor per sport plus a master for all of them — rounds come straight from the fixture schedule, and results appear instantly on the homepage and results page.')) + '</p>' +
+      esc(A('كوّن مواجهات كل دور: اختر طرفَي كل مباراة تحت جولات جدول المنافسات نفسه — ثم تُدخل نتائجها من تبويب «إدخال النتائج».',
+             'Pair the sides of every match under the fixture schedule’s own rounds — then enter their scores from the Results Entry tab.')) + '</p>' +
+      '<div id="scoreEd">' + scoresEditorHtml() + '</div></div>';
+  } else if (adminTab === 'scores') {
+    seMode = 'results';
+    body = '<div class="panel"><p class="sec-intro">' +
+      esc(A('أدخل النتائج والحالة للمباريات المكوّنة — تكوين المواجهات يتم من «إعداد المباريات»، والنتائج تظهر فوراً في الرئيسية وصفحة النتائج.',
+             'Enter scores and status for the paired matches — pairing happens in Match Setup, and results appear instantly on the homepage and results page.')) + '</p>' +
       '<div id="scoreEd">' + scoresEditorHtml() + '</div></div>';
   } else if (adminTab === 'settings') {
     var portalRows = Object.keys(FORMS).map(function (k) {
@@ -7732,6 +7783,32 @@ var GATE_ACCOUNTS = {
   organizer: { role: 'organizer', hash: '050a4deefa3dd9c5ec1c4a5e4577e65ecf4c36b676cdb9b9d64549c5029408bf' },
   results:   { role: 'results',   hash: 'ee0de22cad28454c1fcb91d6706820bc217cf58be0e040fb1daef89ba3695ce9' }
 };
+/* One scoped results account per sport — username `results-<slug>` — pinned to its
+   own sport's matches and scores. The plain `results` account above stays the
+   master with every sport. Digests keyed by slug so the sport index always comes
+   from CHAMPS itself and cannot drift from the roster's order. */
+(function () {
+  var h = {
+    'football': '6f48e6d4d4bc5caef21e67c7432005131d842dd52f2ced2a020aab17525150e2',
+    'beach-volleyball': '2fc55ff97aea034b1fb87e5a386606967ca5fd5fc0be48e6d5016c1fceef5784',
+    'basketball-3x3': 'f5fe010534d532186e70ad4f9a89815e3818630b9010c82dc48c49fd413434d2',
+    'padel': 'bcd70c645761b489268e13ad94e63c0227f73ca752551fd1258c23c04ae52590',
+    'crossfit': 'cdd6d3894d2cdd610450f35fe3ef0a1fdf4292f44b8d6daa67f6a672e3368403',
+    'paintball': '87245b7adb316776e445d512ce0373c20c12e8c5f6b77dbda40c938902b52d7b',
+    'boxing': '8363923ff8e796e65472e4f8cb9337cac31986232b84bbc93500077183f00fc1',
+    'taekwondo': '4fe62a94c44186902fd3aa709350c9454a707c6c5d654d8a283019c49e819682',
+    'jiujitsu': 'c40db340d3ade4a5816ec862241800ed6d8b5b606091da1aaae90947accb94ad',
+    'running': '32ae5f5a706c3655afe35c4af250d64050ff140a7ca203ffea555dc220ae73d5',
+    'cycling': '36d566526064685b56c5938661c6785e361c89e6ef75f8d019d71c4fbc839b46',
+    'obstacles': '88fd5f878a37543ac30848835948fab5a268a0c757a7be67c1cd457eaceb248f',
+    'hike': '574d8759ba6b433147780e963114135fb3c27497b2453a738c456694958c02f9',
+    'kayak': '5391bfb61930bf6437e4d541e29d9a9c014b8ccd230d3897eeb0d0542a530338',
+    'schools-challenge': '537e44d3d48dcab51ea0e9099b6d6120f7c0c746912388ecd57e176824810b13'
+  };
+  CHAMPS.forEach(function (c, i) {
+    if (h[c.s]) GATE_ACCOUNTS['results-' + c.s] = { role: 'results', sport: i, hash: h[c.s] };
+  });
+})();
 function sha256Hex(s) {
   if (!(window.crypto && crypto.subtle)) return Promise.reject(new Error('crypto.subtle unavailable'));
   return crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)).then(function (buf) {
@@ -7760,7 +7837,7 @@ window.doGateLogin = function () {
       fail(A('اسم المستخدم أو كلمة المرور غير صحيحة', 'Wrong username or password'));
       return;
     }
-    setOpsRole(acc.role, u);
+    setOpsRole(acc.role, u, acc.sport);
     auditLog('login.ok', u);
     toast(A('تم تسجيل الدخول ✔ — تظهر أدواتك في القائمة العلوية', 'Logged in ✔ — your tools are in the top menu'));
     var dest = opsReturnTo;
@@ -7918,8 +7995,9 @@ kbotAutoTuck();
 (function () {
   try {
     var r = sessionStorage.getItem('kalba.opsRole');
-    /* setOpsRole owns the storage contract and rejects unknown roles */
-    if (r) setOpsRole(r, sessionStorage.getItem('kalba.opsUser') || '');
+    var sp = parseInt(sessionStorage.getItem('kalba.opsSport'), 10);
+    /* setOpsRole owns the storage contract and rejects unknown roles and sports */
+    if (r) setOpsRole(r, sessionStorage.getItem('kalba.opsUser') || '', isNaN(sp) ? null : sp);
   } catch (e) {}
 })();
 render();
