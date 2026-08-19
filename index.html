@@ -155,6 +155,9 @@
   .card.link:hover::after { transform: scaleX(1); }
   @media (prefers-reduced-motion: reduce) { .card.link, .card.link::after, .champ-card .card-media img { transition: none; } .card.link:hover { transform: none; } }
   .card .ic { font-size: 1.8rem; }
+  /* an SVG in this slot has to match the weight of the emoji used in the cards
+     beside it, and the base .sc-i rule is only 16px */
+  .card .ic .sc-i { width: 28px; height: 28px; color: var(--sea); }
   .card .tt { font-weight: 700; margin: 7px 0 3px; }
   .card .dd { color: var(--muted); font-size: .85rem; }
   .panel { background: #fff; border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); border: 1px solid var(--line); margin-bottom: 16px; }
@@ -701,7 +704,19 @@
   .hero.hero-live::before { opacity: .09; z-index: 1; }
   .hero.hero-live > * { position: relative; z-index: 2; }
   .hero.hero-live .hero-media { z-index: 0; }
-  #kbotBtn { position: fixed; bottom: 20px; inset-inline-end: 20px; z-index: 150; width: 56px; height: 56px; border-radius: 50%; border: 0; cursor: pointer; background: var(--gold); font-size: 1.45rem; box-shadow: 0 8px 24px rgba(24,50,84,.35); }
+  #kbotBtn { position: fixed; bottom: 20px; inset-inline-end: 20px; z-index: 150; width: 56px; height: 56px; border-radius: 50%; border: 0; cursor: pointer; background: var(--gold); color: var(--deep); display: grid; place-items: center; box-shadow: 0 8px 24px rgba(24,50,84,.35); transition: transform .22s ease, opacity .22s ease; }
+  #kbotBtn svg { width: 25px; height: 25px; }
+  #kbotBtn:hover { transform: scale(1.06); }
+  #kbotBtn:focus-visible { outline: 3px solid var(--sea); outline-offset: 3px; }
+  /* A fixed launcher sits on top of whatever is being read. Rather than leave it
+     there, it steps aside while the page is scrolling down and comes back on the way
+     up or once scrolling stops — so it never permanently covers a paragraph. */
+  #kbotBtn.tucked { transform: translateY(90px); opacity: 0; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { #kbotBtn { transition: none; } }
+  /* and the end of the page clears it even when it is showing */
+  /* footer.footer, not footer: the .footer class sets a padding shorthand and would
+     otherwise win on specificity, leaving the last line of the page under the button. */
+  footer.footer { padding-bottom: 84px; }
   #kbot { position: fixed; bottom: 86px; inset-inline-end: 20px; z-index: 150; width: 330px; max-width: calc(100vw - 32px); max-height: 70vh; background: #fff; border-radius: 16px; box-shadow: 0 18px 50px rgba(15,23,42,.35); display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); }
   .kbot-head { background: var(--deep); color: #fff; padding: 11px 15px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
   .kbot-head button { background: none; border: 0; color: #cbd5e1; font-size: 1rem; cursor: pointer; }
@@ -1946,9 +1961,9 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
     <button class="btn gold sm" type="button" id="nlBtn"></button>
   </div>
 </footer>
-<button id="kbotBtn" type="button" aria-label="chat">💬</button>
+<button id="kbotBtn" type="button" aria-expanded="false" aria-controls="kbot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.9 8.9 0 0 1-3.8-.9L3 21l1.9-5.1A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg><span class="sr-only" id="kbotBtnLbl"></span></button>
 <div id="kbot" hidden>
-  <div class="kbot-head"><span id="kbotTitle">🤖</span><button id="kbotClose" type="button" aria-label="close">✕</button></div>
+  <div class="kbot-head"><span id="kbotTitle">🤖</span><button id="kbotClose" type="button"><span aria-hidden="true">✕</span><span class="sr-only" id="kbotCloseLbl"></span></button></div>
   <div class="kbot-msgs" id="kbotMsgs"></div>
   <div class="kbot-chips" id="kbotChips"></div>
   <form id="kbotForm" autocomplete="off"><input id="kbotIn" maxlength="200"><button type="submit" aria-label="send">➤</button></form>
@@ -2388,6 +2403,30 @@ function carouselHtml() {
 
 /* ============ helpers ============ */
 function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
+/* Hide the launcher while the reader is moving down the page, bring it back when
+   they scroll up or come to rest. Nothing here runs during the scroll event itself
+   beyond storing a number; the class flip happens on the next frame. */
+function kbotAutoTuck() {
+  var btn = document.getElementById('kbotBtn');
+  if (!btn) return;
+  var last = window.scrollY, pending = 0, idle = null;
+  window.addEventListener('scroll', function () {
+    /* Cancel and reschedule rather than guarding with a boolean: a 'ticking' flag
+       that is cleared inside the frame stays stuck if frames are paused (a background
+       tab), and the behaviour would then be dead for the rest of the session. */
+    if (pending) cancelAnimationFrame(pending);
+    pending = requestAnimationFrame(function () {
+      pending = 0;
+      var y = window.scrollY, panel = document.getElementById('kbot');
+      /* never tuck it away while the chat itself is open */
+      var open = panel && !panel.hidden;
+      if (!open) btn.classList.toggle('tucked', y > last + 4 && y > 240);
+      last = y;
+    });
+    clearTimeout(idle);
+    idle = setTimeout(function () { btn.classList.remove('tucked'); }, 700);
+  }, { passive: true });
+}
 function toast(msg) {
   var t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
@@ -2486,6 +2525,13 @@ function renderChrome() {
   document.getElementById('footSlogan').textContent = T('dates');
   document.getElementById('footNote').textContent = T('loc') + ' · ' + T('committee');
   document.getElementById('kbotTitle').textContent = '🤖 ' + A('مساعد المهرجان', 'Festival Assistant');
+  /* the launcher used to announce itself as "chat" in either language */
+  var kb = document.getElementById('kbotBtn'), kbl = document.getElementById('kbotBtnLbl');
+  if (kbl) kbl.textContent = A('افتح مساعد المهرجان', 'Open the festival assistant');
+  if (kb) kb.setAttribute('aria-label', A('افتح مساعد المهرجان', 'Open the festival assistant'));
+  var kc = document.getElementById('kbotClose'), kcl = document.getElementById('kbotCloseLbl');
+  if (kcl) kcl.textContent = A('إغلاق المساعد', 'Close the assistant');
+  if (kc) kc.setAttribute('aria-label', A('إغلاق المساعد', 'Close the assistant'));
   var nlIn = document.getElementById('nlEmail');
   nlIn.placeholder = A('بريدك الإلكتروني — النشرة البريدية', 'Your email — newsletter');
   nlIn.setAttribute('aria-label', A('البريد الإلكتروني للنشرة البريدية', 'Email for the newsletter'));
@@ -3052,7 +3098,9 @@ function mqBand(text) {
 }
 var HOME_STATS = [
   { n: 15, s: '', ar: 'رياضة معتمدة', en: 'official sports' },
-  { n: 56, s: '', ar: 'فعالية في البرنامج', en: 'scheduled events' },
+  /* a function so it is read at render, after SCHED is built — a literal here went
+     stale the moment the workshop list grew the programme */
+  { n: function () { return SCHED.length; }, s: '', ar: 'فعالية في البرنامج', en: 'scheduled events' },
   { n: 8, s: '', ar: 'أيام منافسة', en: 'days of competition' },
   { n: 50000, s: '+', ar: 'زائر متوقع', en: 'expected visitors' }
 ];
@@ -3172,7 +3220,7 @@ R.home = function () {
     '<h2>' + A('<b>٨ أيام.</b> مدينة واحدة. <b>حماس لا يتوقف!</b>', '<b>8 DAYS.</b> ONE CITY. <b>GAME ON!</b>') + '</h2>' +
     '<p>' + esc(A('من 6 إلى 13 نوفمبر تتحول كلباء إلى ملعب كبير مفتوح للجميع — منافسات رسمية على الشاطئ، تحديات للمدارس والعائلات، وورش وفعاليات مجتمعية حول كل زاوية.', 'From 6 to 13 November, Kalba becomes one giant open playground — official beach competitions, school and family challenges, and community events around every corner.')) + '</p>' +
     '<div class="def-stats">' + HOME_STATS.map(function (x) {
-      return '<div class="def-stat"><b data-count="' + x.n + '" data-suffix="' + x.s + '">0</b>' +
+      return '<div class="def-stat"><b data-count="' + (typeof x.n === 'function' ? x.n() : x.n) + '" data-suffix="' + x.s + '">0</b>' +
         '<span>' + esc(A(x.ar, x.en)) + '</span></div>';
     }).join('') + '</div></section>' +
 
@@ -4287,16 +4335,78 @@ var NEWS = [
 /* Only the non-competition entries are written by hand; every fixture below is
    generated from the roster's `sch`, so the programme and the calendar cannot drift
    away from the championships. */
+/* The community page and the programme each carried their own copy of the workshops,
+   with different seat counts for the same sessions. One list now feeds both, and a
+   booking is a real thing that persists rather than a toast that claims it did. */
+var WORKSHOPS = [
+  { k: 'fitness',   d: '07/11', t: '16:30', cap: 30, left: 14, ar: 'أساسيات اللياقة العامة',   en: 'Fitness basics' },
+  { k: 'nutrition', d: '08/11', t: '16:30', cap: 30, left: 6,  ar: 'التغذية الرياضية الصحية', en: 'Sports nutrition' },
+  { k: 'running',   d: '09/11', t: '16:30', cap: 30, left: 0,  ar: 'أساسيات الجري والسباقات',   en: 'Running basics' },
+  { k: 'firstaid',  d: '10/11', t: '16:30', cap: 30, left: 9,  ar: 'الإسعافات الأولية الرياضية',  en: 'Sports first aid' },
+  { k: 'injury',    d: '11/11', t: '16:30', cap: 30, left: 22, ar: 'الوقاية من الإصابات',    en: 'Injury prevention' },
+  { k: 'senior',    d: '12/11', t: '16:30', cap: 30, left: 17, ar: 'لياقة كبار السن',    en: 'Senior fitness' }
+];
+/* Seats held by this browser. localStorage rather than IndexedDB: a handful of keys,
+   and it must be readable synchronously while the page renders. */
+var WS_BOOKED = {};
+function wsLoad() {
+  try { WS_BOOKED = JSON.parse(localStorage.getItem('kalba.workshops') || '{}') || {}; }
+  catch (e) { WS_BOOKED = {}; }
+}
+function wsSave() {
+  try { localStorage.setItem('kalba.workshops', JSON.stringify(WS_BOOKED)); } catch (e) {}
+}
+function wsById(k) { return WORKSHOPS.filter(function (w) { return w.k === k; })[0]; }
+function wsHas(k) { return !!WS_BOOKED[k]; }
+/* The seat the visitor is holding comes off the counter, so the number they read
+   matches what they have actually done. */
+function wsLeft(w) { return Math.max(0, w.left - (wsHas(w.k) ? 1 : 0)); }
+window.wsToggle = function (k) {
+  var w = wsById(k);
+  if (!w) return;
+  if (wsHas(k)) {
+    delete WS_BOOKED[k];
+    toast(A('أُلغي حجزك — عاد المقعد للمتاح',
+             'Booking cancelled — the seat is back in the pool'));
+  } else {
+    if (w.left <= 0) return;
+    WS_BOOKED[k] = 1;
+    toast(A('حُجز مقعدك — يبقى محفوظاً على هذا الجهاز',
+             'Seat booked — it stays saved on this device'));
+  }
+  wsSave();
+  /* repaint wherever the workshop is on screen */
+  var body = document.getElementById('wsList');
+  if (body) body.innerHTML = wsCardsHtml();
+  if (document.getElementById('scList')) schedRefresh();
+};
+function wsCardsHtml() {
+  return WORKSHOPS.map(function (w) {
+    var left = wsLeft(w), mine = wsHas(w.k), full = left <= 0 && !mine;
+    return '<div class="card"><div class="ic" aria-hidden="true">' + scIcon('pulse') + '</div>' +
+      '<div class="tt" style="font-size:.95rem">' + esc(A(w.ar, w.en)) + '</div>' +
+      '<div class="dd">' + esc(festDayLabel(w.d)) + ' · <span dir="ltr">' + esc(w.t) + '</span></div>' +
+      '<div class="dd ' + (full ? 'bad-text' : 'ok-text') + '">' +
+      (full ? esc(A('اكتمل العدد', 'Fully booked'))
+            : esc(A('مقاعد متبقية: ', 'Seats left: ')) + left + '/' + w.cap) + '</div>' +
+      (mine ? '<div class="dd" style="color:var(--ok-ink);font-weight:700">' + esc(A('✓ مقعدك محجوز', '✓ Your seat is booked')) + '</div>' : '') +
+      (full ? '' : '<button class="btn sm ' + (mine ? 'ghost' : 'primary') + '" onclick="wsToggle(\'' + w.k + '\')">' +
+        esc(mine ? A('إلغاء الحجز', 'Cancel booking') : A('احجز', 'Reserve')) + '</button>') +
+      '</div>';
+  }).join('');
+}
 var SCHED_FIXED = [
   { d: '06/11', t: '15:00', k: '📝', ar: 'التسجيل والاعتماد الميداني', en: 'Registration & accreditation', v: 'نقطة التسجيل' },
   { d: '06/11', t: '19:00', k: '🏅', ar: 'حفل الافتتاح', en: 'Opening ceremony', v: 'المسرح الرئيسي' },
-  { d: '07/11', t: '16:30', k: '🩺', ar: 'ورشة: أساسيات اللياقة العامة', en: 'Workshop: fitness basics', v: 'خيمة الورش', ws: 1, cap: 30, left: 14 },
-  { d: '08/11', t: '16:30', k: '🩺', ar: 'ورشة: التغذية الرياضية الصحية', en: 'Workshop: sports nutrition', v: 'خيمة الورش', ws: 1, cap: 30, left: 6 },
   { d: '09/11', t: '17:00', k: '🤸', ar: 'التحديات اليومية والكالستينكس', en: 'Daily challenges & calisthenics', v: 'ساحة الكورنيش' },
   { d: '10/11', t: '17:00', k: '🤸', ar: 'الألعاب الشعبية (الكيرم وشد الحبل)', en: 'Traditional games', v: 'المنطقة المجتمعية' },
-  { d: '11/11', t: '16:30', k: '🩺', ar: 'ورشة: الوقاية من الإصابات', en: 'Workshop: injury prevention', v: 'خيمة الورش', ws: 1, cap: 30, left: 22 },
   { d: '13/11', t: '20:00', k: '🏅', ar: 'الحفل الختامي', en: 'Closing ceremony', v: 'المسرح الرئيسي' }
 ];
+/* Every workshop in the list appears in the programme, so the two cannot disagree. */
+WORKSHOPS.forEach(function (w) {
+  SCHED_FIXED.push({ d: w.d, t: w.t, k: '🩺', wk: w.k, cap: w.cap, left: w.left, ws: 1,
+    ar: 'ورشة: ' + w.ar, en: 'Workshop: ' + w.en, v: 'خيمة الورش' });
+});
 /* التتويجات run every day from the second to the last, per the fixture table. */
 ['07/11', '08/11', '09/11', '10/11', '11/11', '12/11', '13/11'].forEach(function (d) {
   SCHED_FIXED.push({ d: d, t: '21:30', k: '🏅', ar: 'التتويجات', en: 'Award ceremonies', v: 'منصة التتويج' });
@@ -5072,13 +5182,20 @@ function schedItemHtml(r, i) {
     '<div class="sc-facts">' +
     '<span class="sc-fact">' + scIcon('pin') + '<b>' + esc(r.v) + '</b></span>' +
     '<span class="sc-fact">' + scIcon(kind.ic) + esc(A(kind.ar, kind.en)) + '</span>' +
-    (r.ws ? '<span class="sc-fact">' + scIcon('seat') + '<b class="' + (r.left > 0 ? 'ok-text' : 'bad-text') + '">' +
-      (r.left > 0 ? esc(A('مقاعد متبقية: ', 'Seats left: ')) + r.left + '/' + r.cap
-                  : esc(A('اكتمل العدد', 'Fully booked'))) + '</b></span>' : '') +
+    (r.ws ? (function () {
+      var w = r.wk ? wsById(r.wk) : null, left = w ? wsLeft(w) : r.left, mine = w && wsHas(w.k);
+      return '<span class="sc-fact">' + scIcon('seat') + '<b class="' + (left > 0 ? 'ok-text' : 'bad-text') + '">' +
+        (left > 0 ? esc(A('مقاعد متبقية: ', 'Seats left: ')) + left + '/' + r.cap
+                  : esc(A('اكتمل العدد', 'Fully booked'))) + '</b></span>' +
+        (mine ? '<span class="sc-fact" style="color:var(--ok-ink);font-weight:700">✓ ' + esc(A('مقعدك محجوز', 'Your seat is booked')) + '</span>' : '');
+    })() : '') +
     '</div><div class="sc-acts">' +
     '<a class="btn sm primary" data-ics="' + r.i + '" href="#" onclick="icsAttach(this, ' + r.i + '); return !!this.dataset.ready">' +
     scIcon('calplus') + ' ' + esc(A('أضف إلى التقويم', 'Add to calendar')) + '</a>' +
     (champ ? '<button type="button" class="btn sm ghost" onclick="go(\'champ\',' + r.c + ')">' + esc(A('صفحة ', 'Open ') + champName(champ)) + '</button>' : '') +
+    (r.wk && (wsLeft(wsById(r.wk)) > 0 || wsHas(r.wk))
+      ? '<button type="button" class="btn sm ' + (wsHas(r.wk) ? 'ghost' : 'primary') + '" onclick="wsToggle(\'' + r.wk + '\')">' +
+        esc(wsHas(r.wk) ? A('إلغاء الحجز', 'Cancel booking') : A('احجز مقعداً', 'Reserve a seat')) + '</button>' : '') +
     '</div></div></div></div></li>';
 }
 function schedListHtml() {
@@ -6700,7 +6817,6 @@ R.venue = function () {
 
 R.community = function () {
   var evs = [['🤸', A('التحديات اليومية والكالستينكس', 'Daily challenges & calisthenics')], ['🎯', A('الألعاب الشعبية (الكيرم وشد الحبل)', 'Traditional games')], ['⚽', A('مسابقات جماهيرية قصيرة', 'Short public contests')], ['👟', A('عروض تعريفية للمحترفين', 'Pro demo sessions')]];
-  var ws = [[A('أساسيات اللياقة العامة', 'Fitness basics'), 14], [A('التغذية الرياضية الصحية', 'Sports nutrition'), 6], [A('الوقاية من الإصابات', 'Injury prevention'), 22], [A('أساسيات الجري والسباقات', 'Running basics'), 0], [A('الإسعافات الأولية الرياضية', 'Sports first aid'), 9], [A('لياقة كبار السن', 'Senior fitness'), 17]];
   return pageHead(
     A('للجميع', 'FOR EVERYONE'),
     A('الفعاليات المجتمعية والورش الصحية', 'Community & Health Workshops'),
@@ -6710,12 +6826,8 @@ R.community = function () {
     '<section class="container section">' +
     '<p class="sec-intro">' + esc(A('فعاليات مفتوحة للجميع وورش صحية بمقاعد محدودة — سجّل مسبقاً لضمان مقعدك.', 'Events open to everyone and health workshops with limited seats — pre-register to guarantee yours.')) + '</p><div class="grid g4">' +
     evs.map(function (e2) { return '<div class="card"><div class="ic">' + e2[0] + '</div><div class="tt" style="font-size:.95rem">' + esc(e2[1]) + '</div></div>'; }).join('') +
-    '</div><h2 class="sec-h" style="margin-top:26px">' + esc(A('الورش الصحية — سجّل مسبقاً لضمان مقعدك', 'Health workshops — pre-register for a seat')) + '</h2><div class="grid g3">' +
-    ws.map(function (w) {
-      return '<div class="card"><div class="ic">🩺</div><div class="tt" style="font-size:.95rem">' + esc(w[0]) + '</div>' +
-        '<div class="dd ' + (w[1] > 0 ? 'ok-text' : 'bad-text') + '">' + (w[1] > 0 ? esc(A('مقاعد متبقية: ', 'Seats left: ')) + w[1] + '/30' : esc(A('اكتمل العدد', 'Fully booked'))) + '</div>' +
-        (w[1] > 0 ? '<button class="btn sm primary" onclick="toast(A(\'تم حجز مقعدك ✔\',\'Seat reserved ✔\'))">' + esc(A('احجز', 'Reserve')) + '</button>' : '') + '</div>';
-    }).join('') + '</div></section>';
+    '</div><h2 class="sec-h" style="margin-top:26px">' + esc(A('الورش الصحية — سجّل مسبقاً لضمان مقعدك', 'Health workshops — pre-register for a seat')) + '</h2>' +
+    '<div id="wsList" class="grid g3">' + wsCardsHtml() + '</div></section>';
 };
 
 R.news = function () {
@@ -7030,6 +7142,10 @@ function kbotAnswer(q) {
   var btn = document.getElementById('kbotBtn'), kb = document.getElementById('kbot');
   btn.addEventListener('click', function () {
     kb.hidden = !kb.hidden;
+    /* the toggle has to say which state it is in, and it must not tuck itself away
+       while the panel it controls is open */
+    btn.setAttribute('aria-expanded', kb.hidden ? 'false' : 'true');
+    if (!kb.hidden) btn.classList.remove('tucked');
     var box = document.getElementById('kbotMsgs');
     if (!kb.hidden && !box.children.length) {
       kbotMsg(esc(A('أهلاً بك في مهرجان كلباء الرياضي 2026! 👋 كيف أقدر أساعدك؟', 'Welcome to Kalba Sports Festival 2026! 👋 How can I help?')));
@@ -7040,7 +7156,11 @@ function kbotAnswer(q) {
         b.onclick = function () { kbotAsk(c[0]); };
         chips.appendChild(b);});}
   });
-  document.getElementById('kbotClose').addEventListener('click', function () { kb.hidden = true; });
+  document.getElementById('kbotClose').addEventListener('click', function () {
+    kb.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    btn.focus();   /* send focus back to what opened it */
+  });
   document.getElementById('kbotForm').addEventListener('submit', function (ev) {
     ev.preventDefault();
     var q = document.getElementById('kbotIn').value.trim();
@@ -7082,6 +7202,8 @@ document.documentElement.lang = 'ar';
 document.documentElement.dir = 'rtl';
 /* Paint immediately with defaults, then repaint once saved media comes back from
    IndexedDB — an async read shouldn't hold the first frame hostage. */
+wsLoad();
+kbotAutoTuck();
 render();
 mediaHydrate().then(function () { render(); });
 </script>
