@@ -609,12 +609,6 @@
   #kbotForm input { border: 0; padding: 11px 13px; }
   #kbotForm input:focus { outline: none; }
   #kbotForm button { border: 0; background: var(--gold); color: var(--deep); width: 50px; font-size: 1rem; cursor: pointer; }
-  .agenda-blocks { list-style: none; margin: 0; padding: 0 20px 0 0; position: relative; }
-  .agenda-blocks::before { content: ''; position: absolute; inset-inline-start: 6px; top: 10px; bottom: 10px; width: 2px; background: var(--gold); opacity: .45; }
-  .agenda-blocks li { display: flex; gap: 10px; padding: 10px 0; font-size: .98rem; align-items: baseline; position: relative; border-top: 0; }
-  .agenda-blocks li::before { content: ''; position: absolute; inset-inline-start: -18px; top: 18px; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 3px rgba(207,167,98,.25); }
-  .agenda-time { color: var(--sea-dark); font-weight: 800; white-space: nowrap; font-size: .9rem; background: var(--sand); border: 1px solid var(--line); padding: 2px 9px; border-radius: 8px; font-variant-numeric: tabular-nums; }
-  .agenda-desc { font-size: .98rem; }
   .mini-cd { font-weight: 800; color: var(--gold-ink); font-size: 1.1rem; margin: 8px 0; font-variant-numeric: tabular-nums; }
   .nav-login { border: 1px solid var(--gold); color: var(--gold-soft) !important; border-radius: 999px; cursor: pointer; }
   .menu-btn.nav-login { padding: 7px 14px; }
@@ -694,10 +688,6 @@
   .btn-outline:hover { background: var(--deep); color: #fff; }
   .btn-outline:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
   .ag-empty { text-align: center; padding: 40px 16px; background: #fff; border: 1px dashed var(--line); border-radius: 14px; color: var(--muted); }
-  .ag-rhythm { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; margin-top: 26px; }
-  .ag-rhythm h2 { margin: 0 0 4px; font-size: 1.1rem; }
-  .ag-rhythm p { margin: 0 0 12px; font-size: .88rem; }
-
   /* month calendar */
   .ag-side { position: sticky; top: 76px; }
   /* 10px side padding keeps the 7 day cells at 44px inside a 330px sidebar */
@@ -2069,7 +2059,7 @@ var I18N = {
     site: 'مهرجان كلباء الرياضي 2026',
     loc: 'مدينة كلباء — إمارة الشارقة، الإمارات العربية المتحدة',
     galleryTitle: 'من أجواء كلباء الرياضية',
-    champsT: 'البطولات', schedT: 'الجدول', resT: 'النتائج', communityT: 'المجتمع', venueT: 'الموقع', newsT: 'الأخبار',
+    champsT: 'البطولات', resT: 'النتائج', communityT: 'المجتمع', venueT: 'الموقع', newsT: 'الأخبار',
     home: 'الرئيسية', register: 'التسجيل', surveys: 'الاستبيانات', leaderboard: 'المتصدرون',
     map: 'الخريطة', agenda: 'الأجندة', screen: 'الشاشة', admin: 'لوحة التحكم', award: 'واجهة المنظم',
     join: 'انضم لنظام النقاط', langBtn: 'English',
@@ -2099,13 +2089,12 @@ var I18N = {
     subTitle: 'الاشتراك في التنبيهات', subIntro: 'سجّل بريدك أو جوالك لتصلك تنبيهات المهرجان.', subBtn: 'اشترك',
     another: 'زائر آخر', required: 'الرجاء تعبئة الحقول الإلزامية', npsHint: '0 = لن أوصي · 10 = سأوصي بشدة',
     days: ['الجمعة 6 نوفمبر','السبت 7 نوفمبر','الأحد 8 نوفمبر','الاثنين 9 نوفمبر','الثلاثاء 10 نوفمبر','الأربعاء 11 نوفمبر','الخميس 12 نوفمبر','الجمعة 13 نوفمبر'],
-    blocks: [['⛅','05:30','أنشطة الفجر: كاياك المانغروف، هايكنج، جولات المزارع'],['🏟️','16:00','المنطقة الرئيسية: مسابقات، تحدي القوة، منطقة الأطفال'],['🎭','18:00','العروض الجماهيرية + الأكشاك والمأكولات'],['🏆','20:00','مسابقات المساء وإعلان متصدري اليوم']]
   },
   en: {
     site: 'Kalba Sports Festival 2026',
     loc: 'City of Kalba — Emirate of Sharjah, United Arab Emirates',
     galleryTitle: 'Kalba sports in action',
-    champsT: 'Championships', schedT: 'Schedule', resT: 'Results', communityT: 'Community', venueT: 'Venue', newsT: 'News',
+    champsT: 'Championships', resT: 'Results', communityT: 'Community', venueT: 'Venue', newsT: 'News',
     home: 'Home', register: 'Register', surveys: 'Surveys', leaderboard: 'Leaderboard',
     map: 'Map', agenda: 'Agenda', screen: 'Screen', admin: 'Admin', award: 'Organizer',
     join: 'Join the Points Program', langBtn: 'العربية',
@@ -2135,7 +2124,6 @@ var I18N = {
     subTitle: 'Get Notifications', subIntro: 'Leave your email or mobile to receive festival alerts.', subBtn: 'Subscribe',
     another: 'Another visitor', required: 'Please fill the required fields', npsHint: '0 = not at all · 10 = extremely likely',
     days: ['Fri Nov 6','Sat Nov 7','Sun Nov 8','Mon Nov 9','Tue Nov 10','Wed Nov 11','Thu Nov 12','Fri Nov 13'],
-    blocks: [['⛅','05:30','Dawn: mangrove kayaking, hiking, farm tours'],['🏟️','16:00','Main zone: competitions, strength challenge, kids zone'],['🎭','18:00','Public shows + kiosks & food'],['🏆','20:00','Evening competitions & daily leaders announcement']]
   }
 };
 function T(k) { return I18N[lang][k] !== undefined ? I18N[lang][k] : (I18N.ar[k] || k); }
@@ -2403,7 +2391,7 @@ function renderChrome() {
   ].map(function (l) { return '<a onclick="go(\'' + l[0] + '\')">' + esc(l[1]) + '</a>'; }).join(' · ');
 
   var MENUS = [[A('المنافسات', 'Competitions'),[['champs', T('champsT')],['res', T('resT')],['leaderboard', T('leaderboard')]]],
-  [A('الفعاليات', 'Programme'),[['sched', T('schedT')],['community', T('communityT')],['schools', A('تحدي مدارس كلباء', 'Schools Challenge')],['agenda', T('agenda')]]],
+  [A('الفعاليات', 'Programme'),[['agenda', T('agenda')],['community', T('communityT')],['schools', A('تحدي مدارس كلباء', 'Schools Challenge')]]],
   [A('التسجيل', 'Register'),[['champs', A('تسجيل المشاركين', 'Participants')],['register', T('register')],['join', A('تصريح الزيارة', 'Visitor Pass')],['surveys', T('surveys')]]],
   [A('استكشف', 'Explore'),[['about', A('عن المهرجان', 'About')],['venue', T('venueT')],['gallery', A('المعرض الإعلامي', 'Gallery')],
   ['news', T('newsT')],['faq', A('الأسئلة الشائعة', 'FAQ')],['contact', A('تواصل معنا', 'Contact')]]]];
@@ -3652,10 +3640,20 @@ function agCalendarHtml() {
     '<p class="cal-legend"><span class="dot"></span> ' + esc(A('يوم به فعاليات', 'Day with events')) + '</p>' +
     '</div></aside>';
 }
+/* The month calendar and the timeline's day chips now sit on one page, so they are
+   two views of a single choice rather than two filters that can disagree. */
+function agIsoOf(d) { return d ? FEST_FROM.slice(0, 4) + '-' + d.slice(3, 5) + '-' + d.slice(0, 2) : null; }
+function schedDayOf(iso) { return iso ? iso.slice(8, 10) + '/' + iso.slice(5, 7) : ''; }
+function agRepaint() {
+  var c = document.getElementById('agCal');
+  if (c) c.outerHTML = agCalendarHtml().replace('<aside class="ag-side"', '<aside class="ag-side" id="agCal"');
+  var l = document.getElementById('agList');
+  if (l) l.innerHTML = agListHtml();
+}
 window.agPick = function (iso) {
   agDay = iso;
-  var c = document.getElementById('agCal'); if (c) c.outerHTML = agCalendarHtml().replace('<aside class="ag-side"', '<aside class="ag-side" id="agCal"');
-  var l = document.getElementById('agList'); if (l) l.innerHTML = agListHtml();
+  schedDay = schedDayOf(iso);
+  schedRefresh();   /* repaints the calendar and the cards too */
 };
 window.agMonthShift = function (n) {
   var m = agMonth.m + n, y = agMonth.y;
@@ -3680,11 +3678,12 @@ function agDateLabel(iso) {
   return (+p[2]) + ' ' + AG_MONTHS[lang][+p[1] - 1] + ' ' + p[0];
 }
 function agListHtml() {
-  var rows = SCHED.map(function (r, i) { return { r: r, i: i, iso: agSchedIso(r) }; });
-  if (agDay) rows = rows.filter(function (x) { return x.iso === agDay; });
+  /* Same filter state as the timeline above — day, type and search — so the two
+     views of the programme can never show different subsets of it at once. */
+  var rows = schedRowsNow().map(function (r) { return { r: r, i: r.i, iso: agSchedIso(r) }; });
   if (!rows.length) {
-    return '<div class="ag-empty"><p>' + esc(A('لا توجد فعاليات مجدولة في هذا اليوم.', 'No events scheduled on this day.')) +
-      '</p><button class="btn sm ghost" onclick="agPick(null)">' + esc(A('عرض كل الأيام', 'Show all days')) + '</button></div>';
+    return '<div class="ag-empty"><p>' + esc(A('لا توجد فعاليات مطابقة للتصفية الحالية.', 'No events match the current filters.')) +
+      '</p><button class="btn sm ghost" onclick="schedClear()">' + esc(A('مسح التصفية', 'Clear filters')) + '</button></div>';
   }
   return rows.map(function (x) {
     var r = x.r;
@@ -3700,7 +3699,6 @@ function agListHtml() {
       '<span class="ag-val">' + esc(r.v) + '</span></div>' +
       (r.ws ? '<div class="ag-field"><span class="ag-lbl">' + esc(A('المقاعد', 'Seats')) + '</span>' +
         '<span class="ag-val ' + (r.left > 0 ? 'ok-text' : 'bad-text') + '">' + r.left + '/' + r.cap + '</span></div>' : '') +
-      '<button class="btn-outline" onclick="go(\'sched\')">' + esc(A('الجدول الكامل', 'Full schedule')) + '</button>' +
       '</div></article>';
   }).join('');
 }
@@ -3723,27 +3721,43 @@ R.agenda = function () {
       return '<div class="card" style="text-align:center"><div class="ic">' + m[0] + '</div><div class="tt">' + esc(m[1]) + '</div>' +
         '<div class="mini-cd" dir="ltr" data-target="' + m[2] + '">--</div></div>';
     }).join('') + '</div>';
-  /* the fixed daily rhythm, shown under the event cards */
-  var rhythm = '<div class="ag-rhythm"><h2 class="sec-h">' + esc(A('الإيقاع اليومي', 'The daily rhythm')) + '</h2>' +
-    '<p class="muted">' + esc(A('يتكرر هذا البرنامج كل يوم من أيام المهرجان الثمانية.', 'This runs every one of the eight festival days.')) + '</p>' +
-    '<ul class="agenda-blocks">' + T('blocks').map(function (b) {
-      return '<li><span aria-hidden="true">' + b[0] + '</span><span class="agenda-time" dir="ltr">' + b[1] + '</span><span class="agenda-desc">' + esc(b[2]) + '</span></li>';
-    }).join('') + '</ul></div>';
-
   /* One tap for the whole programme, rather than adding 56 events one at a time. */
   var addAll = '<div class="cal-cta">' +
     '<span class="cal-cta-ic">' + scIcon('cal') + '</span>' +
     '<span class="cal-cta-txt"><strong>' + esc(A('أضف المهرجان كاملاً إلى تقويمك', 'Add the whole festival to your calendar')) + '</strong>' +
     '<span class="cal-cta-sub">' + esc(eventsLabel(SCHED.length) + A(' على مدى 8 أيام، مع تنبيه قبل 30 دقيقة من كل موعد.', ' across 8 days, each with a 30-minute alert.')) + '</span></span>' +
-    '<a class="btn gold" href="' + icsLink(icsBuild(SCHED, T('site'))) + '" download="kalba-festival-2026.ics">' +
+    '<a class="btn gold" href="' + icsFestival() + '" download="kalba-festival-2026.ics">' +
     scIcon('calplus') + ' ' + esc(A('أضف إلى التقويم', 'Add to calendar')) + '</a></div>';
 
+  /* The schedule was its own page with its own hero and its own day filter, which
+     split one question - "what is on, and when?" - across two places. It leads the
+     agenda now, in a reading-width column of its own; the month calendar below is
+     wired to the same day choice rather than competing with it. */
+  var timeline =
+    '<section class="container section" style="max-width:820px;padding-bottom:8px">' +
+      '<h2 class="sec-title">' + esc(A('الجدول الزمني التفاعلي', 'Interactive Schedule')) + '</h2>' +
+      '<p class="sec-intro">' + esc(A('رشّح حسب اليوم أو النوع، أو ابحث عن رياضة، ثم افتح أي فعالية للتفاصيل وإضافتها لتقويمك.',
+        'Filter by day or type, search for a sport, then open any event for the detail and add it to your calendar.')) + '</p>' +
+      '<div class="sc-tools">' +
+        '<div class="sc-search">' + scIcon('search') +
+          '<label class="sr-only" for="scQ">' + esc(A('ابحث في الجدول', 'Search the schedule')) + '</label>' +
+          '<input type="text" id="scQ" value="' + esc(schedQ) + '" oninput="schedSearch(this.value)" maxlength="60" ' +
+          'placeholder="' + esc(A('ابحث عن رياضة، ورشة أو مكان…', 'Search a sport, workshop or venue…')) + '">' +
+          '<button type="button" class="sc-clear" onclick="schedClear()" aria-label="' + esc(A('مسح البحث والتصفية', 'Clear search and filters')) + '">' + scIcon('x') + '</button>' +
+        '</div>' +
+        '<div id="scChips">' + schedChipsHtml() + '</div>' +
+        '<div id="scMeta">' + schedMetaHtml(schedRowsNow().length) + '</div>' +
+      '</div>' +
+      '<div id="scList">' + schedListHtml() + '</div>' +
+    '</section>';
+
   return pageHead(A('البرنامج', 'PROGRAMME'), T('agTitle'), T('agIntro') || '', { bg: GALLERY[2].src }) +
-    '<section class="container section">' +
+    timeline +
+    '<section class="container section" style="padding-top:8px">' +
     addAll +
     msHtml +
     '<div class="ag-grid">' +
-    '<div class="ag-main"><div id="agList">' + agListHtml() + '</div>' + rhythm + '</div>' +
+    '<div class="ag-main"><div id="agList">' + agListHtml() + '</div></div>' +
     agCalendarHtml().replace('<aside class="ag-side"', '<aside class="ag-side" id="agCal"') +
     '</div></section>';
 };
@@ -4671,10 +4685,16 @@ function icsBuild(rows, calName) {
    swallowed, so the button did nothing at all. A plain download link lets the OS treat
    the file as something to open, which is what both platforms want. */
 var icsUrls = [];
-function icsLink(text) {
-  var url = URL.createObjectURL(new Blob([text], { type: 'text/calendar;charset=utf-8' }));
-  icsUrls.push(url);
-  return url;
+/* The whole-festival file is built once per language and deliberately kept out of
+   icsUrls: both links now live on the same page, so releasing the row blobs when the
+   timeline re-filters would otherwise revoke the festival link out from under it. */
+var icsFestUrl = null, icsFestLang = null;
+function icsFestival() {
+  if (icsFestUrl && icsFestLang === lang) return icsFestUrl;
+  if (icsFestUrl) { try { URL.revokeObjectURL(icsFestUrl); } catch (e) {} }
+  icsFestLang = lang;
+  icsFestUrl = URL.createObjectURL(new Blob([icsBuild(SCHED, T('site'))], { type: 'text/calendar;charset=utf-8' }));
+  return icsFestUrl;
 }
 /* Blob URLs live until the document unloads, so drop the schedule's when its list is
    rebuilt — the anchors holding them have just been thrown away. */
@@ -4687,7 +4707,9 @@ window.icsAttach = function (a, id) {
   if (!a || a.dataset.ready) return;
   var r = SCHED[id];
   if (!r) return;
-  a.href = icsLink(icsBuild([r], A(r.ar, r.en)));
+  var url = URL.createObjectURL(new Blob([icsBuild([r], A(r.ar, r.en))], { type: 'text/calendar;charset=utf-8' }));
+  icsUrls.push(url);
+  a.href = url;
   a.setAttribute('download', 'kalba-2026-' + (r.i + 1) + '.ics');
   a.dataset.ready = '1';
 };
@@ -4816,12 +4838,13 @@ function schedRefresh() {
   if (meta) meta.innerHTML = schedMetaHtml(schedRowsNow().length);
   list.innerHTML = schedListHtml();
   hideDecorativeEmoji(list);
+  agRepaint();
 }
 window.schedSetKind = function (k) { schedFilter = k; schedRefresh(); };
-window.schedSetDay = function (d) { schedDay = d; schedRefresh(); };
+window.schedSetDay = function (d) { schedDay = d; agDay = agIsoOf(d); schedRefresh(); };
 window.schedSearch = function (v) { schedQ = v; schedRefresh(); };
 window.schedClear = function () {
-  schedFilter = ''; schedDay = ''; schedQ = '';
+  schedFilter = ''; schedDay = ''; schedQ = ''; agDay = null;
   var i = document.getElementById('scQ');
   if (i) { i.value = ''; i.focus(); }
   schedRefresh();
@@ -4836,30 +4859,6 @@ window.schedToggle = function (id) {
   /* it is already on screen — do not re-run the entry animation under it */
   li.style.animation = 'none';
 };
-R.sched = function () {
-  var shown = schedRowsNow().length;
-  return pageHead(
-    A('المواعيد', 'FIXTURES'),
-    A('الجدول الزمني التفاعلي', 'Interactive Schedule'),
-    A('كل المباريات والفعاليات عبر أيام المهرجان الثمانية — رشّح حسب اليوم أو النوع، أو ابحث عن رياضة، ثم افتح أي فعالية للتفاصيل.',
-      'Every match and event across the eight festival days — filter by day or type, search for a sport, and open any event for the detail.'),
-    { bg: GALLERY[2].src }
-  ) +
-  '<section class="container section" style="max-width:820px">' +
-    '<div class="sc-tools">' +
-      '<div class="sc-search">' + scIcon('search') +
-        '<label class="sr-only" for="scQ">' + esc(A('ابحث في الجدول', 'Search the schedule')) + '</label>' +
-        '<input type="text" id="scQ" value="' + esc(schedQ) + '" oninput="schedSearch(this.value)" maxlength="60" ' +
-        'placeholder="' + esc(A('ابحث عن رياضة، ورشة أو مكان…', 'Search a sport, workshop or venue…')) + '">' +
-        '<button type="button" class="sc-clear" onclick="schedClear()" aria-label="' + esc(A('مسح البحث والتصفية', 'Clear search and filters')) + '">' + scIcon('x') + '</button>' +
-      '</div>' +
-      '<div id="scChips">' + schedChipsHtml() + '</div>' +
-      '<div id="scMeta">' + schedMetaHtml(shown) + '</div>' +
-    '</div>' +
-    '<div id="scList">' + schedListHtml() + '</div>' +
-  '</section>';
-};
-
 var resTab = 'live';
 /* NEW LIVE RESULTS */
 var liveCategory = 'all';
@@ -6716,7 +6715,7 @@ function kbotAnswer(q) {
      [[A('🏆 تصفح البطولات', '🏆 Championships'), 'champs']]],
     [['جدول', 'موعد', 'متى', 'وقت', 'schedule', 'when', 'time'],
      A('المهرجان 6–13 نوفمبر 2026، الفعاليات الرئيسية 4–10 مساءً.', 'Nov 6–13, 2026 — main events 4–10 PM.'),
-     [[A('🗓️ الجدول الزمني', '🗓️ Schedule'), 'sched'], [A('📆 الأجندة', '📆 Agenda'), 'agenda']]],
+     [[A('📆 الأجندة والجدول', '📆 Agenda & schedule'), 'agenda']]],
     [['ورش', 'صحي', 'workshop', 'health'],
      A('6 ورش صحية مجانية بمقاعد محدودة — احجز مسبقاً.', '6 free health workshops with limited seats — pre-register.'),
      [[A('🩺 الورش والحجز', '🩺 Workshops'), 'community']]],
