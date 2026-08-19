@@ -505,7 +505,15 @@
   .def-over { color: var(--gold); font-weight: 800; letter-spacing: 3px; font-size: .82rem; }
   .def-feat-txt h2 { color: #fff; font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 900; margin: 8px 0 12px; }
   .def-feat-txt p { color: #b9c8db; line-height: 1.9; margin: 0 0 22px; }
-  @media (max-width: 760px) { .def-hero { min-height: 76vh; } .def-feat, .def-feat.flip { flex-direction: column; gap: 26px; padding: 30px 18px; } .def-stats { gap: 22px; } }
+  @media (max-width: 760px) {
+    .def-hero { min-height: 76vh; }
+    .def-feat, .def-feat.flip { flex-direction: column; gap: 26px; padding: 30px 18px; }
+    /* Once the row becomes a column, flex-basis stops being a width and becomes a
+       height — 400px and 380px were forcing the photo box and the text block to that
+       tall, which left the gold frame drawn around 188px of nothing under the image. */
+    .def-feat-img, .def-feat-txt { flex: 0 0 auto; width: 100%; }
+    .def-stats { gap: 22px; }
+  }
   /* summer wave divider — blends the photo hero into the sand background */
   .hero { position: relative; overflow: hidden; }
   .hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 26px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 26' preserveAspectRatio='none'%3E%3Cpath d='M0 16 Q15 4 30 14 T60 14 T90 14 T120 14 V26 H0 Z' fill='%23fdfcf8'/%3E%3C/svg%3E") repeat-x bottom; background-size: 120px 26px; pointer-events: none; z-index: 3; }
