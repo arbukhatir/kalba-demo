@@ -4042,9 +4042,12 @@ R.agenda = function () {
   var addAll = '<div class="cal-cta">' +
     '<span class="cal-cta-ic">' + scIcon('cal') + '</span>' +
     '<span class="cal-cta-txt"><strong>' + esc(A('أضف المهرجان كاملاً إلى تقويمك', 'Add the whole festival to your calendar')) + '</strong>' +
-    '<span class="cal-cta-sub">' + esc(eventsLabel(SCHED.length) + A(' على مدى 8 أيام، مع تنبيه قبل 30 دقيقة من كل موعد.', ' across 8 days, each with a 30-minute alert.')) + '</span></span>' +
+    '<span class="cal-cta-sub">' + esc(eventsLabel(SCHED.length) + A(' على مدى 8 أيام، مع تنبيه قبل 30 دقيقة من كل موعد.', ' across 8 days, each with a 30-minute alert.')) + '</span>' +
+    /* No template link can carry 59 events, so this one is a file either way — say so
+       rather than let the label promise a one-tap add it cannot deliver. */
+    '<span class="cal-cta-sub">' + esc(A('يُنزّل كملف .ics يفتح في تقويم آبل أو Google أو Outlook.', 'Downloads as an .ics file that opens in Apple Calendar, Google Calendar or Outlook.')) + '</span></span>' +
     '<a class="btn gold" href="' + icsFestival() + '" download="kalba-festival-2026.ics">' +
-    scIcon('calplus') + ' ' + esc(A('أضف إلى التقويم', 'Add to calendar')) + '</a></div>';
+    scIcon('calplus') + ' ' + esc(A('نزّل التقويم كاملاً', 'Download full calendar')) + '</a></div>';
 
   /* The schedule was its own page with its own hero and its own day filter, which
      split one question - "what is on, and when?" - across two places. It leads the
@@ -5086,6 +5089,21 @@ function icsRelease() {
   icsUrls = [];
 }
 /* Built when a row opens rather than for all 56 up front. */
+/* A downloaded .ics reaches the calendar in two taps and a detour through the file
+   manager. Google's template URL deep-links into the Android app (and opens the web
+   calendar elsewhere) with the event already filled in, so it is offered first and the
+   file stays for Apple Calendar and Outlook, which have no equivalent link. */
+function gcalUrl(r) {
+  var t = icsRange(r), kind = schedKind(r.k);
+  var q = [
+    'action=TEMPLATE',
+    'text=' + encodeURIComponent(A(r.ar, r.en)),
+    'dates=' + icsUtc(t[0]) + '/' + icsUtc(t[1]),
+    'location=' + encodeURIComponent(r.v || ''),
+    'details=' + encodeURIComponent(A(kind.ar, kind.en) + ' — ' + T('site'))
+  ];
+  return 'https://calendar.google.com/calendar/render?' + q.join('&');
+}
 window.icsAttach = function (a, id) {
   if (!a || a.dataset.ready) return;
   var r = SCHED[id];
@@ -5190,8 +5208,10 @@ function schedItemHtml(r, i) {
         (mine ? '<span class="sc-fact" style="color:var(--ok-ink);font-weight:700">✓ ' + esc(A('مقعدك محجوز', 'Your seat is booked')) + '</span>' : '');
     })() : '') +
     '</div><div class="sc-acts">' +
-    '<a class="btn sm primary" data-ics="' + r.i + '" href="#" onclick="icsAttach(this, ' + r.i + '); return !!this.dataset.ready">' +
-    scIcon('calplus') + ' ' + esc(A('أضف إلى التقويم', 'Add to calendar')) + '</a>' +
+    '<a class="btn sm primary" href="' + gcalUrl(r) + '" target="_blank" rel="noopener">' +
+    scIcon('calplus') + ' ' + esc(A('تقويم Google', 'Google Calendar')) + '</a>' +
+    '<a class="btn sm ghost" data-ics="' + r.i + '" href="#" onclick="icsAttach(this, ' + r.i + '); return !!this.dataset.ready">' +
+    scIcon('cal') + ' ' + esc(A('ملف .ics', '.ics file')) + '</a>' +
     (champ ? '<button type="button" class="btn sm ghost" onclick="go(\'champ\',' + r.c + ')">' + esc(A('صفحة ', 'Open ') + champName(champ)) + '</button>' : '') +
     (r.wk && (wsLeft(wsById(r.wk)) > 0 || wsHas(r.wk))
       ? '<button type="button" class="btn sm ' + (wsHas(r.wk) ? 'ghost' : 'primary') + '" onclick="wsToggle(\'' + r.wk + '\')">' +
