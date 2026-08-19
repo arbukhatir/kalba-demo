@@ -132,8 +132,6 @@
   @media (max-width: 920px) { .g4, .g3 { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 600px) { .g2, .g3, .g4 { grid-template-columns: 1fr; } }
   .card { background: #fff; border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); border: 1px solid var(--line); }
-  .portal-card { padding-top: 0; overflow: hidden; }
-  .portal-card .card-img { display: block; width: calc(100% + 36px); margin: 0 -18px 12px; aspect-ratio: 16 / 10; object-fit: cover; }
   .champ-card { padding: 0; overflow: hidden; }
   .champ-card .card-media { height: 148px; margin: 0 0 12px; border-radius: 0; overflow: hidden; display: grid; place-items: center; background: linear-gradient(150deg, #eef2f7, #e2e9f1); position: relative; }
   .champ-card .card-media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s cubic-bezier(.22,.61,.36,1); }
@@ -179,14 +177,35 @@
   .field-err::before { content: '!'; flex: 0 0 auto; width: 17px; height: 17px; border-radius: 50%; background: var(--bad-ink); color: #fff; font-size: .72rem; display: grid; place-items: center; }
   #formErr:focus { outline: 2px solid var(--sea); outline-offset: 3px; border-radius: 8px; }
   .frow { display: flex; gap: 13px; flex-wrap: wrap; }
+
+  /* Unified registration form. Eight portal cards each opened their own page, so
+     "register" meant eight different layouts and one wrong guess sent you back.
+     Now one form: pick the type first, and only that type's fields are revealed. */
+  .reg-picked { display: flex; align-items: center; gap: 12px; background: #f8fafc; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 18px 0; }
+  .reg-picked img { width: 44px; height: 44px; object-fit: contain; flex: 0 0 auto; }
+  .reg-picked b { display: block; font-family: var(--font-display); font-size: 1rem; line-height: 1.35; }
+  .reg-picked span { display: block; color: var(--muted); font-size: .83rem; line-height: 1.45; }
+  h2.reg-sub { margin: 22px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--sea-dark); }
+  .reg-picked + h2.reg-sub { margin-top: 0; padding-top: 0; border-top: 0; }
+  /* Short and transform-only, so it reads as the fields arriving rather than as
+     decoration; dropped entirely when the viewer asks for less motion. */
+  .reg-reveal { animation: regIn .22s ease-out both; }
+  @keyframes regIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .reg-reveal { animation: none; } }
   .checks { display: flex; flex-wrap: wrap; gap: 7px; }
-  .check { display: flex; align-items: center; gap: 6px; background: #f1f5f9; padding: 7px 12px; border-radius: 9px; cursor: pointer; font-size: .87rem; border: 1px solid transparent; }
+  /* min-height, not extra padding: these chips measured 38px, under the 44px touch floor */
+  .check { display: flex; align-items: center; gap: 6px; background: #f1f5f9; padding: 7px 12px; min-height: 44px; border-radius: 9px; cursor: pointer; font-size: .87rem; border: 1px solid transparent; }
   .check:has(input:checked) { background: #e0f2fe; border-color: var(--sea); }
   .chiprow { display: flex; gap: 6px; flex-wrap: wrap; }
   .chip { cursor: pointer; }
   .chip input { position: absolute; opacity: 0; }
-  .chip span { display: inline-block; padding: 8px 12px; background: #f1f5f9; border-radius: 9px; border: 1px solid transparent; font-size: .9rem; min-width: 38px; text-align: center; }
+  /* inline-flex so min-height can centre the label: these were 36x38, under the 44px
+     touch floor, and the NPS row packs eleven of them side by side */
+  .chip span { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; background: #f1f5f9; border-radius: 9px; border: 1px solid transparent; font-size: .9rem; min-width: 44px; min-height: 44px; text-align: center; }
   .chip:has(input:checked) span { background: var(--gold); color: var(--deep); font-weight: 700; }
+  /* the radio itself is opacity:0, so the generic input:focus ring painted on an
+     invisible box — keyboard users had no indicator at all on rating and NPS */
+  .chip:has(input:focus-visible) span { outline: 2px solid var(--sea); outline-offset: 2px; }
   .flash { padding: 11px 15px; border-radius: 10px; margin: 12px 0; font-size: .9rem; }
   .flash.ok { background: #dcfce7; color: #14532d; } .flash.err { background: #fee2e2; color: #7f1d1d; } .flash.warn { background: #fef3c7; color: #78350f; }
 
@@ -1984,7 +2003,7 @@ var I18N = {
     join: 'انضم لنظام النقاط', langBtn: 'English',
     dates: '10 – 17 ديسمبر 2026 | يومياً 4 – 10 مساءً',
     ctaJoin: 'شارك واجمع النقاط', ctaLb: 'شاهد المتصدرين',
-    regTitle: 'بوابات التسجيل', regIntro: 'اختر البوابة المناسبة وقدّم طلبك — تتم مراجعته من اللجنة (قيد المراجعة / مقبول / مرفوض).',
+    regTitle: 'نموذج التسجيل', regIntro: 'نموذج واحد لجميع أنواع التسجيل — اختر نوع التسجيل أولاً وستظهر لك الحقول المطلوبة له فقط. تراجع اللجنة طلبك (قيد المراجعة / مقبول / مرفوض).',
     svTitle: 'الاستبيانات', svIntro: 'رأيك يصنع المهرجان — ثلاث أدوات قياس: قبل، أثناء وبعد.',
     fullName: 'الاسم الكامل', phone: 'رقم الهاتف المتحرك', email: 'البريد الإلكتروني', ageGroup: 'الفئة العمرية',
     optional: 'اختياري', submit: 'إرسال', send: 'إرسال الطلب', choose: '— اختر —',
@@ -2020,7 +2039,7 @@ var I18N = {
     join: 'Join the Points Program', langBtn: 'العربية',
     dates: 'Dec 10 – 17, 2026 | Daily 4 – 10 PM',
     ctaJoin: 'Join & Earn Points', ctaLb: 'View Leaderboard',
-    regTitle: 'Registration Portals', regIntro: 'Pick a portal and apply — the committee reviews it (under review / accepted / rejected).',
+    regTitle: 'Registration Form', regIntro: 'One form for every registration type — choose your type first and only its fields appear. The committee reviews your application (under review / accepted / rejected).',
     svTitle: 'Surveys', svIntro: 'Three measurement tools: before, during and after the festival.',
     fullName: 'Full name', phone: 'Mobile', email: 'Email', ageGroup: 'Age group',
     optional: 'optional', submit: 'Submit', send: 'Submit Application', choose: '— choose —',
@@ -2713,13 +2732,6 @@ window.mediaResetAll = function () {
   go('admin', 'settings');
 };
 function portalImgSrc(k) { return CARD_IMG.portals[k] || ('portals/' + k + '.svg'); }
-function portalsGrid() {
-  return Object.keys(FORMS).map(function (k) {
-    var f = FORMS[k];
-    var target = k === 'sports' ? "go('champs')" : "go('form','" + k + "')";
-    return '<button type="button" class="card link portal-card" onclick="' + target + '"><img class="card-img" src="' + portalImgSrc(k) + '" alt=""><div class="tt">' + esc(tx(f.t)) + '</div><div class="dd">' + esc(tx(f.d)) + '</div></button>';
-  }).join('');
-}
 window.setCardImg = function (g, k, input) {
   var f = input.files && input.files[0];
   if (!f) return;
@@ -2745,10 +2757,59 @@ function surveysGrid() {
     return '<button type="button" class="card link" onclick="go(\'survey\',\'' + k + '\')"><div class="ic" aria-hidden="true">' + s.ic + '</div><div class="tt">' + esc(tx(s.t)) + '</div><div class="dd">' + esc(tx(s.d)) + '</div></button>';
   }).join('');
 }
+/* One registration form for all eight types. The type is the first field; choosing it
+   reveals the applicant block plus only that type's own fields, so nothing is asked
+   before it is known to apply. The choice lives in `regType` so a language toggle
+   (which re-renders every view) does not throw it away. */
+var regType = '';
+function regFieldsHtml(k) {
+  var f = FORMS[k];
+  if (!f) return '';
+  /* sports registration: email is required — the account PIN + QR are sent to it */
+  var emailReq = k === 'sports';
+  return '<div class="reg-reveal">' +
+    '<div class="reg-picked"><img src="' + portalImgSrc(k) + '" alt=""><div><b>' + esc(tx(f.t)) + '</b><span>' + esc(tx(f.d)) + '</span></div></div>' +
+    '<h2 class="sec-h reg-sub">' + esc(A('بيانات مقدّم الطلب', 'Applicant details')) + '</h2>' +
+    '<div class="field" data-n="_name" data-t="text" data-r="1"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" maxlength="150"></div>' +
+    '<div class="frow"><div class="field" data-n="_phone" data-t="text" data-r="1"><label class="flabel">' + esc(T('phone')) + ' <span class="req">*</span></label><input type="tel" dir="ltr" maxlength="30"></div>' +
+    '<div class="field" data-n="_email" data-t="text" data-r="' + (emailReq ? 1 : 0) + '"><label class="flabel">' + esc(T('email')) +
+    (emailReq ? ' <span class="req">*</span>' : ' <span class="opt">(' + esc(T('optional')) + ')</span>') + '</label><input type="email" dir="ltr" maxlength="150">' +
+    (emailReq ? '<div class="hint">' + esc(A('يُرسل إليه حسابك (الرقم السري PIN) ورمز QR', 'Your account (PIN) and QR code are sent here')) + '</div>' : '') + '</div></div>' +
+    '<h2 class="sec-h reg-sub">' + esc(A('تفاصيل الطلب', 'Application details')) + '</h2>' +
+    f.fields.map(fieldHtml).join('') +
+    '<button class="btn primary block" style="margin-top:18px" onclick="submitForm(\'' + k + '\')">' + esc(T('send')) + '</button>' +
+    '</div>';
+}
+window.regTypeChange = function (k) {
+  regType = FORMS[k] ? k : '';
+  var rest = document.getElementById('regRest');
+  if (!rest) return;
+  /* the prompt has served its purpose once a type is picked — the picked-type card
+     below now carries that type's own description in its place */
+  var hint = document.getElementById('regTypeHint');
+  if (hint) hint.hidden = !!regType;
+  clearFormErrors(document.getElementById('formFields'));
+  rest.innerHTML = regFieldsHtml(regType);
+  /* injected markup misses render()'s passes, so run them over the new subtree */
+  associateLabels(rest);
+  hideDecorativeEmoji(rest);
+};
 R.register = function () {
+  var opts = Object.keys(FORMS).map(function (k) {
+    return '<option value="' + k + '"' + (k === regType ? ' selected' : '') + '>' + esc(tx(FORMS[k].t)) + '</option>';
+  }).join('');
   return pageHead(A('انضم إلينا', 'JOIN US'), T('regTitle'), T('regIntro'), { bg: GALLERY[4].src }) +
-    '<section class="container section"><div class="grid g4">' + portalsGrid() + '</div>' +
-    '<div class="panel" style="margin-top:14px"><strong>🏆 ' + esc(A('مشارك في البطولات؟', 'Competing in a championship?')) + '</strong> ' +
+    '<section class="container section" style="max-width:680px">' +
+    '<div class="panel">' +
+    '<div id="formErr"></div><div id="formFields">' +
+    '<div class="field" data-n="_type" data-t="select" data-r="1">' +
+    '<label class="flabel" for="regTypeSel">' + esc(A('نوع التسجيل', 'Registration type')) + ' <span class="req">*</span></label>' +
+    '<select id="regTypeSel" required aria-required="true" aria-describedby="regTypeHint" onchange="regTypeChange(this.value)">' +
+    '<option value="">' + esc(T('choose')) + '</option>' + opts + '</select>' +
+    '<div class="hint" id="regTypeHint"' + (regType ? ' hidden' : '') + '>' + esc(A('اختر نوع التسجيل وستظهر الحقول المطلوبة له فقط.', 'Choose a registration type and only its fields will appear.')) + '</div></div>' +
+    '<div id="regRest">' + regFieldsHtml(regType) + '</div>' +
+    '</div></div>' +
+    '<div class="panel"><strong>🏆 ' + esc(A('مشارك في البطولات؟', 'Competing in a championship?')) + '</strong> ' +
     '<button class="btn sm gold" onclick="go(\'champs\')">' + esc(A('التسجيل من صفحة البطولة مباشرة', 'Register from the championship page')) + '</button></div></section>';
 };
 R.surveys = function () {
@@ -2828,23 +2889,12 @@ R.home = function () {
     sponsorsHtml();
 };
 
+/* The per-portal registration page is gone — every type is now one form. Kept as an
+   alias so any surviving go('form', <type>) call lands on the unified form with that
+   type already chosen, rather than on a dead route. */
 R.form = function () {
-  var k = viewArg, f = FORMS[k];
-  if (!f) { go('home'); return ''; }
-  /* sports registration: email is required — the account PIN + QR are sent to it */
-  var emailReq = k === 'sports';
-  return pageHead(A('التسجيل', 'REGISTRATION'), tx(f.t), tx(f.d),
-    { back: 'register', backLbl: T('regTitle'), bg: CARD_IMG.portals[k] || '' }) +
-    '<section class="container section" style="max-width:660px">' +
-    '<div class="panel">' +
-    '<div id="formErr"></div><div id="formFields">' +
-    '<div class="field" data-n="_name" data-t="text" data-r="1"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" maxlength="150"></div>' +
-    '<div class="frow"><div class="field" data-n="_phone" data-t="text" data-r="1"><label class="flabel">' + esc(T('phone')) + ' <span class="req">*</span></label><input type="tel" dir="ltr" maxlength="30"></div>' +
-    '<div class="field" data-n="_email" data-t="text" data-r="' + (emailReq ? 1 : 0) + '"><label class="flabel">' + esc(T('email')) +
-    (emailReq ? ' <span class="req">*</span>' : ' <span class="opt">(' + esc(T('optional')) + ')</span>') + '</label><input type="email" dir="ltr" maxlength="150">' +
-    (emailReq ? '<div class="hint">' + esc(A('يُرسل إليه حسابك (الرقم السري PIN) ورمز QR', 'Your account (PIN) and QR code are sent here')) + '</div>' : '') + '</div></div>' +
-    f.fields.map(fieldHtml).join('') +
-    '</div><button class="btn primary block" onclick="submitForm(\'' + k + '\')">' + esc(T('send')) + '</button></div></section>';
+  regType = FORMS[viewArg] ? viewArg : '';
+  return R.register();
 };
 window.submitForm = function (k) {
   var root = document.getElementById('formFields');
@@ -3679,7 +3729,7 @@ R.admin = function () {
         '<div class="cardimg-actions"><input type="file" accept=".jpg,.jpeg,.png,.webp" onchange="setCardImg(\'champs\',' + i + ',this)">' +
         (CARD_IMG.champs[i] ? '<button class="btn sm ghost" onclick="resetCardImg(\'champs\',' + i + ')">↺</button>' : '') + '</div></div>';
     }).join('');
-    body = '<div class="panel"><h2 class="sec-h" style="margin-top:0">🖼️ ' + esc(A('صور البطاقات — بوابات التسجيل', 'Card images — registration portals')) + '</h2>' +
+    body = '<div class="panel"><h2 class="sec-h" style="margin-top:0">🖼️ ' + esc(A('صور أنواع التسجيل', 'Registration type images')) + '</h2>' +
       '<p class="sec-intro">' + esc(A('ارفع صورة لأي بطاقة لتحل مكان الرسم الافتراضي فوراً (JPG/PNG/WEBP). تُحفظ الصور في هذا المتصفح وتبقى بعد إعادة تحميل الصفحة.', 'Upload an image for any card to replace its default artwork instantly (JPG/PNG/WEBP). Images are saved in this browser and survive a reload.')) + '</p>' +
       '<div class="cardimg-grid">' + portalRows + '</div></div>' +
       '<div class="panel"><h2 class="sec-h" style="margin-top:0">🏆 ' + esc(A('صور البطاقات — البطولات الـ13 المعتمدة', 'Card images — the 13 championships')) + '</h2>' +
@@ -6295,7 +6345,7 @@ function kbotAnswer(q) {
   var I = [
     [['سجل', 'تسجيل', 'مشارك', 'اشترك', 'register', 'sign', 'join', 'participat'],
      A('يمكنك التسجيل مباشرة من هنا:', 'Register directly here:'),
-     [[A('🏆 تسجيل المشاركين', '🏆 Participants'), 'champs'], [A('📝 بوابات التسجيل', '📝 Portals'), 'register'], [A('🎫 تصريح الزيارة', '🎫 Visitor pass'), 'join']]],
+     [[A('🏆 تسجيل المشاركين', '🏆 Participants'), 'champs'], [A('📝 نموذج التسجيل', '📝 Registration form'), 'register'], [A('🎫 تصريح الزيارة', '🎫 Visitor pass'), 'join']]],
     [['بطول', 'مسابق', 'championship', 'competition'],
      A('لدينا 13 بطولة معتمدة — لكل بطولة صفحة بالشروط والجوائز والتسجيل المباشر.', '13 accredited championships, each with rules, prizes and direct registration.'),
      [[A('🏆 تصفح البطولات', '🏆 Championships'), 'champs']]],
