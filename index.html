@@ -1086,6 +1086,9 @@
   .cal-cta strong { display: block; font-family: var(--font-display); font-size: 1.05rem; line-height: 1.35; margin-bottom: 3px; }
   .cal-cta span.cal-cta-sub { display: block; color: #cbd5e1; font-size: .85rem; line-height: 1.5; }
   .cal-cta .btn { flex: 0 0 auto; }
+  /* .btn is used on <a> here as well as <button>, so pin what the anchor inherits. */
+  a.btn { text-decoration: none; }
+  a.btn:hover { text-decoration: none; }
   @media (max-width: 560px) { .cal-cta { padding: 16px; gap: 13px; } .cal-cta .btn { width: 100%; justify-content: center; } }
   .sc-empty { text-align: center; padding: 40px 22px; background: #fff; border: 1px dashed var(--line); border-radius: 14px; }
   .sc-empty .sc-i { width: 34px; height: 34px; color: var(--muted); margin-bottom: 10px; }
@@ -3732,7 +3735,8 @@ R.agenda = function () {
     '<span class="cal-cta-ic">' + scIcon('cal') + '</span>' +
     '<span class="cal-cta-txt"><strong>' + esc(A('أضف المهرجان كاملاً إلى تقويمك', 'Add the whole festival to your calendar')) + '</strong>' +
     '<span class="cal-cta-sub">' + esc(eventsLabel(SCHED.length) + A(' على مدى 8 أيام، مع تنبيه قبل 30 دقيقة من كل موعد.', ' across 8 days, each with a 30-minute alert.')) + '</span></span>' +
-    '<button type="button" class="btn gold" onclick="agendaIcs()">' + scIcon('calplus') + ' ' + esc(A('أضف إلى التقويم', 'Add to calendar')) + '</button></div>';
+    '<a class="btn gold" href="' + icsLink(icsBuild(SCHED, T('site'))) + '" download="kalba-festival-2026.ics">' +
+    scIcon('calplus') + ' ' + esc(A('أضف إلى التقويم', 'Add to calendar')) + '</a></div>';
 
   return pageHead(A('البرنامج', 'PROGRAMME'), T('agTitle'), T('agIntro') || '', { bg: GALLERY[2].src }) +
     '<section class="container section">' +
@@ -4661,41 +4665,31 @@ function icsBuild(rows, calName) {
   lines.push('END:VCALENDAR');
   return lines.map(icsFold).join('\r\n') + '\r\n';
 }
-/* Phones are the point of this, so the share sheet is tried first — it puts Calendar
-   one tap away instead of leaving a file in Downloads. The download attribute covers
-   desktop and Android, and a data: navigation is the last resort for older iOS, where
-   Safari hands the file straight to Calendar. */
-function icsSave(name, text, shareTitle) {
-  var blob = new Blob([text], { type: 'text/calendar;charset=utf-8' });
-  var ok = function () {
-    toast(A('\u0627\u0641\u062a\u062d \u0627\u0644\u0645\u0644\u0641 \u0644\u0625\u0636\u0627\u0641\u0629 \u0627\u0644\u0645\u0648\u0627\u0639\u064a\u062f \u0625\u0644\u0649 \u062a\u0642\u0648\u064a\u0645\u0643 \u2014 \u0645\u0639 \u062a\u0646\u0628\u064a\u0647 \u0642\u0628\u0644 30 \u062f\u0642\u064a\u0642\u0629',
-             'Open the file to add these to your calendar \u2014 each with a 30-minute alert'));
-  };
-  try {
-    var file = new File([blob], name, { type: 'text/calendar' });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      navigator.share({ files: [file], title: shareTitle }).then(ok)['catch'](function () {});
-      return;
-    }
-  } catch (e) { /* File or share unsupported — fall through */ }
-  var a = document.createElement('a');
-  if ('download' in a) {
-    var url = URL.createObjectURL(blob);
-    a.href = url; a.download = name; a.rel = 'noopener';
-    document.body.appendChild(a); a.click();
-    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 800);
-    ok();
-    return;
-  }
-  window.location.href = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(text);
-  ok();
+/* Web Share was the wrong intent. It offers a file to send to a *person*, which is
+   why iOS listed AirDrop, Messages and Mail but never Calendar; and on Android Chrome
+   it accepted canShare() then rejected the text/calendar share, and the rejection was
+   swallowed, so the button did nothing at all. A plain download link lets the OS treat
+   the file as something to open, which is what both platforms want. */
+var icsUrls = [];
+function icsLink(text) {
+  var url = URL.createObjectURL(new Blob([text], { type: 'text/calendar;charset=utf-8' }));
+  icsUrls.push(url);
+  return url;
 }
-window.schedIcs = function (id) {
+/* Blob URLs live until the document unloads, so drop the schedule's when its list is
+   rebuilt — the anchors holding them have just been thrown away. */
+function icsRelease() {
+  icsUrls.forEach(function (u) { try { URL.revokeObjectURL(u); } catch (e) {} });
+  icsUrls = [];
+}
+/* Built when a row opens rather than for all 56 up front. */
+window.icsAttach = function (a, id) {
+  if (!a || a.dataset.ready) return;
   var r = SCHED[id];
-  if (r) icsSave('kalba-2026-' + (r.i + 1) + '.ics', icsBuild([r], A(r.ar, r.en)), A(r.ar, r.en));
-};
-window.agendaIcs = function () {
-  icsSave('kalba-festival-2026.ics', icsBuild(SCHED, T('site')), T('site'));
+  if (!r) return;
+  a.href = icsLink(icsBuild([r], A(r.ar, r.en)));
+  a.setAttribute('download', 'kalba-2026-' + (r.i + 1) + '.ics');
+  a.dataset.ready = '1';
 };
 function scIcon(n) {
   return '<svg class="sc-i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
@@ -4787,8 +4781,8 @@ function schedItemHtml(r, i) {
       (r.left > 0 ? esc(A('مقاعد متبقية: ', 'Seats left: ')) + r.left + '/' + r.cap
                   : esc(A('اكتمل العدد', 'Fully booked'))) + '</b></span>' : '') +
     '</div><div class="sc-acts">' +
-    '<button type="button" class="btn sm primary" onclick="schedIcs(' + r.i + ')">' +
-    scIcon('calplus') + ' ' + esc(A('أضف إلى التقويم', 'Add to calendar')) + '</button>' +
+    '<a class="btn sm primary" data-ics="' + r.i + '" href="#" onclick="icsAttach(this, ' + r.i + '); return !!this.dataset.ready">' +
+    scIcon('calplus') + ' ' + esc(A('أضف إلى التقويم', 'Add to calendar')) + '</a>' +
     (champ ? '<button type="button" class="btn sm ghost" onclick="go(\'champ\',' + r.c + ')">' + esc(A('صفحة ', 'Open ') + champName(champ)) + '</button>' : '') +
     '</div></div></div></div></li>';
 }
@@ -4817,6 +4811,7 @@ function schedRefresh() {
   var meta = document.getElementById('scMeta');
   var list = document.getElementById('scList');
   if (!list) return;
+  icsRelease();
   if (chips) chips.innerHTML = schedChipsHtml();
   if (meta) meta.innerHTML = schedMetaHtml(schedRowsNow().length);
   list.innerHTML = schedListHtml();
