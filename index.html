@@ -1951,6 +1951,99 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
   .se-dirty { display: none; color: var(--warn-ink); font-weight: 700; font-size: .86rem; }
   .se-bar.dirty { border-color: rgba(251,191,36,.4); }
   .se-bar.dirty .se-dirty { display: inline; }
+  /* ---- خريطة المهرجان ---- */
+  .fm-root { position: relative; margin-top: 14px; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #0d1412; }
+  .fm-view { height: min(64vh, 620px); touch-action: none; cursor: grab; perspective: 1400px; overflow: hidden; }
+  .fm-view:active { cursor: grabbing; }
+  /* the 2.5D: the whole plot leans back; depth comes from shadows and risers */
+  .fm-tiltwrap { width: 100%; height: 100%; transform: rotateX(30deg) scale(1.28); transform-origin: 50% 62%; transform-style: preserve-3d; animation: fmSettle 1.6s var(--ease-out-strong) both; }
+  @keyframes fmSettle { from { opacity: 0; transform: rotateX(14deg) scale(1.12); } to { opacity: 1; transform: rotateX(30deg) scale(1.28); } }
+  #fmSvg { width: 100%; height: 100%; display: block; }
+  #fmCam { transition: transform 550ms var(--ease-in-out-strong); }
+  .fm-bg { fill: #182420; }
+  .fm-sand { fill: #2b2a20; rx: 10; }
+  .fm-green { fill: #14361f; stroke: #1d4a2b; stroke-width: 2; }
+  .fm-souq { fill: #1a1f24; rx: 8; opacity: .8; }
+  .fm-road { fill: #23282c; }
+  .fm-water { fill: #0c2733; animation: fmWater 9s ease-in-out infinite alternate; }
+  @keyframes fmWater { from { fill: #0c2733; } to { fill: #0e3140; } }
+  .fm-axis { stroke: rgba(53,178,142,.35); stroke-width: 3; stroke-dasharray: 10 12; }
+  .fm-v { cursor: pointer; }
+  .fm-v:focus-visible { outline: none; }
+  .fm-v:focus-visible .fm-shape { stroke: var(--gold-soft); stroke-width: 4; }
+  .fm-shape { stroke-width: 2; transition: transform .25s var(--ease-out-strong), filter .25s; transform-box: fill-box; transform-origin: center; }
+  .fm-c-sport .fm-shape { fill: rgba(26,113,90,.55); stroke: #35b28e; filter: drop-shadow(0 4px 0 rgba(0,0,0,.5)); }
+  .fm-c-stage .fm-shape { fill: rgba(230,180,60,.35); stroke: #d9b45c; }
+  .fm-c-service .fm-shape { fill: rgba(122,166,255,.28); stroke: #7ba6ff; }
+  .fm-c-vip .fm-shape { fill: rgba(217,180,92,.22); stroke: rgba(217,180,92,.6); }
+  .fm-c-parking .fm-shape, .fm-c-parking polygon.fm-shape { fill: rgba(160,170,180,.16); stroke: rgba(160,170,180,.5); stroke-dasharray: 6 5; }
+  .fm-c-seating .fm-shape, .fm-seat { fill: rgba(240,140,60,.4); stroke: #e08840; }
+  .fm-c-ops .fm-shape { fill: rgba(255,255,255,.05); stroke: rgba(255,255,255,.18); }
+  .fm-c-ops .fm-lbl { fill: rgba(255,255,255,.35); }
+  .fm-mat { fill: rgba(255,255,255,.14); stroke: #cfe8df; stroke-width: 1.5; pointer-events: none; }
+  .fm-line { stroke: rgba(255,255,255,.4); stroke-width: 1.5; pointer-events: none; }
+  .fm-ball { fill: #fff; pointer-events: none; }
+  [data-zoom="near"] .fm-ball { animation: fmBall 3.2s ease-in-out infinite alternate; }
+  @keyframes fmBall { from { transform: translateX(0); } to { transform: translateX(36px); } }
+  .fm-vipseat { fill: rgba(217,180,92,.5); stroke: #d9b45c; pointer-events: none; }
+  .fm-lbl { fill: #e9edf0; font-size: 17px; font-weight: 700; text-anchor: middle; paint-order: stroke; stroke: rgba(0,0,0,.65); stroke-width: 3px; pointer-events: none; font-family: var(--font); }
+  [data-zoom="far"] .fm-c-service .fm-lbl, [data-zoom="far"] .fm-c-seating .fm-lbl, [data-zoom="far"] .fm-c-vip .fm-lbl, [data-zoom="far"] .fm-c-ops .fm-lbl { display: none; }
+  [data-zoom="far"] .fm-c-ops, [data-zoom="mid"] .fm-c-ops { display: none; }
+  .fm-ent-c { fill: var(--gold); stroke: #fff; stroke-width: 2.5; }
+  .fm-ent-t { fill: #fff; font-size: 13px; font-weight: 800; text-anchor: middle; pointer-events: none; }
+  .fm-v:hover .fm-shape, .fm-on .fm-shape { transform: translateY(-5px) scale(1.04); filter: drop-shadow(0 9px 0 rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(53,178,142,.4)); }
+  .fm-on .fm-shape { stroke-width: 4; }
+  .fm-dimmed { opacity: .22; }
+  .fm-pulse { fill: none; stroke: #f87171; stroke-width: 3; animation: fmPulse 2s ease-out infinite; pointer-events: none; }
+  @keyframes fmPulse { from { opacity: .9; transform: scale(.6); } to { opacity: 0; transform: scale(1.5); } }
+  .fm-pulse { transform-box: fill-box; transform-origin: center; }
+  .fm-route { fill: none; stroke: var(--gold-soft); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 14 10; animation: fmDraw 800ms var(--ease-out-strong) both; }
+  @keyframes fmDraw { from { opacity: 0; stroke-dashoffset: 400; } to { opacity: 1; stroke-dashoffset: 0; } }
+  .fm-route-dot { fill: #fff; }
+  .fm-ctl { position: absolute; top: 12px; inset-inline-start: 12px; display: flex; flex-direction: column; gap: 7px; z-index: 4; }
+  .fm-btn { min-width: 44px; min-height: 44px; border: 1px solid var(--line); background: rgba(12,16,15,.85); color: #e9edf0; border-radius: 10px; font-size: 1.2rem; cursor: pointer; font-family: inherit; backdrop-filter: blur(4px); }
+  .fm-btn:hover { border-color: var(--gold); }
+  .fm-btn:focus-visible { outline: 2px solid var(--sea); outline-offset: 2px; }
+  .fm-btn-w { font-size: .8rem; padding: 0 12px; }
+  .fm-panel { position: absolute; top: 12px; inset-inline-end: 12px; width: 300px; max-width: calc(100% - 24px); max-height: calc(100% - 24px); overflow: auto; background: rgba(14,18,17,.94); border: 1px solid rgba(53,178,142,.4); border-radius: 14px; padding: 14px 16px; z-index: 5; backdrop-filter: blur(6px); }
+  .fm-p-head { display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 1.02rem; color: #fff; }
+  .fm-p-head .sport-icon { width: 26px; height: 26px; }
+  .fm-x { margin-inline-start: auto; width: 34px; height: 34px; background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 1rem; }
+  .fm-dim { color: var(--muted); font-size: .8rem; margin: 6px 0; }
+  .fm-fx { display: flex; gap: 10px; align-items: center; font-size: .84rem; padding: 6px 0; border-top: 1px dashed var(--line); }
+  .fm-st { font-size: .72rem; padding: 2px 8px; border-radius: 99px; margin-inline-start: auto; }
+  .fm-st-live { background: #3d1218; color: #ff8896; }
+  .fm-st-up, .fm-st-soon { background: #0f2f2b; color: #3dbd97; }
+  .fm-st-done { background: #23282b; color: #b6bec5; }
+  .fm-none { color: var(--muted); font-size: .84rem; }
+  .fm-acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .fm-hits { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+  .fm-hit { min-height: 40px; padding: 7px 14px; border: 1px solid var(--line); background: #161a1c; color: #e9edf0; border-radius: 999px; font-family: inherit; font-size: .84rem; cursor: pointer; }
+  .fm-hit:hover { border-color: var(--gold); }
+  .fm-days { display: flex; gap: 8px; overflow-x: auto; margin: 10px 0 0; padding-bottom: 4px; }
+  .fm-legend { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; color: var(--muted); font-size: .8rem; margin: 12px 2px; }
+  .fm-k { width: 13px; height: 13px; border-radius: 4px; display: inline-block; margin-inline-end: 4px; vertical-align: -2px; }
+  .fm-k-sport { background: rgba(26,113,90,.7); border: 1px solid #35b28e; }
+  .fm-k-service { background: rgba(122,166,255,.4); border: 1px solid #7ba6ff; }
+  .fm-k-entrance { background: var(--gold); border-radius: 50%; }
+  .fm-k-parking { background: rgba(160,170,180,.3); border: 1px dashed rgba(160,170,180,.7); }
+  .fm-k-seating { background: rgba(240,140,60,.5); border: 1px solid #e08840; }
+  /* the map itself never mirrors for RTL — only the UI around it does */
+  .fm-view, #fmSvg { direction: ltr; }
+  @media (max-width: 700px) {
+    .fm-view { height: 62vh; }
+    .fm-panel { position: fixed; top: auto; bottom: 0; left: 0; right: 0; width: 100%; max-width: none; max-height: 46vh; border-radius: 14px 14px 0 0; animation: fmSheet .3s var(--ease-out-strong); z-index: 160; }
+    @keyframes fmSheet { from { transform: translateY(30%); opacity: 0; } }
+    .fm-ctl { top: auto; bottom: 12px; }
+    .fm-panel ~ .fm-ctl, .fm-root:has(.fm-panel:not([hidden])) .fm-ctl { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fm-tiltwrap { animation: none; }
+    .fm-water, .fm-ball, .fm-pulse { animation: none; }
+    #fmCam, .fm-shape { transition: none; }
+    .fm-route { animation: none; }
+    .fm-route-dot { display: none; }
+  }
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -2224,7 +2317,7 @@ var I18N = {
     site: 'مهرجان كلباء الرياضي 2026',
     loc: 'مدينة كلباء — إمارة الشارقة، الإمارات العربية المتحدة',
     galleryTitle: 'من أجواء كلباء الرياضية',
-    champsT: 'البطولات', resT: 'النتائج', communityT: 'المجتمع', venueT: 'الموقع', newsT: 'الأخبار',
+    champsT: 'البطولات', resT: 'النتائج', communityT: 'المجتمع', venueT: 'خريطة المهرجان', newsT: 'الأخبار',
     home: 'الرئيسية', register: 'التسجيل', surveys: 'الاستبيانات', leaderboard: 'المتصدرون',
     map: 'الخريطة', agenda: 'الأجندة', screen: 'الشاشة', admin: 'لوحة التحكم', award: 'واجهة المنظم',
     join: 'انضم لنظام النقاط', langBtn: 'English',
@@ -2259,7 +2352,7 @@ var I18N = {
     site: 'Kalba Sports Festival 2026',
     loc: 'City of Kalba — Emirate of Sharjah, United Arab Emirates',
     galleryTitle: 'Kalba sports in action',
-    champsT: 'Championships', resT: 'Results', communityT: 'Community', venueT: 'Venue', newsT: 'News',
+    champsT: 'Championships', resT: 'Results', communityT: 'Community', venueT: 'Festival Map', newsT: 'News',
     home: 'Home', register: 'Register', surveys: 'Surveys', leaderboard: 'Leaderboard',
     map: 'Map', agenda: 'Agenda', screen: 'Screen', admin: 'Admin', award: 'Organizer',
     join: 'Join the Points Program', langBtn: 'العربية',
@@ -4600,21 +4693,6 @@ var STANDINGS = [
 var OVERALL = [['أحمد المنصوري', 160], ['فريق المد البحري', 140], ['سالم الكتبي', 120], ['نوارس كلباء', 100], ['خالد النقبي', 80]];
 var CHAMPIONS = [{ c: 9, n: 'أحمد المنصوري', m: '1:12:44' }, { c: 13, n: 'فريق المد البحري', m: '' }];
 
-var VENUE = [
-  { f: 'fields', e: '⚽', col: '#1A715A', x: 90, y: 120, ar: 'الملعب الشاطئي', en: 'Beach pitch' },
-  { f: 'fields', e: '🏐', col: '#1A715A', x: 250, y: 100, ar: 'ملعب الطائرة', en: 'Volleyball court' },
-  { f: 'fields', e: '🧗', col: '#1A715A', x: 420, y: 120, ar: 'ساحة الحواجز', en: 'Obstacle arena' },
-  { f: 'fields', e: '🚴', col: '#1A715A', x: 590, y: 100, ar: 'مسار الجري والدراجات', en: 'Track' },
-  { f: 'registration', e: '📝', col: '#1A715A', x: 350, y: 330, ar: 'نقطة التسجيل', en: 'Registration' },
-  { f: 'aid', e: '⛑️', col: '#dc2626', x: 180, y: 250, ar: 'إسعاف 1 + مياه', en: 'First aid 1' },
-  { f: 'aid', e: '⛑️', col: '#dc2626', x: 520, y: 250, ar: 'إسعاف 2 + مياه', en: 'First aid 2' },
-  { f: 'parking', e: '🅿️', col: '#475569', x: 80, y: 420, ar: 'مواقف A + المدخل', en: 'Parking A' },
-  { f: 'parking', e: '🅿️', col: '#475569', x: 620, y: 420, ar: 'مواقف B + العائلات', en: 'Parking B' },
-  { f: 'activities', e: '🤸', col: '#16a34a', x: 250, y: 330, ar: 'الفعاليات المجتمعية', en: 'Community' },
-  { f: 'activities', e: '🩺', col: '#16a34a', x: 460, y: 330, ar: 'خيمة الورش', en: 'Workshops' },
-  { f: 'awards', e: '🏅', col: '#b45309', x: 350, y: 200, ar: 'المسرح — التتويج', en: 'Main stage' }
-];
-var VENUE_KINDS = [['', 'الكل', 'All'], ['fields', '⚽ الملاعب', '⚽ Fields'], ['registration', '📝 التسجيل', '📝 Registration'], ['aid', '⛑️ الإسعاف', '⛑️ First aid'], ['parking', '🅿️ المواقف', '🅿️ Parking'], ['activities', '🤸 الأنشطة', '🤸 Activities'], ['awards', '🏅 التتويج', '🏅 Awards']];
 
 /* Hero background images — editable from the mock CMS (admin → settings). */
 function heroImgs() {
@@ -4924,7 +5002,9 @@ R.champ = function () {
     {
       back: 'champs', backLbl: T('champsT'),
       bg: champImg(viewArg || 0),
-      actions: '<button class="btn gold def" onclick="go(\'pform\',' + (viewArg || 0) + ')">' + esc(A('سجّل الآن', 'REGISTER NOW')) + '</button>'
+      actions: '<button class="btn gold def" onclick="go(\'pform\',' + (viewArg || 0) + ')">' + esc(A('سجّل الآن', 'REGISTER NOW')) + '</button>' +
+        (FEST_MAP.some(function (e) { return e.sp === (viewArg || 0); })
+          ? '<button class="btn def defghost" onclick="fmSel = FEST_MAP.find(function (e) { return e.sp === ' + (viewArg || 0) + '; }).id; go(\'venue\')">' + esc(A('عرض على الخريطة', 'VIEW ON MAP')) + '</button>' : '')
     }
   ) + fixtures +
     '<section class="container section">' +
@@ -6957,26 +7037,316 @@ R.schools = function () {
     esc(A('المراكز الثلاثة الأولى + جوائز خاصة: أفضل مدرسة، أفضل معلم محفز، أفضل أسرة، أصغر مشارك، أفضل صورة لمعالم كلباء، أفضل فيديو رياضي، أفضل فكرة إبداعية، جائزة الالتزام اليومي، وجائزة الروح الرياضية.', 'Top three + special awards: best school, most encouraging teacher, best family, youngest participant, best landmark photo, best sports video, best creative idea, daily commitment and sportsmanship awards.')) + '</p></div></div></section>';
 };
 
-R.venue = function () {
-  var groups = {};
-  VENUE.forEach(function (p) { (groups[p.f] = groups[p.f] || []).push(p); });
-  var cards = VENUE_KINDS.slice(1).map(function (k) {
-    var items = groups[k[0]] || [];
-    return '<div class="card"><div class="ic">' + (items[0] ? items[0].e : '') + '</div><div class="tt" style="font-size:.95rem">' + esc(A(k[1].replace(/^\S+ /, ''), k[2].replace(/^\S+ /, ''))) + '</div>' +
-      '<div class="dd">' + items.map(function (p) { return esc(A(p.ar, p.en)); }).join('<br>') + '</div></div>';
-  }).join('');
-  return pageHead(
-    A('الموقع', 'THE VENUE'),
-    A('خريطة موقع المهرجان', 'Venue Map'),
-    A('كورنيش كلباء — الملاعب ونقاط التسجيل والإسعاف والمواقف على الخريطة التفاعلية.', 'Kalba Corniche — pitches, registration points, first aid and parking on the interactive map.'),
-    { bg: GALLERY[3].src }
-  ) +
-    '<section class="container section">' +
-    '<p class="sec-intro">' + esc(A('الموقع الفعلي على الخريطة، ومرافق الموقع الستة أدناه. التوجيه الداخلي مع تطبيق الجوال.', 'The real location on the map, with the six facility groups below. Indoor navigation comes with the mobile app.')) + '</p>' +
-    '<div class="panel" style="padding:10px">' + realMapHtml(480) + '</div>' +
-    '<div class="grid g3">' + cards + '</div></section>';
-};
+/* ============ خريطة المهرجان — digitized from the official plot ============
+   Source of truth: «مهرجان الرياضة-Model.pdf» (AutoCAD plot, A1). The viewBox IS the
+   plot's own coordinate space in PDF points; label anchors were extracted from the
+   file's vector text layer, so positions are data, not eyeballing. Scale validated
+   against three dimensioned boxes (كرة القدم 45م، بينت بول 50م، المدرجات 30م):
+   1 metre ≈ 3.3pt. Distances shown are polyline length / 3.3, rounded to 10m, and
+   are approximate by construction. These are NOT GPS coordinates. */
+var FM_PT_PER_M = 3.3;
+var FM_VB = '150 400 2220 1010';
+/* cat: sport|service|entrance|parking|seating|stage|ops — ops entities are drawn
+   faint and excluded from public filters and search (this is a visitor site). */
+var FEST_MAP = [
+  { id:'vb',    ar:'ملعب كرة طائرة شاطئية', en:'Beach Volleyball Court', cat:'sport', sp:1, x:352,y:455,w:62,h:130, dims:'18م × 6م' },
+  { id:'tennis',ar:'حلبة التنس الارضي',     en:'Tennis Arena',          cat:'sport', sp:3, x:690,y:820,w:76,h:47,  dims:'23م × 14م', flag:1 },
+  { id:'jjs',   ar:'حلبة الجيتسو',          en:'Jiu-Jitsu Arena',       cat:'sport', sp:8, x:905,y:822,w:46,h:46,  dims:'14م × 14م' },
+  { id:'tkd',   ar:'حلبة التايكوندو',       en:'Taekwondo Arena',       cat:'sport', sp:7, x:1063,y:818,w:53,h:53, dims:'16م × 16م', mat:1 },
+  { id:'fb',    ar:'كرة القدم',             en:'Football Pitch',        cat:'sport', sp:0, x:447,y:900,w:148,h:99, dims:'45م × 30م', pitch:1 },
+  { id:'pb',    ar:'بينت بول',              en:'Paintball',             cat:'sport', sp:5, x:645,y:900,w:165,h:99, dims:'50م × 30م' },
+  { id:'eg',    ar:'العاب الكترونية',       en:'Electronic Games',      cat:'sport', sp:14,x:1298,y:1042,w:40,h:22,dims:'10م × 5م' },
+  { id:'bb',    ar:'كرة السلة',             en:'Basketball',            cat:'sport', sp:2, x:2178,y:846,w:84,h:52, dims:'20م × 10م', rot:-18 },
+  { id:'box',   ar:'حلبة الملاكمة',         en:'Boxing Ring',           cat:'sport', sp:6, x:2136,y:940,w:53,h:53, dims:'16م × 16م', ring:1 },
 
+  { id:'stage', ar:'المسرح',                en:'Main Stage',            cat:'stage', x:1090,y:800,w:66,h:34, dims:'20م × 10م' },
+  { id:'prayM', ar:'مصلي الرجال',           en:"Men's Prayer",          cat:'service', sv:'prayer', x:1392,y:852,w:66,h:78 },
+  { id:'prayF', ar:'مصلي النساء',           en:"Women's Prayer",        cat:'service', sv:'prayer', x:1458,y:852,w:66,h:78 },
+  { id:'wc',    ar:'دورات مياه',            en:'Toilets',               cat:'service', sv:'wc', x:1550,y:856,w:95,h:44, note:'حمامات رجال ونساء ومواضئ — كما في المخطط' },
+  { id:'food',  ar:'قسم المطاعم',           en:'Food Court',            cat:'service', sv:'food', x:1752,y:858,w:66,h:50, dims:'20م × 15م' },
+  { id:'info',  ar:'الاستعلامات',           en:'Information',           cat:'service', sv:'info', x:1076,y:1112,w:38,h:38 },
+  { id:'kids',  ar:'ورشة اطفال',            en:'Kids Workshop',         cat:'service', sv:'fun', x:1500,y:1032,w:100,h:66, dims:'30م × 20م' },
+  { id:'games2',ar:'العاب مصاحبة',          en:'Side Games',            cat:'service', sv:'fun', x:1690,y:1058,w:66,h:34, dims:'20م × 10م' },
+  { id:'medic', ar:'خيمة فريق طبي',         en:'Medical Tent',          cat:'service', sv:'aid', x:452,y:808,w:18,h:52 },
+  { id:'majlis',ar:'مجلس الشخصيات المهمة',  en:'VIP Majlis',            cat:'vip', x:1020,y:1040,w:66,h:50 },
+
+  { id:'standsW', ar:'مدرجات الجمهور',      en:'Public Stands',         cat:'seating', x:336,y:842,seatL:1 },
+  { id:'standsC', ar:'المدرجات الرئيسية',   en:'Main Stands',           cat:'seating', x:1020,y:848,w:240,h:110, vip2:1, note:'صفوف جلوس أمامية ومنصتا VIP كما في المخطط' },
+  { id:'standsBB',ar:'مدرجات كره السلة',    en:'Basketball Stands',     cat:'seating', x:2170,y:800,w:100,h:34, rot:-18 },
+
+  { id:'e3', ar:'مدخل 03', en:'Entrance 03', cat:'entrance', x:222,y:948 },
+  { id:'e1', ar:'مدخل 01', en:'Entrance 01', cat:'entrance', x:1180,y:1168 },
+  { id:'e2', ar:'مدخل 02', en:'Entrance 02', cat:'entrance', x:1898,y:988 },
+
+  { id:'pv1', ar:'مواقف زوار', en:'Visitor Parking', cat:'parking', x:560,y:505,w:150,h:85 },
+  { id:'pv2', ar:'مواقف زوار', en:'Visitor Parking', cat:'parking', x:1048,y:608,w:155,h:75 },
+  { id:'pv3', ar:'مواقف زوار', en:'Visitor Parking', cat:'parking', x:1598,y:612,w:145,h:80 },
+  { id:'pvip',ar:'مواقف VIP',  en:'VIP Parking',     cat:'parking', vip:1, x:1000,y:1162, poly:'440,1128 1608,1152 1608,1198 470,1182' },
+  { id:'pcorn',ar:'مواقف السيارات — الكورنيش', en:'Corniche Parking', cat:'parking', x:1090,y:1310,w:510,h:42, flag:1 },
+
+  { id:'ppol',  ar:'مواقف الشرطة',       en:'Police Parking',        cat:'ops', x:1250,y:788,w:110,h:34 },
+  { id:'pcvd',  ar:'مواقف الدفاع المدني',en:'Civil Defence Parking', cat:'ops', x:1362,y:788,w:132,h:34 },
+  { id:'tv',    ar:'التلفزيون',          en:'Broadcast',             cat:'ops', x:908,y:868,w:92,h:30 },
+  { id:'store', ar:'مخزن',               en:'Storage',               cat:'ops', x:330,y:770,w:34,h:20 },
+  { id:'coTent',ar:'خيمة الشركة',        en:'Organiser Tent',        cat:'ops', x:270,y:840,w:60,h:92, flag:1 },
+  { id:'socPol',ar:'الشرطة الاجتماعية',  en:'Community Police',      cat:'ops', x:916,y:914,w:30,h:34, flag:1 }
+];
+/* Circulation, traced from the plan's dashed 80m axis and entry arrows. */
+var FM_SPINE = [[240,982],[1870,982]];
+var FM_PATHS = {
+  e1: [[1180,1168],[1180,982]],
+  e2: [[1898,988],[1880,982]],
+  e3: [[222,948],[240,982]],
+  bb: [[1898,988],[2040,952],[2130,900],[2205,872]],
+  box:[[1898,988],[2050,988],[2136,966]],
+  vb: [[240,982],[300,930],[340,740],[370,600],[383,585]]
+};
+var fmSel = null, fmCat = '', fmDay = -1, fmRouteFrom = null, fmZ = 1, fmX = 0, fmY = 0;
+function fmPublic(e) { return e.cat !== 'ops'; }
+function fmName(e) { return A(e.ar, e.en || e.ar); }
+function fmSportSched(sp) { return SCHED.filter(function (r) { return r.c === sp; }); }
+/* Real-clock status only — the brief forbids invented liveness. Dubai is UTC+4. */
+function fmNowParts() {
+  var d = new Date(Date.now() + 4 * 3600000);
+  /* sortable YYYYMMDD key: DD/MM strings compare wrongly as text */
+  return { key: d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate(), min: d.getUTCHours() * 60 + d.getUTCMinutes() };
+}
+function fmDayKey(d) { var p = d.split('/'); return 20260000 + (+p[1]) * 100 + (+p[0]); }
+function fmStatus(r) {
+  var now = fmNowParts();
+  var rd = fmDayKey(r.d);
+  if (rd !== now.key) return rd > now.key ? 'up' : 'done';
+  var p = String(r.t).split(/[\u2013\u2014-]/);
+  var hm = function (x) { var q = x.trim().split(':'); return (+q[0]) * 60 + (+q[1] || 0); };
+  var a = hm(p[0]), b = p[1] ? hm(p[1]) : a + 60;
+  if (now.min < a) return now.min >= a - 60 ? 'soon' : 'up';
+  return now.min <= b ? 'live' : 'done';
+}
+var FM_ST = { up: ['قريباً', 'Upcoming'], soon: ['يبدأ بعد قليل', 'Starting soon'], live: ['جاري الآن', 'Live now'], done: ['انتهت', 'Ended'] };
+function fmVenueLive(e) {
+  if (e.sp === undefined) return false;
+  return fmSportSched(e.sp).some(function (r) { return fmStatus(r) === 'live'; });
+}
+function fmDist(pts) {
+  var L = 0;
+  for (var i = 1; i < pts.length; i++) L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+  return Math.round(L / FM_PT_PER_M / 10) * 10;
+}
+/* Route: entrance -> along the spine -> vertical connector to the venue, using the
+   hand-traced special paths where the plan's own circulation demanded them. */
+function fmRoute(fromId, toId) {
+  var to = FEST_MAP.find(function (e) { return e.id === toId; });
+  if (!to) return null;
+  var start = FM_PATHS[fromId] ? FM_PATHS[fromId].slice() : [[FEST_MAP.find(function (e) { return e.id === fromId; }).x, 982]];
+  if (FM_PATHS[toId] && (toId === 'bb' || toId === 'box' || toId === 'vb')) {
+    var sp = FM_PATHS[toId];
+    if (fromId === 'e2' && (toId === 'bb' || toId === 'box')) return sp;
+    if (toId === 'vb') return start.concat([[240, 982]], FM_PATHS.vb.slice(1));
+    /* bb/box from e1/e3: walk the spine east, then the crossing */
+    return start.concat([[1870, 982]], sp.slice(1));
+  }
+  var cx = to.x + (to.w || 0) / 2, cy = to.y + (to.h || 0) / 2;
+  return start.concat([[cx, 982], [cx, cy]]);
+}
+window.fmSelect = function (id) {
+  fmSel = (fmSel === id) ? null : id; fmRouteFrom = null;
+  fmPaint();
+  if (fmSel) fmFly(id);
+};
+window.fmFilter = function (c) { fmCat = c; fmSel = null; fmPaint(); };
+window.fmDaySet = function (i) { fmDay = i; fmPaint(); };
+window.fmRouteStart = function (fromId) { fmRouteFrom = fromId; fmPaint(); };
+window.fmReset = function () { fmSel = null; fmCat = ''; fmRouteFrom = null; fmZ = 1; fmX = 0; fmY = 0; fmApplyCam(); fmPaint(); };
+window.fmNow = function () {
+  var live = FEST_MAP.filter(fmVenueLive).map(function (e) { return e.id; });
+  if (!live.length) { toast(A('لا منافسات جارية الآن — المهرجان من 6 إلى 13 نوفمبر', 'Nothing is live right now — the festival runs Nov 6–13')); return; }
+  fmCat = ''; fmSel = live[0]; fmPaint(); fmFly(live[0]);
+};
+function fmFly(id) {
+  var e = FEST_MAP.find(function (x) { return x.id === id; });
+  if (!e) return;
+  var box = document.getElementById('fmView'); if (!box) return;
+  var vb = FM_VB.split(' ').map(Number);
+  var cx = e.x + (e.w || 0) / 2, cy = e.y + (e.h || 0) / 2;
+  fmZ = Math.max(fmZ, 2.1);
+  fmX = (vb[0] + vb[2] / 2) - cx; fmY = (vb[1] + vb[3] / 2) - cy;
+  fmApplyCam(true);
+}
+function fmApplyCam(anim) {
+  var g = document.getElementById('fmCam'); if (!g) return;
+  var vb = FM_VB.split(' ').map(Number), ox = vb[0] + vb[2] / 2, oy = vb[1] + vb[3] / 2;
+  g.style.transition = anim ? 'transform 550ms var(--ease-in-out-strong)' : 'none';
+  g.style.transform = 'translate(' + ox + 'px,' + oy + 'px) scale(' + fmZ + ') translate(' + (fmX - ox) + 'px,' + (fmY - oy) + 'px)';
+  var root = document.getElementById('fmRoot');
+  if (root) root.dataset.zoom = fmZ >= 2.6 ? 'near' : fmZ >= 1.6 ? 'mid' : 'far';
+}
+window.fmZoom = function (dir) { fmZ = Math.min(4.5, Math.max(1, fmZ * (dir > 0 ? 1.35 : 1 / 1.35))); fmApplyCam(true); };
+function fmSearchList(q) {
+  q = (q || '').trim().toLowerCase();
+  var pool = FEST_MAP.filter(fmPublic);
+  if (!q) return [];
+  return pool.filter(function (e) {
+    return (e.ar + ' ' + (e.en || '')).toLowerCase().indexOf(q) > -1 ||
+      (e.sp !== undefined && (CHAMPS[e.sp].ar + ' ' + CHAMPS[e.sp].en).toLowerCase().indexOf(q) > -1);
+  }).slice(0, 8);
+}
+window.fmSearch = function (v) {
+  var box = document.getElementById('fmHits'); if (!box) return;
+  var hits = fmSearchList(v);
+  box.innerHTML = hits.map(function (e) {
+    return '<button type="button" class="fm-hit" onclick="fmSelect(\'' + e.id + '\')">' + esc(fmName(e)) + '</button>';
+  }).join('');
+};
+function fmSchedHtml(e) {
+  if (e.sp === undefined) return '';
+  var rows = fmSportSched(e.sp);
+  if (fmDay > -1) { var d = T('days')[fmDay]; rows = rows.filter(function (r) { return festDayLabel(r.d) === d; }); }
+  if (!rows.length) return '<p class="fm-none">' + esc(A('لا منافسات في هذا اليوم', 'No fixtures on this day')) + '</p>';
+  return rows.slice(0, 4).map(function (r) {
+    var st = fmStatus(r);
+    return '<div class="fm-fx"><span dir="ltr">' + esc(r.t) + '</span> <span>' + esc(festDayLabel(r.d)) + '</span>' +
+      ' <b class="fm-st fm-st-' + st + '">' + esc(A(FM_ST[st][0], FM_ST[st][1])) + '</b></div>';
+  }).join('');
+}
+function fmPanelHtml(e) {
+  var sport = e.sp !== undefined ? CHAMPS[e.sp] : null;
+  return '<div class="fm-p-head">' + (sport ? sport.ic + ' ' : '') + '<b>' + esc(fmName(e)) + '</b>' +
+    '<button type="button" class="fm-x" onclick="fmSelect(\'' + e.id + '\')" aria-label="' + esc(A('إغلاق', 'Close')) + '">✕</button></div>' +
+    (e.dims ? '<div class="fm-dim">' + esc(e.dims) + ' — ' + esc(A('حسب المخطط الرسمي', 'per the official plan')) + '</div>' : '') +
+    (e.note ? '<div class="fm-dim">' + esc(e.note) + '</div>' : '') +
+    fmSchedHtml(e) +
+    '<div class="fm-acts">' +
+    (sport ? '<button type="button" class="btn sm primary" onclick="go(\'champ\',' + e.sp + ')">' + esc(A('صفحة الرياضة', 'Sport page')) + '</button>' : '') +
+    '<button type="button" class="btn sm ghost" onclick="fmRouteStart(null); fmAskFrom(\'' + e.id + '\')">' + esc(A('المسار من مدخل', 'Route from an entrance')) + '</button>' +
+    '</div><div id="fmFromRow"></div>';
+}
+window.fmAskFrom = function (toId) {
+  var row = document.getElementById('fmFromRow'); if (!row) return;
+  row.innerHTML = ['e1', 'e2', 'e3'].map(function (eid) {
+    var en = FEST_MAP.find(function (x) { return x.id === eid; });
+    return '<button type="button" class="fm-hit" onclick="fmShowRoute(\'' + eid + '\',\'' + toId + '\')">' + esc(fmName(en)) + '</button>';
+  }).join('');
+};
+window.fmShowRoute = function (fromId, toId) {
+  var pts = fmRoute(fromId, toId); if (!pts) return;
+  var layer = document.getElementById('fmRouteLayer');
+  var d = 'M' + pts.map(function (p) { return p[0] + ' ' + p[1]; }).join(' L');
+  var dist = fmDist(pts);
+  layer.innerHTML = '<path class="fm-route" d="' + d + '"/><circle class="fm-route-dot" r="7"><animateMotion dur="2.6s" repeatCount="indefinite" path="' + d + '"/></circle>';
+  var row = document.getElementById('fmFromRow');
+  if (row) row.innerHTML = '<div class="fm-dim">' + esc(A('المسافة التقريبية: ', 'Approx. distance: ')) + '≈ ' + dist + esc(A(' م', ' m')) + '</div>';
+}
+function fmMarker(e) {
+  var live = fmVenueLive(e);
+  var cx = e.x + (e.w || 0) / 2, cy = e.y + (e.h || 0) / 2;
+  var shape = '';
+  if (e.poly) shape = '<polygon points="' + e.poly + '" class="fm-shape"/>';
+  else if (e.seatL) shape = '<rect x="336" y="842" width="120" height="16" class="fm-seat"/><rect x="336" y="862" width="20" height="96" class="fm-seat"/>';
+  else if (e.w) shape = '<rect x="' + e.x + '" y="' + e.y + '" width="' + e.w + '" height="' + e.h + '" rx="3" class="fm-shape"' + (e.rot ? ' transform="rotate(' + e.rot + ' ' + cx + ' ' + cy + ')"' : '') + '/>';
+  var extra = '';
+  if (e.mat) extra = '<polygon class="fm-mat" points="' + [0,1,2,3,4,5,6,7].map(function (i) { var a2 = Math.PI / 4 * i + Math.PI / 8, r = 16; return (cx + r * Math.cos(a2)).toFixed(1) + ',' + (cy + r * Math.sin(a2)).toFixed(1); }).join(' ') + '"/>';
+  if (e.ring) extra = '<rect class="fm-mat" x="' + (cx - 14) + '" y="' + (cy - 14) + '" width="28" height="28"/>';
+  if (e.pitch) extra = '<line class="fm-line" x1="' + cx + '" y1="' + e.y + '" x2="' + cx + '" y2="' + (e.y + e.h) + '"/><circle class="fm-line" cx="' + cx + '" cy="' + cy + '" r="12" fill="none"/><circle class="fm-ball" cx="' + (cx - 18) + '" cy="' + cy + '" r="3.5"/>';
+  if (e.vip2) extra = '<rect class="fm-vipseat" x="1112" y="868" width="28" height="22"/><rect class="fm-vipseat" x="1216" y="868" width="28" height="22"/>';
+  var cls = 'fm-v fm-c-' + e.cat + (live ? ' fm-live' : '') + (fmSel === e.id ? ' fm-on' : '');
+  var dim = fmCat && !(fmCat === e.cat || (fmCat === 'sport' && e.sp !== undefined) || (fmCat === 'service' && e.cat === 'service') || (fmCat === e.sv));
+  if (fmCat === 'wc' || fmCat === 'food' || fmCat === 'prayer' || fmCat === 'fun') dim = e.sv !== fmCat;
+  else if (fmCat) dim = e.cat !== fmCat;
+  if (dim) cls += ' fm-dimmed';
+  var label = e.cat === 'entrance'
+    ? '<g class="fm-ent" transform="translate(' + e.x + ',' + e.y + ')"><circle r="15" class="fm-ent-c"/><text class="fm-ent-t" y="5">' + esc(e.ar.replace('مدخل ', '')) + '</text></g>'
+    : '<text class="fm-lbl" x="' + cx + '" y="' + (e.y ? e.y - 6 : cy) + '">' + esc(fmName(e)) + '</text>';
+  return '<g class="' + cls + '" data-id="' + e.id + '" role="button" tabindex="0" aria-label="' + esc(fmName(e)) + '" onclick="fmSelect(\'' + e.id + '\')" onkeydown="if(event.key===\'Enter\')fmSelect(\'' + e.id + '\')">' +
+    (live ? '<circle class="fm-pulse" cx="' + cx + '" cy="' + cy + '" r="18"/>' : '') + shape + extra + label + '</g>';
+}
+function fmGroundSvg() {
+  return '<svg id="fmSvg" viewBox="' + FM_VB + '" preserveAspectRatio="xMidYMid meet" aria-label="' + esc(A('خريطة أرض المهرجان', 'Festival ground map')) + '">' +
+    '<g id="fmCam"><g id="fmTilt">' +
+    /* terrain: sand west lot, the green strip, roads, the khor east and corniche south */
+    '<rect x="150" y="400" width="2220" height="1010" class="fm-bg"/>' +
+    '<path class="fm-water" d="M2210 400 L2370 400 L2370 1410 L1650 1410 L1650 1360 L2230 1330 L2290 1100 L2250 700 Z"/>' +
+    '<rect x="150" y="1225" width="1720" height="60" class="fm-road"/>' +
+    '<rect x="255" y="400" width="46" height="830" class="fm-road"/>' +
+    '<rect x="1850" y="400" width="120" height="560" class="fm-road" transform="rotate(8 1910 700)"/>' +
+    '<circle cx="2035" cy="1160" r="90" class="fm-road"/><circle cx="2035" cy="1160" r="45" class="fm-bg"/>' +
+    '<rect x="310" y="418" width="380" height="300" class="fm-sand"/>' +
+    '<path class="fm-green" d="M318 770 Q310 990 380 1215 L1845 1215 L1878 1010 L1870 900 Q1600 760 318 770 Z"/>' +
+    '<rect x="500" y="418" width="1330" height="330" class="fm-souq"/>' +
+    '<line x1="240" y1="982" x2="1870" y2="982" class="fm-axis"/>' +
+    '<g id="fmRouteLayer"></g>' +
+    FEST_MAP.map(fmMarker).join('') +
+    '</g></g></svg>';
+}
+function fmPaint() {
+  var host = document.getElementById('fmMap'); if (!host) return;
+  host.innerHTML = fmGroundSvg();
+  fmApplyCam(false);
+  var panel = document.getElementById('fmPanel');
+  var e = fmSel ? FEST_MAP.find(function (x) { return x.id === fmSel; }) : null;
+  if (panel) { panel.hidden = !e; panel.innerHTML = e ? fmPanelHtml(e) : ''; if (e) hideDecorativeEmoji(panel); }
+  document.querySelectorAll('.fm-chip').forEach(function (b) { b.classList.toggle('on', b.dataset.c === fmCat); });
+}
+/* pan by drag, zoom by wheel/pinch */
+function fmWireGestures() {
+  var view = document.getElementById('fmView'); if (!view) return;
+  var drag = null;
+  view.addEventListener('pointerdown', function (ev) { drag = { x: ev.clientX, y: ev.clientY, fx: fmX, fy: fmY }; view.setPointerCapture(ev.pointerId); });
+  view.addEventListener('pointermove', function (ev) {
+    if (!drag) return;
+    var vb = FM_VB.split(' ').map(Number), k = vb[2] / view.clientWidth / fmZ;
+    fmX = drag.fx + (ev.clientX - drag.x) * k; fmY = drag.fy + (ev.clientY - drag.y) * k;
+    fmApplyCam(false);
+  });
+  ['pointerup', 'pointercancel'].forEach(function (t) { view.addEventListener(t, function () { drag = null; }); });
+  view.addEventListener('wheel', function (ev) { ev.preventDefault(); fmZoom(ev.deltaY < 0 ? 1 : -1); }, { passive: false });
+}
+function fmDeepLink() {
+  var m = (location.hash || '').match(/#map\/([a-z0-9]+)/i);
+  if (!m) return;
+  var id = m[1];
+  setTimeout(function () { go('venue'); setTimeout(function () { fmSelect(id); }, 80); }, 40);
+}
+R.venue = function () {
+  setTimeout(function () { fmPaint(); fmWireGestures(); }, 0);
+  var cats = [['', 'جميع المواقع', 'All'], ['sport', 'الرياضات', 'Sports'], ['entrance', 'المداخل', 'Entrances'],
+    ['parking', 'المواقف', 'Parking'], ['food', 'المطاعم', 'Food'], ['wc', 'دورات المياه', 'Toilets'],
+    ['prayer', 'المصلى', 'Prayer'], ['fun', 'العائلة', 'Family']];
+  var days = '<div class="fm-days">' + T('days').map(function (d, i) {
+    return '<button type="button" class="sc-chip' + (fmDay === i ? ' on' : '') + '" onclick="fmDaySet(' + (fmDay === i ? -1 : i) + ')">' + esc(d.split(' ')[0] + ' ' + d.split(' ')[1]) + '</button>';
+  }).join('') + '</div>';
+  var offPlan = CHAMPS.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) {
+    return !FEST_MAP.some(function (e) { return e.sp === x.i; });
+  });
+  return pageHead(A('استكشف', 'EXPLORE'), T('venueT'),
+    A('أرض المهرجان كاملة مرقمنة من المخطط الرسمي — تنقّل، اختر رياضة، واعرف طريقك.',
+      'The whole festival ground, digitized from the official plan — explore, pick a sport, find your way.'), {}) +
+    '<section class="container section" style="max-width:1180px">' +
+    '<div class="sc-search"><label class="sr-only" for="fmQ">' + esc(A('ابحث في المهرجان', 'Search the festival')) + '</label>' +
+    '<input type="text" id="fmQ" oninput="fmSearch(this.value)" placeholder="' + esc(A('ابحث في المهرجان…', 'Search the festival…')) + '"></div>' +
+    '<div id="fmHits" class="fm-hits"></div>' +
+    '<div class="sc-chips" role="group" aria-label="' + esc(A('استكشف', 'Explore')) + '">' +
+    cats.map(function (c) { return '<button type="button" class="sc-chip fm-chip' + (fmCat === c[0] ? ' on' : '') + '" data-c="' + c[0] + '" onclick="fmFilter(\'' + c[0] + '\')">' + esc(A(c[1], c[2])) + '</button>'; }).join('') +
+    '<button type="button" class="sc-chip" onclick="fmNow()">' + esc(A('يحدث الآن', 'Happening now')) + '</button>' +
+    '</div>' + days +
+    '<div id="fmRoot" class="fm-root" data-zoom="far">' +
+    '<div id="fmView" class="fm-view"><div id="fmMap" class="fm-tiltwrap"></div></div>' +
+    '<div class="fm-ctl">' +
+    '<button type="button" class="fm-btn" onclick="fmZoom(1)" aria-label="' + esc(A('تكبير', 'Zoom in')) + '">+</button>' +
+    '<button type="button" class="fm-btn" onclick="fmZoom(-1)" aria-label="' + esc(A('تصغير', 'Zoom out')) + '">−</button>' +
+    '<button type="button" class="fm-btn fm-btn-w" onclick="fmReset()">' + esc(A('عرض كامل المهرجان', 'Full festival view')) + '</button>' +
+    '</div>' +
+    '<aside id="fmPanel" class="fm-panel" hidden></aside>' +
+    '</div>' +
+    '<p class="fm-legend">' +
+    '<span class="fm-k fm-k-sport"></span>' + esc(A('الرياضات', 'Sports')) + ' <span class="fm-k fm-k-service"></span>' + esc(A('الخدمات', 'Services')) +
+    ' <span class="fm-k fm-k-entrance"></span>' + esc(A('المداخل', 'Entrances')) + ' <span class="fm-k fm-k-parking"></span>' + esc(A('المواقف', 'Parking')) +
+    ' <span class="fm-k fm-k-seating"></span>' + esc(A('الجماهير', 'Stands')) + '</p>' +
+    (offPlan.length ? '<div class="panel" style="margin-top:14px"><h2 class="sec-h" style="margin-top:0">' +
+      esc(A('رياضات خارج أرض المهرجان', 'Sports beyond the festival ground')) + '</h2><p class="hint">' +
+      esc(A('مساراتها ومواقعها غير محددة في المخطط الرسمي — تفاصيلها في صفحة كل رياضة.', 'Their routes are not drawn on the official plan — see each sport\u2019s page.')) + '</p>' +
+      '<div class="sc-chips">' + offPlan.map(function (x) { return '<button type="button" class="sc-chip" onclick="go(\'champ\',' + x.i + ')">' + esc(A(x.c.ar, x.c.en)) + '</button>'; }).join('') + '</div></div>' : '') +
+    '</section>';
+};
 R.community = function () {
   var evs = [['🤸', A('التحديات اليومية والكالستينكس', 'Daily challenges & calisthenics')], ['🎯', A('الألعاب الشعبية (الكيرم وشد الحبل)', 'Traditional games')], ['⚽', A('مسابقات جماهيرية قصيرة', 'Short public contests')], ['👟', A('عروض تعريفية للمحترفين', 'Pro demo sessions')]];
   return pageHead(
@@ -7365,6 +7735,7 @@ document.documentElement.dir = 'rtl';
 /* Paint immediately with defaults, then repaint once saved media comes back from
    IndexedDB — an async read shouldn't hold the first frame hostage. */
 wsLoad();
+fmDeepLink();
 appsLoad();
 actsLoad();
 scoresLoad();
