@@ -11,8 +11,8 @@
 window.KALBA_MAP = {
 
   /* The official illustrated master plan — the untouched hero of the page. */
-  imageSrc: 'portals/festival-map.webp',
-  imageFallback: 'portals/festival-map.png',
+  imageSrc: 'portals/festival-map.jpg',
+  imageFallback: 'portals/festival-map.webp',
 
   venueGeo: '25.0757,56.3620',   /* for the Directions button */
 
