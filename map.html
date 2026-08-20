@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الخريطة التفاعلية — مهرجان كلباء الرياضي 2026</title>
+<meta name="description" content="خريطة تفاعلية لأرض مهرجان كلباء الرياضي 2026 — الملاعب، الفعاليات، الخدمات، المداخل والمواقف.">
+<link rel="preload" as="image" href="portals/festival-map.webp">
+<style>
+/* ============ foundations ============ */
+@font-face { font-family: 'Cairo'; font-weight: 800; font-display: swap;
+  src: url('fonts/cairo-800-arabic.woff2') format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FE70-FEFF; }
+@font-face { font-family: 'Cairo'; font-weight: 800; font-display: swap;
+  src: url('fonts/cairo-800-latin.woff2') format('woff2'); unicode-range: U+0000-00FF; }
+
+:root {
+  --bg: #0a0e12; --bg2: #0e141a; --ink: #eef2f5; --muted: #92a2ac;
+  --line: rgba(255,255,255,.09); --gold: #d8b571; --gold-soft: #e8d3a4;
+  --glass: rgba(13,19,25,.82); --glass-brd: rgba(255,255,255,.12);
+  --ok: #4cc276; --live: #ff5c5c;
+  --radius: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 15px/1.65 'Segoe UI', Tahoma, 'Noto Kufi Arabic', sans-serif;
+  overflow: hidden; -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, .brand, .qj-chip, .flt-chip { font-family: 'Cairo', 'Segoe UI', sans-serif; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ============ layout ============ */
+#app { display: flex; flex-direction: column; height: 100dvh; }
+
+/* topbar */
+.topbar {
+  display: flex; align-items: center; gap: 14px; padding: 10px 16px;
+  background: linear-gradient(180deg, rgba(10,14,18,.96), rgba(10,14,18,.88));
+  border-bottom: 1px solid var(--line); z-index: 40; flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.02rem; white-space: nowrap; }
+.brand .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 12px var(--gold); }
+.brand small { color: var(--muted); font-weight: 400; font-family: inherit; }
+.top-actions { display: flex; align-items: center; gap: 8px; margin-inline-start: auto; }
+.tbtn {
+  padding: 7px 14px; border: 1px solid var(--line); border-radius: 999px;
+  font-size: .84rem; color: var(--ink); background: rgba(255,255,255,.03);
+  transition: border-color .2s, background .2s;
+}
+.tbtn:hover { border-color: var(--gold); background: rgba(216,181,113,.08); }
+.tbtn.gold { border-color: rgba(216,181,113,.5); color: var(--gold-soft); }
+
+/* quick jump */
+.qj { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; max-width: 46vw; }
+.qj::-webkit-scrollbar { display: none; }
+.qj-chip {
+  padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px;
+  font-size: .78rem; font-weight: 800; color: var(--muted); white-space: nowrap;
+  transition: color .2s, border-color .2s;
+}
+.qj-chip:hover { color: var(--gold-soft); border-color: rgba(216,181,113,.45); }
+
+/* stage */
+#stageArea { position: relative; flex: 1; min-height: 0; background: var(--bg2); }
+
+/* ============ viewport ============ */
+#viewport {
+  position: absolute; inset: 0; overflow: hidden; touch-action: none; cursor: grab;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(216,181,113,.05), transparent 60%),
+    var(--bg2);
+}
+#viewport.dragging { cursor: grabbing; }
+#world { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
+#world.anim { transition: transform .55s cubic-bezier(.22,.9,.3,1); }
+#mapImg { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+
+/* soft vignette so the illustration sits in the page rather than on it */
+#world::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 90px rgba(4,8,12,.55); }
+
+/* spotlight when a zone is selected */
+#spot { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .45s; }
+#spot.on { opacity: 1; }
+
+/* ============ markers ============ */
+#markers { position: absolute; inset: 0; }
+.mk {
+  position: absolute; transform: translate(-50%, -50%) scale(var(--inv, 1));
+  transform-origin: center; z-index: 5; transition: opacity .3s;
+}
+#markers.dim .mk:not(.sel) { opacity: .28; }
+#markers.flt .mk.hide { opacity: 0; pointer-events: none; }
+.mk-dot {
+  position: relative; display: grid; place-items: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(10,14,18,.9); border: 2px solid var(--c, var(--gold));
+  color: var(--c, var(--gold)); box-shadow: 0 4px 14px rgba(0,0,0,.5);
+  animation: mkFloat 3.4s ease-in-out infinite;
+  transition: transform .22s;
+}
+.mk:nth-child(3n) .mk-dot { animation-delay: -1.2s; }
+.mk:nth-child(3n+1) .mk-dot { animation-delay: -2.3s; }
+.mk-dot svg { width: 17px; height: 17px; }
+.mk:hover .mk-dot { transform: scale(1.18); }
+@keyframes mkFloat { 0%,100% { translate: 0 0; } 50% { translate: 0 -4px; } }
+
+/* idle pulse — a soft breathing glow, not a siren */
+.mk-dot::before {
+  content: ''; position: absolute; inset: -7px; border-radius: 50%;
+  border: 1.5px solid var(--c, var(--gold)); opacity: 0;
+  animation: mkPulse 3.4s ease-out infinite;
+}
+@keyframes mkPulse { 0% { opacity: .5; scale: .75; } 70% { opacity: 0; scale: 1.25; } 100% { opacity: 0; } }
+
+/* selected marker — larger glowing ring */
+.mk.sel { z-index: 9; }
+.mk.sel .mk-dot {
+  transform: scale(1.3); border-width: 2.5px;
+  box-shadow: 0 0 0 5px rgba(216,181,113,.15), 0 0 26px var(--c, var(--gold));
+}
+.mk.sel .mk-dot::before { animation-duration: 1.8s; opacity: .8; }
+
+/* entrance markers — numbered pill with a beckoning ring */
+.mk.gate .mk-dot {
+  width: auto; height: 30px; padding: 0 11px; border-radius: 999px;
+  font-family: 'Cairo', sans-serif; font-weight: 800; font-size: .8rem; letter-spacing: .5px;
+  background: linear-gradient(160deg, #20161c, #0d0a10); gap: 5px; display: flex;
+}
+.mk.gate .mk-dot::before { border-radius: 999px; }
+.mk.gate svg { width: 13px; height: 13px; }
+
+/* ambient activity sparks */
+.spark { position: absolute; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--gold-soft); pointer-events: none; opacity: 0;
+  animation: spark 5.2s ease-in-out infinite; }
+@keyframes spark { 0%, 100% { opacity: 0; scale: .4; } 12% { opacity: .85; scale: 1; } 26% { opacity: 0; scale: .4; } }
+
+/* ============ tooltip ============ */
+#tip {
+  position: fixed; z-index: 60; pointer-events: none; opacity: 0; translate: 0 6px;
+  transition: opacity .18s, translate .18s;
+  background: var(--glass); border: 1px solid var(--glass-brd); border-radius: 10px;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  padding: 7px 12px; font-size: .84rem; max-width: 240px; box-shadow: 0 10px 30px rgba(0,0,0,.5);
+}
+#tip.on { opacity: 1; translate: 0 0; }
+#tip .t-cat { display: block; font-size: .7rem; color: var(--muted); }
+
+/* ============ controls ============ */
+.ctl {
+  position: absolute; inset-inline-end: 14px; top: 14px; z-index: 30;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.ctl button {
+  width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--glass); border: 1px solid var(--glass-brd);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  transition: border-color .2s, color .2s;
+}
+.ctl button:hover { border-color: var(--gold); color: var(--gold-soft); }
+.ctl svg { width: 18px; height: 18px; }
+
+/* ============ filters / legend ============ */
+.flt {
+  position: absolute; z-index: 30; inset-inline-start: 50%; bottom: 14px;
+  translate: -50% 0; display: flex; gap: 6px; padding: 6px;
+  background: var(--glass); border: 1px solid var(--glass-brd); border-radius: 999px;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  max-width: calc(100% - 24px); overflow-x: auto; scrollbar-width: none;
+  box-shadow: 0 12px 34px rgba(0,0,0,.45);
+}
+[dir="rtl"] .flt { translate: 50% 0; }
+.flt::-webkit-scrollbar { display: none; }
+.flt-chip {
+  display: flex; align-items: center; gap: 7px; white-space: nowrap;
+  padding: 7px 13px; border-radius: 999px; font-size: .8rem; font-weight: 800;
+  color: var(--muted); transition: background .2s, color .2s;
+}
+.flt-chip .c-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--gold)); box-shadow: 0 0 8px var(--c, var(--gold)); }
+.flt-chip .n { font-size: .68rem; opacity: .7; font-family: 'Segoe UI', sans-serif; }
+.flt-chip:hover { color: var(--ink); }
+.flt-chip.on { background: rgba(216,181,113,.14); color: var(--gold-soft); }
+
+/* ============ zone panel (desktop) ============ */
+#panel {
+  position: absolute; z-index: 35; top: 14px; bottom: 14px; inset-inline-start: 14px;
+  width: min(360px, 88vw); display: flex; flex-direction: column;
+  background: var(--glass); border: 1px solid var(--glass-brd); border-radius: var(--radius);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 18px 60px rgba(0,0,0,.55);
+  opacity: 0; pointer-events: none; translate: calc(var(--dir, 1) * -16px) 0;
+  transition: opacity .35s, translate .35s;
+}
+[dir="rtl"] #panel { --dir: -1; }
+#panel.on { opacity: 1; pointer-events: auto; translate: 0 0; }
+
+/* ============ bottom sheet (mobile) ============ */
+#sheet {
+  position: absolute; z-index: 35; left: 0; right: 0; bottom: 0;
+  height: 72dvh; translate: 0 100%;
+  background: var(--glass); border: 1px solid var(--glass-brd); border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 -14px 50px rgba(0,0,0,.55);
+  transition: translate .38s cubic-bezier(.22,.9,.3,1);
+  display: flex; flex-direction: column; touch-action: none;
+}
+#sheet.peek { translate: 0 calc(100% - 46dvh); }
+#sheet.full { translate: 0 0; }
+#sheet .grip { padding: 10px 0 4px; display: grid; place-items: center; cursor: grab; }
+#sheet .grip span { width: 42px; height: 4px; border-radius: 4px; background: rgba(255,255,255,.25); }
+
+/* shared zone-card content */
+.zc { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+.zc-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px 10px; }
+.zc-ic {
+  width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; flex: none;
+  background: rgba(255,255,255,.05); border: 1.5px solid var(--c, var(--gold)); color: var(--c, var(--gold));
+}
+.zc-ic svg { width: 22px; height: 22px; }
+.zc-names { min-width: 0; }
+.zc-names h2 { font-size: 1.06rem; line-height: 1.35; }
+.zc-names p { font-size: .8rem; color: var(--muted); }
+.zc-close { margin-inline-start: auto; align-self: flex-start; margin-top: 2px;
+  width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; color: var(--muted); }
+.zc-close:hover { color: var(--ink); background: rgba(255,255,255,.06); }
+.zc-tags { display: flex; gap: 7px; padding: 0 18px 12px; flex-wrap: wrap; }
+.pill { padding: 3px 11px; border-radius: 999px; font-size: .72rem; border: 1px solid var(--line); color: var(--muted); }
+.pill.cat { border-color: color-mix(in srgb, var(--c, var(--gold)) 55%, transparent); color: var(--c, var(--gold)); }
+.pill.live { border-color: rgba(255,92,92,.5); color: #ff8c8c; display: inline-flex; align-items: center; gap: 6px; }
+.pill.live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--live); animation: blink 1.4s infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+.pill.ok { border-color: rgba(76,194,118,.45); color: #7bd8a0; }
+.pill.soon { border-color: rgba(216,181,113,.4); color: var(--gold-soft); }
+.zc-body { padding: 4px 18px 16px; overflow-y: auto; min-height: 0; }
+.zc-body > p { color: #c4ced6; font-size: .88rem; }
+.zc-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0; }
+.zc-meta .m { background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; }
+.zc-meta .m b { display: block; font-size: .68rem; color: var(--muted); font-weight: 400; }
+.zc-meta .m span { font-size: .86rem; }
+.zc-sch h3 { font-size: .78rem; color: var(--muted); font-weight: 800; margin-bottom: 6px; }
+.zc-sch .row { display: flex; gap: 10px; padding: 7px 2px; border-top: 1px dashed var(--line); font-size: .85rem; }
+.zc-sch .row b { color: var(--gold-soft); font-weight: 600; font-family: 'Segoe UI', sans-serif; min-width: 46px; }
+.zc-acts { display: flex; gap: 8px; padding: 12px 18px 16px; border-top: 1px solid var(--line); }
+.zc-acts .act {
+  flex: 1; text-align: center; padding: 10px; border-radius: 11px; font-size: .84rem; font-weight: 800;
+  border: 1px solid var(--line); transition: border-color .2s, background .2s;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.zc-acts .act svg { width: 15px; height: 15px; }
+.zc-acts .act:hover { border-color: var(--gold); background: rgba(216,181,113,.08); }
+.zc-acts .act.gold { background: rgba(216,181,113,.13); border-color: rgba(216,181,113,.5); color: var(--gold-soft); }
+
+/* ============ calibration ============ */
+#cal { position: absolute; inset: 0; z-index: 50; display: none; pointer-events: none; }
+#cal.on { display: block; }
+#cal .x, #cal .y { position: absolute; background: rgba(216,181,113,.55); }
+#cal .x { top: 0; bottom: 0; width: 1px; }
+#cal .y { left: 0; right: 0; height: 1px; }
+#cal .read {
+  position: absolute; translate: 12px 12px; background: #10161c; border: 1px solid var(--gold);
+  border-radius: 8px; padding: 5px 10px; font: 700 .8rem/1.5 Consolas, monospace; color: var(--gold-soft);
+  white-space: nowrap; direction: ltr;
+}
+.cal-badge {
+  position: absolute; z-index: 51; top: 14px; inset-inline-start: 14px;
+  background: rgba(216,181,113,.14); border: 1px solid var(--gold); color: var(--gold-soft);
+  padding: 6px 13px; border-radius: 999px; font-size: .76rem; font-weight: 800;
+}
+
+/* toast */
+#toast {
+  position: fixed; z-index: 80; bottom: 26px; left: 50%; translate: -50% 18px;
+  background: #10161c; border: 1px solid var(--glass-brd); border-radius: 999px;
+  padding: 9px 20px; font-size: .84rem; opacity: 0; transition: opacity .3s, translate .3s;
+  pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,.5);
+}
+#toast.on { opacity: 1; translate: -50% 0; }
+
+/* missing image state */
+#missing {
+  position: absolute; inset: 0; display: none; place-items: center; z-index: 20; text-align: center; padding: 24px;
+}
+#missing.on { display: grid; }
+#missing .box { max-width: 460px; background: var(--glass); border: 1px solid var(--glass-brd);
+  border-radius: var(--radius); padding: 28px; }
+#missing code { display: block; direction: ltr; background: rgba(255,255,255,.06); border-radius: 8px;
+  padding: 8px; margin-top: 10px; font-size: .82rem; color: var(--gold-soft); }
+
+/* ============ responsive ============ */
+@media (max-width: 899px) {
+  #panel { display: none; }
+  .qj { display: none; }
+  .flt { bottom: 12px; }
+  .brand small { display: none; }
+}
+@media (min-width: 900px) {
+  #sheet { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mk-dot, .mk-dot::before, .spark { animation: none !important; }
+  #world.anim { transition: none; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <a class="brand" href="index.html" id="brandLink">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="brandTitle">مهرجان كلباء الرياضي 2026</span>
+      <small id="brandSub">الخريطة التفاعلية</small>
+    </a>
+    <nav class="qj" id="quickJump" aria-label="الانتقال السريع"></nav>
+    <div class="top-actions">
+      <button class="tbtn" id="langBtn">English</button>
+      <a class="tbtn gold" href="index.html" id="backBtn">← الموقع الرئيسي</a>
+    </div>
+  </header>
+
+  <main id="stageArea">
+    <div id="viewport" dir="ltr" aria-label="خريطة أرض المهرجان">
+      <div id="world">
+        <img id="mapImg" alt="المخطط الرسمي لأرض مهرجان كلباء الرياضي 2026" decoding="async">
+        <div id="spot"></div>
+        <div id="markers"></div>
+      </div>
+      <div id="cal"><div class="x"></div><div class="y"></div><div class="read">x: 0.0% · y: 0.0%</div></div>
+    </div>
+
+    <div class="ctl" role="group" aria-label="التحكم بالخريطة">
+      <button id="zoomIn" aria-label="تكبير"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button id="zoomOut" aria-label="تصغير"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
+      <button id="zoomReset" aria-label="إعادة الضبط"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg></button>
+    </div>
+
+    <nav class="flt" id="filters" aria-label="تصفية حسب الفئة"></nav>
+
+    <aside id="panel" aria-live="polite"></aside>
+    <div id="sheet" aria-live="polite"><div class="grip" id="sheetGrip"><span></span></div><div class="zc-holder zc" id="sheetBody"></div></div>
+
+    <div id="missing"><div class="box">
+      <h2 style="margin-bottom:8px">🗺️ ملف الخريطة غير موجود</h2>
+      <p style="color:var(--muted);font-size:.88rem">احفظ صورة المخطط الرسمي في مجلد الموقع بهذا المسار ثم أعد تحميل الصفحة:</p>
+      <code>portals/festival-map.webp</code>
+    </div></div>
+
+    <div class="cal-badge" id="calBadge" hidden>🎯 وضع المعايرة — انقر لنسخ الإحداثيات</div>
+  </main>
+</div>
+
+<div id="tip" role="tooltip"></div>
+<div id="toast"></div>
+
+<script src="kalbaMapZones.js"></script>
+<script>
+'use strict';
+/* ==========================================================================
+   Interactive festival map — vanilla components, no build step.
+   Data lives in kalbaMapZones.js; nothing below hardcodes a coordinate.
+
+   Components: MapViewport, MapMarkers, MapControls, MapFilters,
+   ZoneInfoPanel, MobileZoneSheet, MapLegend (merged into MapFilters),
+   LanguageToggle, CalibrationMode — orchestrated by InteractiveFestivalMap.
+   ========================================================================== */
+
+/* Set to false before production to disable ?calibrate entirely. */
+var ALLOW_CALIBRATION = true;
+
+var DATA = window.KALBA_MAP;
+var CATS = {};
+DATA.categories.forEach(function (c) { CATS[c.id] = c; });
+
+/* ---------- i18n ---------- */
+var lang = 'ar';
+var STR = {
+  brandSub:   { ar: 'الخريطة التفاعلية', en: 'Interactive Map' },
+  back:       { ar: '← الموقع الرئيسي', en: '← Main site' },
+  langBtn:    { ar: 'English', en: 'عربي' },
+  all:        { ar: 'الكل', en: 'All' },
+  hours:      { ar: 'أوقات العمل', en: 'Opening hours' },
+  capacity:   { ar: 'السعة', en: 'Capacity' },
+  person:     { ar: 'شخص', en: 'people' },
+  schedule:   { ar: 'برنامج اليوم', en: 'Today’s schedule' },
+  locate:     { ar: 'تحديد على الخريطة', en: 'Locate on map' },
+  directions: { ar: 'الاتجاهات', en: 'Directions' },
+  statusLive: { ar: 'مباشر الآن', en: 'Live now' },
+  statusOpen: { ar: 'مفتوح', en: 'Open' },
+  statusSoon: { ar: 'يبدأ قريباً', en: 'Starting soon' },
+  copied:     { ar: 'نُسخت الإحداثيات', en: 'Coordinates copied' },
+  close:      { ar: 'إغلاق', en: 'Close' }
+};
+function S(k) { return STR[k][lang]; }
+function ZN(z) { return lang === 'ar' ? z.nameAr : z.nameEn; }
+function ZD(z) { return lang === 'ar' ? z.descAr : z.descEn; }
+function CN(id) { return lang === 'ar' ? CATS[id].ar : CATS[id].en; }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+  return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+/* ---------- icons (24×24 stroke paths) ---------- */
+var ICONS = {
+  football:   'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 8l3.5 2.5-1.3 4h-4.4l-1.3-4L12 8zM12 3v5M5.4 6.5l3.3 4M3.4 14.6l4.4-.1M8.5 20.5l2.2-3.9M15.5 20.5l-2.2-3.9M20.6 14.6l-4.4-.1M18.6 6.5l-3.3 4',
+  volleyball: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3.5 10c4 2.5 9.5 2.6 14-.5M12 3c-1 4.5 1 9.8 5.5 12.6M8 20c1.8-4.3.4-10-3.4-13',
+  basketball: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3v18M5.6 5.6C8 8 8 16 5.6 18.4M18.4 5.6C16 8 16 16 18.4 18.4',
+  wave:       'M2 12c2.5-2.8 5-2.8 7.5 0s5 2.8 7.5 0 3.5-2.4 5-1M2 17c2.5-2.8 5-2.8 7.5 0s5 2.8 7.5 0 3.5-2.4 5-1M14 7l3-3 4 2-2 3.5M9 8.5A2.5 2.5 0 1 0 9 3.4',
+  martial:    'M6 3v7a6 6 0 0 0 12 0V3M6 3h12M9 21l3-6 3 6M12 15v-2',
+  boxing:     'M7 10V7a5 5 0 0 1 10 0v3M5 10h14v4a7 7 0 0 1-14 0v-4zM12 10v4',
+  flag:       'M5 21V4M5 4c3-1.8 6 1.8 9 0s5 0 5 0v9s-2-1.8-5 0-6-1.8-9 0',
+  barrier:    'M4 21V8M20 21V8M2 8h20M4 14h16M6 8l4 6M12 8l4 6M18 8l1.5 2.2M4 11l2-3',
+  stands:     'M3 21h18M4 21v-4h4v4M10 21v-8h4v8M16 21V9h4v12M4 13l12-8 1.5 2',
+  stage:      'M3 10h18v11H3zM3 10l2-6h14l2 6M12 10v11M7.5 14h.01M16.5 14h.01M9 4v3M15 4v3',
+  star:       'M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8-6.1-3.4-6.1 3.4 1.4-6.8L2.2 9.1l6.9-.8L12 2z',
+  tv:         'M3 8h18v11H3zM8 3l4 5 4-5M8 22h8',
+  shield:     'M12 22s8-3.6 8-10V5l-8-3-8 3v7c0 6.4 8 10 8 10zM9 11.5l2 2 4-4',
+  siren:      'M6 17V11a6 6 0 0 1 12 0v6M4 17h16v3H4zM12 2v2M4.5 5.5L6 7M19.5 5.5L18 7',
+  gamepad:    'M6 9h4M8 7v4M15 8h.01M18 10h.01M5.5 6h13a4 4 0 0 1 4 4.5l-.6 4a3 3 0 0 1-5.2 1.6L15 14.5H9l-1.7 1.6a3 3 0 0 1-5.2-1.6l-.6-4A4 4 0 0 1 5.5 6z',
+  paint:      'M12 2l1.8 4.2L18 8l-4.2 1.8L12 14l-1.8-4.2L6 8l4.2-1.8L12 2zM5 16l-1 5 5-1M19 16l1 5-5-1M12 17v4',
+  kids:       'M9 6a3 3 0 1 0 6 0 3 3 0 0 0-6 0zM5 22v-3a7 7 0 0 1 14 0v3M12 12v4M9.5 14.5L12 16l2.5-1.5',
+  games:      'M4 4h7v7H4zM13 13h7v7h-7zM16.5 4L20 10.5h-7L16.5 4zM7.5 13a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z',
+  food:       'M7 2v9M4.5 2v4a2.5 2.5 0 0 0 5 0V2M7 11v11M17 2c-2 2-3 4.5-3 7h6c0-2.5-1-5-3-7zM17 9v13',
+  wc:         'M7 5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM5 22v-6H3.5L5 9a2 2 0 0 1 2-1.5h0A2 2 0 0 1 9 9l1.5 7H9v6M15 22v-5h-1.8L15 9.5A2 2 0 0 1 17 8h0a2 2 0 0 1 2 1.5L20.8 17H19v5',
+  parking:    'M4 4h16v16H4zM9 17V7h4.5a3 3 0 0 1 0 6H9',
+  car:        'M4 16l1.5-5.5A2 2 0 0 1 7.4 9h9.2a2 2 0 0 1 1.9 1.5L20 16M4 16h16v4h-2.5v-1.5h-11V20H4v-4zM7.5 13.5h.01M16.5 13.5h.01',
+  gate:       'M12 3l7 4v14M5 21V7l7-4M5 12h4M15 12h4M12 21v-6'
+};
+function icon(name) {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' +
+         (ICONS[name] || ICONS.star) + '"/></svg>';
+}
+
+/* ---------- toast ---------- */
+var toastT;
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove('on'); }, 2200);
+}
+
+/* ==========================================================================
+   MapViewport — pan / zoom / fly-to over the illustrated plan
+   ========================================================================== */
+function MapViewport(vp, world, img) {
+  var self = this;
+  this.vp = vp; this.world = world;
+  this.s = 1; this.tx = 0; this.ty = 0;      /* current transform */
+  this.W = 0; this.H = 0;                    /* world base size (fit) */
+  this.min = 1; this.max = 4;
+  var ptrs = new Map(), lastMid = null, lastDist = 0, raf = 0;
+
+  this.fit = function () {
+    var r = vp.getBoundingClientRect();
+    var iw = img.naturalWidth || 1603, ih = img.naturalHeight || 983;
+    var k = Math.min(r.width / iw, r.height / ih);
+    self.W = iw * k; self.H = ih * k;
+    world.style.width = self.W + 'px'; world.style.height = self.H + 'px';
+    self.s = 1;
+    self.tx = (r.width - self.W) / 2; self.ty = (r.height - self.H) / 2;
+    self.apply(false);
+  };
+  this.apply = function (anim) {
+    world.classList.toggle('anim', !!anim);
+    self.clamp();
+    world.style.transform = 'translate3d(' + self.tx + 'px,' + self.ty + 'px,0) scale(' + self.s + ')';
+    world.style.setProperty('--inv', (1 / self.s).toFixed(4));
+  };
+  this.clamp = function () {
+    var r = vp.getBoundingClientRect();
+    var w = self.W * self.s, h = self.H * self.s, pad = 70;
+    if (w <= r.width) self.tx = (r.width - w) / 2;
+    else self.tx = Math.min(pad, Math.max(r.width - w - pad, self.tx));
+    if (h <= r.height) self.ty = (r.height - h) / 2;
+    else self.ty = Math.min(pad, Math.max(r.height - h - pad, self.ty));
+  };
+  this.zoomAt = function (cx, cy, factor, anim) {
+    var ns = Math.min(self.max, Math.max(self.min, self.s * factor));
+    factor = ns / self.s; if (factor === 1) return;
+    var r = vp.getBoundingClientRect();
+    var px = cx - r.left, py = cy - r.top;
+    self.tx = px - (px - self.tx) * factor;
+    self.ty = py - (py - self.ty) * factor;
+    self.s = ns;
+    self.apply(anim);
+  };
+  /* Centre a world-percentage point at a target scale — the camera move. */
+  this.flyTo = function (xp, yp, scale) {
+    var r = vp.getBoundingClientRect();
+    self.s = Math.min(self.max, Math.max(self.min, scale || self.s));
+    self.tx = r.width / 2 - (xp / 100) * self.W * self.s;
+    self.ty = r.height * 0.44 - (yp / 100) * self.H * self.s;
+    self.apply(true);
+  };
+  this.reset = function () {
+    var r = vp.getBoundingClientRect();
+    self.s = 1; self.tx = (r.width - self.W) / 2; self.ty = (r.height - self.H) / 2;
+    self.apply(true);
+  };
+  /* pointer % inside the artwork, for the calibration mode */
+  this.pctAt = function (cx, cy) {
+    var r = vp.getBoundingClientRect();
+    return { x: (cx - r.left - self.tx) / (self.W * self.s) * 100,
+             y: (cy - r.top  - self.ty) / (self.H * self.s) * 100 };
+  };
+
+  /* --- input --- */
+  vp.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    self.zoomAt(e.clientX, e.clientY, Math.pow(1.0016, -e.deltaY), false);
+  }, { passive: false });
+
+  vp.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('.mk')) return;      /* markers own their taps */
+    ptrs.set(e.pointerId, e); vp.setPointerCapture(e.pointerId);
+    vp.classList.add('dragging'); world.classList.remove('anim');
+    if (ptrs.size === 2) {
+      var p = Array.from(ptrs.values());
+      lastDist = Math.hypot(p[0].clientX - p[1].clientX, p[0].clientY - p[1].clientY);
+      lastMid = { x: (p[0].clientX + p[1].clientX) / 2, y: (p[0].clientY + p[1].clientY) / 2 };
+    }
+  });
+  vp.addEventListener('pointermove', function (e) {
+    if (!ptrs.has(e.pointerId)) return;
+    var prev = ptrs.get(e.pointerId); ptrs.set(e.pointerId, e);
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = 0;
+      if (ptrs.size === 1) {
+        self.tx += e.clientX - prev.clientX; self.ty += e.clientY - prev.clientY;
+        self.apply(false);
+      } else if (ptrs.size === 2) {
+        var p = Array.from(ptrs.values());
+        var dist = Math.hypot(p[0].clientX - p[1].clientX, p[0].clientY - p[1].clientY);
+        var mid = { x: (p[0].clientX + p[1].clientX) / 2, y: (p[0].clientY + p[1].clientY) / 2 };
+        if (lastDist) self.zoomAt(mid.x, mid.y, dist / lastDist, false);
+        self.tx += mid.x - lastMid.x; self.ty += mid.y - lastMid.y;
+        lastDist = dist; lastMid = mid;
+        self.apply(false);
+      }
+    });
+  });
+  function up(e) { ptrs.delete(e.pointerId); if (!ptrs.size) { vp.classList.remove('dragging'); lastDist = 0; } }
+  vp.addEventListener('pointerup', up); vp.addEventListener('pointercancel', up);
+  window.addEventListener('resize', function () { self.fit(); });
+}
+
+/* ==========================================================================
+   ZoneInfoPanel — one renderer feeds the desktop panel and the mobile sheet.
+   The markup is data-driven so the zones file can later be swapped for an API.
+   ========================================================================== */
+function zoneCardHtml(z) {
+  var cat = CATS[z.category];
+  var stKey = z.status === 'live' ? 'statusLive' : z.status === 'soon' ? 'statusSoon' : 'statusOpen';
+  var stCls = z.status === 'live' ? 'live' : z.status === 'soon' ? 'soon' : 'ok';
+  var sch = (z.schedule || []).map(function (s) {
+    return '<div class="row"><b>' + esc(s.t) + '</b><span>' + esc(lang === 'ar' ? s.ar : s.en) + '</span></div>';
+  }).join('');
+  return '' +
+    '<div class="zc-head" style="--c:' + cat.color + '">' +
+      '<span class="zc-ic">' + icon(z.icon) + '</span>' +
+      '<div class="zc-names"><h2>' + esc(ZN(z)) + '</h2><p>' + esc(lang === 'ar' ? z.nameEn : z.nameAr) + '</p></div>' +
+      '<button class="zc-close" data-close aria-label="' + esc(S('close')) + '">✕</button>' +
+    '</div>' +
+    '<div class="zc-tags" style="--c:' + cat.color + '">' +
+      '<span class="pill cat">' + esc(CN(z.category)) + '</span>' +
+      '<span class="pill ' + stCls + '">' + esc(S(stKey)) + '</span>' +
+    '</div>' +
+    '<div class="zc-body">' +
+      '<p>' + esc(ZD(z)) + '</p>' +
+      '<div class="zc-meta">' +
+        '<div class="m"><b>' + esc(S('hours')) + '</b><span dir="ltr">' + esc(z.hours || '—') + '</span></div>' +
+        '<div class="m"><b>' + esc(S('capacity')) + '</b><span>' + (z.capacity ? z.capacity + ' ' + esc(S('person')) : '—') + '</span></div>' +
+      '</div>' +
+      (sch ? '<div class="zc-sch"><h3>' + esc(S('schedule')) + '</h3>' + sch + '</div>' : '') +
+    '</div>' +
+    '<div class="zc-acts">' +
+      '<button class="act gold" data-locate>' + icon('star') + esc(S('locate')) + '</button>' +
+      '<a class="act" target="_blank" rel="noopener" href="https://maps.google.com/?q=' + DATA.venueGeo + '">' +
+        icon('gate') + esc(S('directions')) + '</a>' +
+    '</div>';
+}
+
+/* ==========================================================================
+   InteractiveFestivalMap — orchestration
+   ========================================================================== */
+(function () {
+  var vp = document.getElementById('viewport');
+  var world = document.getElementById('world');
+  var img = document.getElementById('mapImg');
+  var markersEl = document.getElementById('markers');
+  var tip = document.getElementById('tip');
+  var panel = document.getElementById('panel');
+  var sheet = document.getElementById('sheet');
+  var sheetBody = document.getElementById('sheetBody');
+  var spot = document.getElementById('spot');
+  var view = new MapViewport(vp, world, img);
+  var selected = null, activeFilter = '';
+  var isMobile = function () { return window.innerWidth < 900; };
+
+  /* ---------- MapImage ---------- */
+  var triedFallback = false;
+  img.addEventListener('load', function () { view.fit(); document.getElementById('missing').classList.remove('on'); });
+  img.addEventListener('error', function () {
+    if (!triedFallback && DATA.imageFallback) { triedFallback = true; img.src = DATA.imageFallback; return; }
+    document.getElementById('missing').classList.add('on');
+  });
+  img.src = DATA.imageSrc;
+
+  /* ---------- MapMarkers ---------- */
+  DATA.zones.forEach(function (z) {
+    var cat = CATS[z.category];
+    var b = document.createElement('button');
+    b.className = 'mk' + (z.icon === 'gate' ? ' gate' : '');
+    b.style.left = z.x + '%'; b.style.top = z.y + '%';
+    b.style.setProperty('--c', cat.color);
+    b.dataset.id = z.id; b.dataset.cat = z.category;
+    b.setAttribute('aria-label', z.nameAr + ' — ' + z.nameEn);
+    b.innerHTML = '<span class="mk-dot">' + icon(z.icon) +
+      (z.gate ? '<span>' + esc(z.gate) + '</span>' : '') + '</span>';
+    b.addEventListener('click', function (e) { e.stopPropagation(); select(z.id); });
+    b.addEventListener('mouseenter', function () { showTip(b, z); });
+    b.addEventListener('mouseleave', hideTip);
+    markersEl.appendChild(b);
+  });
+
+  /* ambient activity — a few soft sparks near the busiest zones */
+  ['stage', 'football', 'restaurants', 'beach-volleyball', 'egames-east', 'side-games'].forEach(function (id, i) {
+    var z = DATA.zones.find(function (x) { return x.id === id; }); if (!z) return;
+    var s = document.createElement('span');
+    s.className = 'spark';
+    s.style.left = (z.x + (i % 2 ? 1.6 : -1.6)) + '%';
+    s.style.top = (z.y + (i % 3 ? 1.2 : -1.4)) + '%';
+    s.style.animationDelay = (-i * 0.9) + 's';
+    markersEl.appendChild(s);
+  });
+
+  /* ---------- tooltip ---------- */
+  function showTip(el, z) {
+    if (isMobile()) return;
+    tip.innerHTML = '<strong>' + esc(ZN(z)) + '</strong><span class="t-cat">' + esc(CN(z.category)) + '</span>';
+    var r = el.getBoundingClientRect();
+    tip.style.left = Math.min(window.innerWidth - 250, Math.max(8, r.left + r.width / 2 - 90)) + 'px';
+    tip.style.top = (r.top - 58) + 'px';
+    tip.classList.add('on');
+  }
+  function hideTip() { tip.classList.remove('on'); }
+
+  /* ---------- selection ---------- */
+  function select(id) {
+    var z = DATA.zones.find(function (x) { return x.id === id; });
+    if (!z) return;
+    selected = id;
+    markersEl.classList.add('dim');
+    markersEl.querySelectorAll('.mk').forEach(function (m) { m.classList.toggle('sel', m.dataset.id === id); });
+    spot.style.background = 'radial-gradient(circle at ' + z.x + '% ' + z.y + '%, transparent 70px, rgba(4,8,12,.5) 300px)';
+    spot.classList.add('on');
+    /* gentle camera move — closer, but never disorienting */
+    view.flyTo(z.x, z.y, Math.max(view.s, isMobile() ? 1.7 : 1.9));
+    var html = zoneCardHtml(z);
+    if (isMobile()) {
+      sheetBody.innerHTML = html;
+      sheet.classList.remove('full'); sheet.classList.add('peek');
+      wireCard(sheetBody, z);
+    } else {
+      panel.innerHTML = '<div class="zc">' + html + '</div>';
+      panel.classList.add('on');
+      wireCard(panel, z);
+    }
+    hideTip();
+  }
+  function wireCard(root, z) {
+    root.querySelector('[data-close]').onclick = deselect;
+    root.querySelector('[data-locate]').onclick = function () { view.flyTo(z.x, z.y, 2.4); };
+  }
+  function deselect() {
+    selected = null;
+    markersEl.classList.remove('dim');
+    markersEl.querySelectorAll('.mk.sel').forEach(function (m) { m.classList.remove('sel'); });
+    spot.classList.remove('on');
+    panel.classList.remove('on');
+    sheet.classList.remove('peek', 'full');
+  }
+  vp.addEventListener('click', function (e) {
+    if (calOn) return;
+    if (!e.target.closest('.mk') && selected) deselect();
+  });
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') deselect();
+    if (e.key === '+' || e.key === '=') view.zoomAt(innerWidth / 2, innerHeight / 2, 1.3, true);
+    if (e.key === '-') view.zoomAt(innerWidth / 2, innerHeight / 2, 1 / 1.3, true);
+  });
+
+  /* ---------- MobileZoneSheet drag ---------- */
+  (function () {
+    var grip = document.getElementById('sheetGrip'), startY = 0, dragging = false;
+    grip.addEventListener('pointerdown', function (e) { dragging = true; startY = e.clientY; grip.setPointerCapture(e.pointerId); });
+    grip.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var dy = e.clientY - startY;
+      if (dy < -46) { sheet.classList.add('full'); sheet.classList.remove('peek'); dragging = false; }
+      if (dy > 46) {
+        if (sheet.classList.contains('full')) { sheet.classList.remove('full'); sheet.classList.add('peek'); }
+        else deselect();
+        dragging = false;
+      }
+    });
+    grip.addEventListener('pointerup', function () { dragging = false; });
+  })();
+
+  /* ---------- MapControls ---------- */
+  document.getElementById('zoomIn').onclick = function () {
+    var r = vp.getBoundingClientRect(); view.zoomAt(r.left + r.width / 2, r.top + r.height / 2, 1.35, true); };
+  document.getElementById('zoomOut').onclick = function () {
+    var r = vp.getBoundingClientRect(); view.zoomAt(r.left + r.width / 2, r.top + r.height / 2, 1 / 1.35, true); };
+  document.getElementById('zoomReset').onclick = function () { deselect(); view.reset(); };
+
+  /* ---------- MapFilters + MapLegend ---------- */
+  function renderFilters() {
+    var el = document.getElementById('filters');
+    var chips = [{ id: '', ar: STR.all.ar, en: STR.all.en, color: 'var(--gold)' }].concat(DATA.categories);
+    el.innerHTML = chips.map(function (c) {
+      var n = c.id ? DATA.zones.filter(function (z) { return z.category === c.id; }).length : DATA.zones.length;
+      return '<button class="flt-chip' + (activeFilter === c.id ? ' on' : '') + '" data-f="' + c.id + '" style="--c:' + c.color + '">' +
+        '<span class="c-dot"></span>' + esc(lang === 'ar' ? c.ar : c.en) + '<span class="n">' + n + '</span></button>';
+    }).join('');
+    el.querySelectorAll('.flt-chip').forEach(function (ch) {
+      ch.onclick = function () {
+        activeFilter = activeFilter === ch.dataset.f ? '' : ch.dataset.f;
+        applyFilter(); renderFilters();
+      };
+    });
+  }
+  function applyFilter() {
+    markersEl.classList.toggle('flt', !!activeFilter);
+    markersEl.querySelectorAll('.mk').forEach(function (m) {
+      m.classList.toggle('hide', !!activeFilter && m.dataset.cat !== activeFilter);
+    });
+    if (selected) {
+      var z = DATA.zones.find(function (x) { return x.id === selected; });
+      if (z && activeFilter && z.category !== activeFilter) deselect();
+    }
+  }
+
+  /* ---------- quick jump ---------- */
+  function renderQuickJump() {
+    var el = document.getElementById('quickJump');
+    el.innerHTML = (DATA.quickJump || []).map(function (id) {
+      var z = DATA.zones.find(function (x) { return x.id === id; });
+      return z ? '<button class="qj-chip" data-id="' + z.id + '">' + esc(ZN(z)) + '</button>' : '';
+    }).join('');
+    el.querySelectorAll('.qj-chip').forEach(function (b) { b.onclick = function () { select(b.dataset.id); }; });
+  }
+
+  /* ---------- LanguageToggle ---------- */
+  function applyLang() {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.getElementById('brandTitle').textContent = lang === 'ar' ? 'مهرجان كلباء الرياضي 2026' : 'Kalba Sports Festival 2026';
+    document.getElementById('brandSub').textContent = S('brandSub');
+    document.getElementById('backBtn').textContent = S('back');
+    document.getElementById('langBtn').textContent = S('langBtn');
+    renderFilters(); renderQuickJump();
+    if (selected) { var id = selected; select(id); }   /* re-render open card in the new language */
+  }
+  document.getElementById('langBtn').onclick = function () { lang = lang === 'ar' ? 'en' : 'ar'; applyLang(); };
+
+  /* ---------- CalibrationMode (dev only) ---------- */
+  var calOn = ALLOW_CALIBRATION && /[?&]calibrate/.test(location.search);
+  if (calOn) {
+    var cal = document.getElementById('cal');
+    cal.classList.add('on');
+    document.getElementById('calBadge').hidden = false;
+    var rx = cal.querySelector('.x'), ry = cal.querySelector('.y'), rd = cal.querySelector('.read');
+    vp.addEventListener('mousemove', function (e) {
+      var r = vp.getBoundingClientRect();
+      rx.style.left = (e.clientX - r.left) + 'px';
+      ry.style.top = (e.clientY - r.top) + 'px';
+      var p = view.pctAt(e.clientX, e.clientY);
+      rd.style.left = (e.clientX - r.left) + 'px'; rd.style.top = (e.clientY - r.top) + 'px';
+      rd.textContent = 'x: ' + p.x.toFixed(1) + '% · y: ' + p.y.toFixed(1) + '%';
+    });
+    vp.addEventListener('click', function (e) {
+      var p = view.pctAt(e.clientX, e.clientY);
+      var txt = 'x: ' + p.x.toFixed(1) + ', y: ' + p.y.toFixed(1);
+      try { navigator.clipboard.writeText(txt); } catch (err) {}
+      toast(S('copied') + ' — ' + txt);
+      console.log('[calibrate] ' + txt);
+    }, true);
+  }
+
+  /* ---------- boot ---------- */
+  renderFilters(); renderQuickJump();
+  /* deep link: map.html?zone=stage */
+  var zq = new URLSearchParams(location.search).get('zone');
+  if (zq) setTimeout(function () { select(zq); }, 600);
+
+  /* small public API so the CMS / main site can drive the map later */
+  window.KalbaMapAPI = { select: select, deselect: deselect, setLang: function (l) { lang = l; applyLang(); } };
+})();
+</script>
+</body>
+</html>
