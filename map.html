@@ -75,9 +75,12 @@ a { color: inherit; text-decoration: none; }
     var(--bg2);
 }
 #viewport.dragging { cursor: grabbing; }
-#world { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
+/* No will-change here: pinning the huge image into its own persistent GPU layer
+   let Chromium hold a stale transform for it after resizes and back-navigation,
+   painting the artwork and the markers in two different places. */
+#world { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
 #world.anim { transition: transform .55s cubic-bezier(.22,.9,.3,1); }
-#mapImg { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+#mapImg { position: absolute; inset: 0; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; pointer-events: none; }
 
 /* soft vignette so the illustration sits in the page rather than on it */
 #world::after { content: ''; position: absolute; inset: 0; pointer-events: none;
@@ -96,7 +99,9 @@ a { color: inherit; text-decoration: none; }
   padding: 6px;
 }
 #markers.dim .mk:not(.sel) { opacity: .28; }
-#markers.flt .mk.hide { opacity: 0; pointer-events: none; }
+/* state class deliberately NOT named "flt" — that's the filter bar's styling class,
+   and putting it on this layer once dressed all the markers up as a giant glass pill */
+#markers.filtered .mk.hide { opacity: 0; pointer-events: none; }
 .mk-dot {
   position: relative; display: grid; place-items: center;
   width: 34px; height: 34px; border-radius: 50%;
@@ -552,7 +557,12 @@ function MapViewport(vp, world, img) {
   });
   function up(e) { ptrs.delete(e.pointerId); if (!ptrs.size) { vp.classList.remove('dragging'); lastDist = 0; } }
   vp.addEventListener('pointerup', up); vp.addEventListener('pointercancel', up);
-  window.addEventListener('resize', function () { self.fit(); });
+  /* Refit on anything that can move the container out from under the transform:
+     window resizes, browser-zoom viewport changes, and bfcache restores — each
+     one re-derives the world box so image and markers can never drift apart. */
+  if (window.ResizeObserver) new ResizeObserver(function () { self.fit(); }).observe(vp);
+  else window.addEventListener('resize', function () { self.fit(); });
+  window.addEventListener('pageshow', function (e) { if (e.persisted) self.fit(); });
 }
 
 /* ==========================================================================
@@ -742,7 +752,7 @@ function zoneCardHtml(z) {
     });
   }
   function applyFilter() {
-    markersEl.classList.toggle('flt', !!activeFilter);
+    markersEl.classList.toggle('filtered', !!activeFilter);
     markersEl.querySelectorAll('.mk').forEach(function (m) {
       m.classList.toggle('hide', !!activeFilter && m.dataset.cat !== activeFilter);
     });
