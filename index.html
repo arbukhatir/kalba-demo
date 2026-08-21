@@ -1220,20 +1220,15 @@
     .sc-dayhead { padding: 10px 13px; }
   }
   .kbot-typing { color: var(--muted); letter-spacing: 3px; }
-  .realmap { position: relative; }
-  .realmap iframe { width: 100%; border: 0; border-radius: 10px; display: block; background: #e8e6e0; }
-  .realmap-open { position: absolute; bottom: 12px; inset-inline-start: 12px; background: #141414; box-shadow: 0 4px 14px rgba(15,23,42,.25); z-index: 500; }
-  .kmap { width: 100%; border-radius: 10px; background: #e8e6e0; z-index: 0; }
-  .kmap .leaflet-bar a { width: 44px; height: 44px; line-height: 44px; font-size: 20px; }
+  /* Homepage plan preview — links to the interactive festival map (map.html) */
+  .planlink { position: relative; display: block; border-radius: 10px; overflow: hidden; }
+  .planlink img { width: 100%; display: block; transition: transform .5s; }
+  .planlink:hover img { transform: scale(1.03); }
+  .planlink-cta { position: absolute; bottom: 12px; inset-inline-start: 12px; display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(10,14,18,.86); border: 1px solid rgba(216,181,113,.55); color: var(--gold-soft);
+    padding: 7px 14px; border-radius: 999px; font-size: .82rem; font-weight: 700; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
   /* visible keyboard focus everywhere */
   :focus-visible { outline: 2px solid var(--surf); outline-offset: 2px; }
-  .kmap-pin { display: grid; place-items: center; }
-  .kmap-pin span { display: grid; place-items: center; width: 34px; height: 34px; font-size: 17px; background: #141414; border: 2px solid var(--gold); border-radius: 50%; box-shadow: 0 3px 10px rgba(15,23,42,.35); cursor: pointer; transition: transform .12s; }
-  /* Sport image inside map pin */
-  .kmap-pin .sport-icon{width:24px;height:24px;display:block;object-fit:contain;max-width:24px;max-height:24px;}
-  .kmap-pin span:hover { transform: scale(1.15); }
-  .kmap-pop { font-family: var(--font); font-size: .95rem; line-height: 1.5; }
-  .kmap-pop .kmap-more { display: inline-block; margin-top: 4px; color: var(--gold-soft); font-weight: 700; cursor: pointer; }
 
   /* CREATIVE RESPONSIVE POINTS TABLE */
   /* Same desktop width as the live-results boxes */
@@ -2047,10 +2042,6 @@ nav.main .menu.open > .menu-btn .caret{transform:rotate(180deg);}
     .fm-route-dot { display: none; }
   }
 </style>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-rotate@0.2.8/dist/leaflet-rotate.js"></script>
-<script>var Leaflet = window.L; /* the demo reuses `L` for its i18n table */</script>
 </head>
 <body>
 
@@ -3525,12 +3516,17 @@ R.home = function () {
       A('خمسة أيام من التحديات المعرفية والرياضية والإبداعية لطلبة المدارس وأسرهم — نقاط ومكافآت سرعة، لوحات متصدرين يومية، وكأس مدارس كلباء.', 'Five days of knowledge, sports and creative challenges for students and their families — points and speed bonuses, daily leaderboards, and the Kalba Schools Cup.'),
       A('تحدّ وشارك', 'TAKE THE CHALLENGE'), 'schools') +
 
-    feat(false,
-      realMapHtml(320),
-      A('الموقع', 'THE VENUE'),
-      A('خريطة شاطئ كلباء التفاعلية', 'Interactive Kalba Beach Map'),
-      A('استكشف الملاعب ونقاط التسجيل والإسعاف والمواقف على الخريطة التفاعلية.', 'Explore the pitches, registration points, first aid and parking on the interactive map.'),
-      A('مرافق الموقع كاملة', 'FULL VENUE MAP'), 'venue') +
+    /* The venue block shows the official illustrated plan and opens the
+       interactive map page — it replaced a Leaflet satellite embed, whose two
+       external scripts left with it. */
+    '<section class="def-feat">' +
+    '<div class="def-feat-img"><a class="planlink" href="map.html" aria-label="' + esc(A('افتح الخريطة التفاعلية لأرض المهرجان', 'Open the interactive festival ground map')) + '">' +
+    '<img src="portals/festival-map.jpg" alt="' + esc(A('المخطط الرسمي لأرض المهرجان', 'The official festival ground plan')) + '" loading="lazy">' +
+    '<span class="planlink-cta">🗺️ ' + esc(A('استكشف الخريطة التفاعلية', 'Explore the interactive map')) + '</span></a></div>' +
+    '<div class="def-feat-txt"><div class="def-over">' + esc(A('الموقع', 'THE VENUE')) + '</div>' +
+    '<h2 class="sec-h">' + esc(A('خريطة أرض المهرجان التفاعلية', 'Interactive Festival Ground Map')) + '</h2>' +
+    '<p>' + esc(A('المخطط الرسمي بنسخة تفاعلية: الملاعب والفعاليات والخدمات والمداخل والمواقف — تكبير وتنقّل وبطاقة معلومات لكل موقع.', 'The official plan, made interactive: courts, events, services, entrances and parking — zoom, pan, and an info card for every location.')) + '</p>' +
+    '<a class="btn gold def" href="map.html">' + esc(A('افتح الخريطة التفاعلية', 'OPEN THE INTERACTIVE MAP')) + '</a></div></section>' +
 
     whyVisitHtml() +
     newsGridHtml() +
@@ -7073,45 +7069,8 @@ function liveMatchesHtml() {
                 '</span>' +'</div>');}).join('') +'</div>' +'</div>');}).join('');
 }
 
-var KALBA = [25.086991093169747, 56.35894497300927];
-/* CMS-managed map buttons (mock of admin → Map Pins) */
-var MAP_PINS = [
-  { lat: 25.086991, lng: 56.358945, ic: '⭐', ar: 'قلب المهرجان — المسرح الرئيسي', en: 'Festival heart — main stage', dAr: 'حفلات الافتتاح والتتويج', dEn: 'Opening & crowning ceremonies', v: 'venue' },
-  { lat: 25.088300, lng: 56.357600, ic: '<img src="portals/BeachSoccer.png" class="sport-icon" alt="">', ar: 'ملعب كرة القدم الشاطئية', en: 'Beach football pitch', dAr: 'مباريات البطولة يومياً 16:00–22:00', dEn: 'Championship matches daily 16:00–22:00', v: 'champs' },
-  { lat: 25.086200, lng: 56.359900, ic: '📝', ar: 'نقطة التسجيل والاعتماد', en: 'Registration & accreditation', dAr: 'استلام البطاقات وتسجيل المشاركين', dEn: 'Badge pickup & participant registration', v: 'register' },
-  { lat: 25.087600, lng: 56.358300, ic: '⛑️', ar: 'الإسعاف والمياه', en: 'First aid & water', dAr: '', dEn: '', v: '' },
-  { lat: 25.085400, lng: 56.360400, ic: '🅿️', ar: 'المواقف والمدخل الرئيسي', en: 'Parking & main entrance', dAr: '', dEn: '', v: '' }
-];
-var kmapN = 0;
-function realMapHtml(h) {
-  kmapN++;
-  var id = 'kmap' + kmapN;
-  setTimeout(function () {
-    var el2 = document.getElementById(id);
-    if (!el2 || el2.dataset.done || typeof Leaflet === 'undefined' || !Leaflet) return;
-    el2.dataset.done = '1';
-    /* bearing -105° turns the N–S shoreline horizontal with the sea at the top */
-    var map = Leaflet.map(id, { scrollWheelZoom: false, rotate: true, bearing: -105, rotateControl: false, touchRotate: false, shiftKeyRotate: false }).setView(KALBA, 16);
-    Leaflet.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Tiles &copy; Esri' }).addTo(map);
-    map.on('click', function () { map.scrollWheelZoom.enable(); });
-    MAP_PINS.forEach(function (p) {
-      var m = Leaflet.marker([p.lat, p.lng], {
-        /* Leaflet builds these after render(), so the emoji pass never reaches them.
-           The marker keeps its accessible name from `title`; the glyph is decorative
-           and the same facilities are listed as text in the cards below the map. */
-        icon: Leaflet.divIcon({ className: 'kmap-pin', html: '<span aria-hidden="true">' + p.ic + '</span>', iconSize: [34, 34], iconAnchor: [17, 17] }),
-        title: A(p.ar, p.en)
-      }).addTo(map);
-      var html = '<strong>' + p.ic + ' ' + esc(A(p.ar, p.en)) + '</strong>';
-      if (p.dAr || p.dEn) html += '<br>' + esc(A(p.dAr, p.dEn));
-      if (p.v) html += '<br><span class="kmap-more" onclick="go(\'' + p.v + '\')">' + esc(A('المزيد ‹', 'More ›')) + '</span>';
-      m.bindPopup('<div class="kmap-pop" dir="' + (lang === 'ar' ? 'rtl' : 'ltr') + '">' + html + '</div>');
-    });
-  }, 60);
-  return '<div class="realmap"><div id="' + id + '" class="kmap" style="height:' + (h || 400) + 'px" dir="ltr"></div>' +
-    '<a class="btn sm realmap-open" href="https://www.google.com/maps/search/?api=1&query=' + KALBA[0] + ',' + KALBA[1] + '" target="_blank" rel="noopener">🧭 ' +
-    esc(A('افتح في خرائط Google', 'Open in Google Maps')) + '</a></div>';
-}
+/* The Leaflet satellite embed and its MAP_PINS lived here; the homepage now
+   previews the official illustrated plan and links to map.html instead. */
 
 var venueFilter = '';
 function venueSvgHtml(filter) {
