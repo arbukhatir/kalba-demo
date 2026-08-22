@@ -2464,7 +2464,9 @@ var FORMS = {
       { n:'act', t:'select', r:1, l:{ar:'المسابقة',en:'Competition'}, o:[{ar:'تحدي القوة',en:'Strength'},{ar:'الكاياك',en:'Kayak'},{ar:'الجري',en:'Running'},{ar:'السباحة',en:'Swimming'},{ar:'كرة القدم الشاطئية',en:'Beach football'}] },
       { n:'acat', t:'select', r:1, l:{ar:'الفئة العمرية',en:'Age category'}, o:[{ar:'أطفال',en:'Children'},{ar:'ناشئون',en:'Teens'},{ar:'كبار',en:'Adults'}] },
       { n:'team', t:'text', r:0, l:{ar:'اسم الفريق',en:'Team name'} },
-      { n:'iban', t:'text', r:1, l:{ar:'رقم الحساب المصرفي IBAN (لصرف الجوائز)',en:'IBAN (for prize payouts)'} }
+      /* the IBAN arrives as a bank-issued certificate, not a typed number — no
+         transcription errors, and the reviewer sees the account holder's name */
+      { n:'iban', t:'file', r:1, l:{ar:'شهادة الآيبان IBAN من البنك (لصرف الجوائز)',en:'IBAN certificate from the bank (for prize payouts)'} }
     ]},
   media: { ic: '📸', t: {ar:'الإعلام والصحافة',en:'Media & Press'}, d: {ar:'الجهة ونوع التغطية وتواريخ الحضور',en:'Outlet, coverage type & dates'},
     fields: [
@@ -2919,7 +2921,7 @@ function fieldHtml(f) {
   } else if (f.t === 'scale') {
     h += '<div class="chiprow"' + grp + '>' + Array.from({length:11},function(_,i){ return '<label class="chip"><input type="radio" name="sc_' + f.n + '" value="' + i + '"><span>' + i + '</span></label>'; }).join('') + '</div><div class="hint">' + esc(T('npsHint')) + '</div>';
   } else if (f.t === 'file') {
-    h += '<input type="file" id="' + fid + '" accept=".pdf,.jpg,.png"' + req + '><div class="hint">PDF / JPG / PNG — 8 MB</div>';
+    h += '<input type="file" id="' + fid + '" accept=".pdf,.jpg,.jpeg,.png"' + req + '><div class="hint">PDF / JPG / PNG — 8 MB</div>';
   }
   return h + '</div>';
 }
@@ -2996,13 +2998,23 @@ function validateFields(root) {
   var missing = [], firstBad = null;
   clearFieldErrors(root);
   root.querySelectorAll('.field').forEach(function (fd) {
-    if (fd.dataset.r !== '1') return;
-    var t = fd.dataset.t, ok = true;
-    if (t === 'checks' || t === 'days') ok = fd.querySelectorAll('input:checked').length > 0;
-    else if (t === 'rating' || t === 'scale') ok = !!fd.querySelector('input:checked');
-    else if (t === 'file') ok = fd.querySelector('input').files.length > 0;
-    else ok = fd.querySelector('input,select,textarea').value.trim() !== '';
-    if (ok) return;
+    var t = fd.dataset.t, bad = '';
+    var ctrl = fd.querySelector('input,select,textarea');
+    if (fd.dataset.r === '1') {
+      var ok = true;
+      if (t === 'checks' || t === 'days') ok = fd.querySelectorAll('input:checked').length > 0;
+      else if (t === 'rating' || t === 'scale') ok = !!fd.querySelector('input:checked');
+      else if (t === 'file') ok = fd.querySelector('input').files.length > 0;
+      else ok = ctrl.value.trim() !== '';
+      if (!ok) bad = A('هذا الحقل مطلوب', 'This field is required');
+    }
+    /* a filled-in email that cannot receive anything fails here, not at the
+       inbox — the sports flows promise a PIN and QR code to this address */
+    if (!bad && ctrl && ctrl.type === 'email' && ctrl.value.trim() &&
+        !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(ctrl.value.trim())) {
+      bad = A('أدخل بريداً إلكترونياً صحيحاً', 'Enter a valid email address');
+    }
+    if (!bad) return;
 
     var label = fd.querySelector('.flabel');
     var name = label ? label.textContent.replace('*', '').trim() : '';
@@ -3012,10 +3024,9 @@ function validateFields(root) {
     var msg = document.createElement('div');
     msg.className = 'field-err';
     msg.id = 'err' + (++_errSeq);
-    msg.textContent = A('هذا الحقل مطلوب', 'This field is required');
+    msg.textContent = bad;
     fd.appendChild(msg);
 
-    var ctrl = fd.querySelector('input,select,textarea');
     if (ctrl) {
       ctrl.setAttribute('aria-invalid', 'true');
       ctrl.setAttribute('aria-describedby', msg.id);
@@ -3055,11 +3066,24 @@ window.saveScores = function (mode) {
     : A('حُفظت النتائج — تظهر في الرئيسية وتبقى بعد إعادة التحميل',
         'Results saved — they show on the homepage and survive a reload'));
 };
+/* Visitor-submitted applications used to live only in memory: the success page
+   said "it appears in the admin panel", and a reload made a liar of it. They now
+   persist in their own store, status included. */
+function persistUserApps() {
+  store('userApps', APPS.filter(function (a) { return a.u; }).map(function (a) {
+    return { id: a.id, type: a.type, name: a.name, status: a.status };
+  }));
+}
 function appsLoad() {
   var saved = store('appStatus');
   if (saved) saved.forEach(function (v) {
     var a = APPS.find(function (x) { return x.id === v.id; });
     if (a) a.status = v.status;
+  });
+  /* stored newest-first; unshifting in reverse restores the panel's order */
+  (store('userApps') || []).slice().reverse().forEach(function (a) {
+    a.u = 1;
+    APPS.unshift(a);
   });
 }
 function actsLoad() {
@@ -3552,7 +3576,8 @@ window.submitForm = function (k) {
   clearFormErrors(root);
   var ref = k + '-' + String(APPS[0].id + 1).padStart(5, '0');
   var nameFld = root.querySelector('[data-n="_name"] input');
-  APPS.unshift({ id: APPS[0].id + 1, type: k, name: nameFld.value.trim(), status: 'pending' });
+  APPS.unshift({ id: APPS[0].id + 1, type: k, name: nameFld.value.trim(), status: 'pending', u: 1 });
+  persistUserApps();
   var acct = '';
   if (k === 'sports') {
     var emailFld = root.querySelector('[data-n="_email"] input');
@@ -3565,7 +3590,10 @@ window.submitForm = function (k) {
     '<div class="be">✅</div><h2>' + esc(T('okTitle')) + '</h2>' +
     '<p>' + esc(T('okRef')) + ': <b dir="ltr">' + esc(ref) + '</b></p>' + acct + '<p class="muted">' + esc(T('okNote')) + '</p>' +
     '<div class="btn-row" style="justify-content:center"><button class="btn primary" onclick="go(\'home\')">' + esc(T('home')) + '</button>' +
-    '<button class="btn ghost" onclick="go(\'admin\')">' + esc(T('admin')) + ' ←</button></div></div></section>';
+    /* the review shortcut is for staff walking the flow — a visitor would only
+       be bounced to the login gate by it */
+    (opsCan('admin') ? '<button class="btn ghost" onclick="go(\'admin\',\'apps\')">' + esc(T('admin')) + ' ←</button>' : '') +
+    '</div></div></section>';
 };
 
 R.survey = function () {
@@ -3588,27 +3616,31 @@ window.submitSurvey = function () {
     '<section class="container section" style="max-width:600px"><div class="panel success-panel">' +
     '<div class="be">🙏</div><h2>' + esc(T('svOk')) + '</h2>' +
     '<div class="btn-row" style="justify-content:center"><button class="btn primary" onclick="go(\'home\')">' + esc(T('home')) + '</button>' +
-    '<button class="btn ghost" onclick="go(\'admin\',\'surveys\')">' + esc(T('svRes')) + ' ←</button></div></div></section>';
+    (opsCan('admin') ? '<button class="btn ghost" onclick="go(\'admin\',\'surveys\')">' + esc(T('svRes')) + ' ←</button>' : '') +
+    '</div></div></section>';
 };
 
 R.join = function () {
   if (me) return R.my();
   var ageOpts = Object.keys(AGES).map(function (k) { return '<option value="' + k + '">' + esc(tx(AGES[k])) + '</option>'; }).join('');
   return pageHead(A('بطاقة الزائر', 'VISITOR CARD'), T('joinTitle'), T('joinIntro'), { bg: GALLERY[4].src }) +
-    '<section class="container section" style="max-width:600px"><div class="panel">' +
+    '<section class="container section" style="max-width:600px"><div class="panel" id="formFields">' +
     '<div id="formErr"></div>' +
-    '<div class="field"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" id="jName" maxlength="100"></div>' +
-    '<div class="field"><label class="flabel">' + esc(T('ageGroup')) + ' <span class="req">*</span></label><select id="jAge"><option value="">' + esc(T('choose')) + '</option>' + ageOpts + '</select></div>' +
+    '<div class="field" data-n="_jn" data-t="text" data-r="1"><label class="flabel">' + esc(T('fullName')) + ' <span class="req">*</span></label><input type="text" id="jName" maxlength="100"></div>' +
+    '<div class="field" data-n="_ja" data-t="select" data-r="1"><label class="flabel">' + esc(T('ageGroup')) + ' <span class="req">*</span></label><select id="jAge"><option value="">' + esc(T('choose')) + '</option>' + ageOpts + '</select></div>' +
     '<label class="check" style="margin-bottom:12px"><input type="checkbox" id="jConsent"> <span>' +
     esc(A('أوافق على شروط الاستخدام وسياسة الخصوصية', 'I agree to the Terms of Use and Privacy Policy')) +
     ' — <a onclick="go(\'terms\')" style="cursor:pointer">' + esc(A('الشروط', 'Terms')) + '</a></span></label>' +
     '<button class="btn gold block" onclick="doJoin()">' + esc(T('joinBtn')) + '</button></div></section>';
 };
 window.doJoin = function () {
+  /* same inline per-field errors as every other form, not just a generic banner */
+  var missing = validateFields(document.getElementById('formFields'));
+  var consent = document.getElementById('jConsent');
+  if (consent && !consent.checked) missing.push(A('الموافقة على الشروط', 'Agreeing to the terms'));
+  if (missing.length) { showFormErrors(missing); return; }
   var n = document.getElementById('jName').value.trim();
   var a = document.getElementById('jAge').value;
-  var consent = document.getElementById('jConsent');
-  if (!n || !a || (consent && !consent.checked)) { showFormErrors([]); return; }
   me = { id: 999, name: n, age: a, pts: 0, zonePts: {}, code: newCode() };
   VISITORS.push(me);
   go('my');
@@ -4622,6 +4654,7 @@ window.setStatus = function (id, s) {
   if (s === 'rejected' && !confirm(A('رفض طلب «' + a.name + '»؟', 'Reject the application from "' + a.name + '"?'))) return;
   a.status = s;
   store('appStatus', APPS.map(function (x) { return { id: x.id, status: x.status }; }));
+  persistUserApps();
   auditLog('app.status', '#' + a.id + ' → ' + s);
   render(); toast(T(s));
 };
@@ -5302,7 +5335,7 @@ R.pform = function () {
     '<div class="hint">' + esc(A('يُرسل إليه حسابك (الرقم السري PIN) ورمز QR', 'Your account (PIN) and QR code are sent here')) + '</div></div></div>' +
     '<div class="field" data-n="_c" data-t="select" data-r="1"><label class="flabel">' + esc(A('الفئة', 'Category')) + ' <span class="req">*</span></label>' +
     '<select><option value="">' + esc(T('choose')) + '</option><option>' + esc(A('ناشئون', 'Juniors')) + '</option><option>' + esc(A('كبار', 'Seniors')) + '</option><option>' + esc(A('سيدات', 'Women')) + '</option></select></div>' +
-    '<div class="field" data-n="_i" data-t="text" data-r="1"><label class="flabel">' + esc(A('رقم الحساب المصرفي IBAN (لصرف الجوائز)', 'IBAN (for prize payouts)')) + ' <span class="req">*</span></label><input type="text" dir="ltr" placeholder="AE07 0331 2345 6789 0123 456"></div>' +
+    '<div class="field" data-n="_i" data-t="file" data-r="1"><label class="flabel">' + esc(A('شهادة الآيبان IBAN من البنك (لصرف الجوائز)', 'IBAN certificate from the bank (for prize payouts)')) + ' <span class="req">*</span></label><input type="file" accept=".pdf,.jpg,.jpeg,.png"><div class="hint">PDF / JPG / PNG — 8 MB</div></div>' +
     '<div class="field" data-n="_d" data-t="file" data-r="0"><label class="flabel">' + esc(A('صورة الهوية', 'ID copy')) + ' <span class="opt">(' + esc(A('اختياري', 'optional')) + ')</span></label><input type="file"></div>' +
     '</div><button class="btn gold block" onclick="submitPform(' + ci + ')">📝 ' + esc(A('سجّل — يُنشأ حسابك ويصلك الرقم السري ورمز QR بالبريد', 'Register — account created; PIN + QR arrive by email')) + '</button></div></section>';
 };
@@ -5321,7 +5354,8 @@ window.submitPform = function (ci) {
   /* a team entry gets its own series so the reference alone says what was entered */
   var reg = (team ? 'T-000' : 'P-000') + (40 + Math.floor(Math.random() * 50));
   var c = CHAMPS[ci];
-  APPS.unshift({ id: APPS[0].id + 1, type: c.s, name: team ? pfTeamName.trim() : name, status: 'pending' });
+  APPS.unshift({ id: APPS[0].id + 1, type: c.s, name: team ? pfTeamName.trim() : name, status: 'pending', u: 1 });
+  persistUserApps();
   document.getElementById('app').innerHTML =
     '<section class="container section" style="max-width:520px">' +
     '<div class="flash ok">' + esc(A('تم استلام تسجيلك وإنشاء حسابك تلقائياً! أرسلنا الرقم السري (PIN) ورمز QR إلى ', 'Registered — your account was created automatically! We emailed your PIN and QR code to ')) + '<b dir="ltr">' + esc(email) + '</b> — ' + esc(A('يُمسح الرمز عند كل مباراة.', 'the QR is scanned at each game.')) + '</div>' +
@@ -5335,8 +5369,10 @@ window.submitPform = function (ci) {
     '<div class="vstats"><div class="vstat"><div class="n" style="font-size:1rem"><span class="badge pending">' + esc(T('pending')) + '</span></div><div class="l">' + esc(A('حالة الطلب', 'Status')) + '</div></div>' +
     '<div class="vstat"><div class="n" style="font-size:1rem">—</div><div class="l">' + esc(A('الاعتماد الميداني', 'Check-in')) + '</div></div></div>' +
     '<p class="hint" style="color:#94a3b8">' + esc(A('يمسحه المنظم عند نقطة الاعتماد يوم البطولة.', 'Scanned by an organizer at the accreditation point.')) + '</p></div>' +
-    '<div class="btn-row" style="justify-content:center"><button class="btn primary" onclick="go(\'admin\',\'apps\')">' + esc(T('admin')) + ' ←</button>' +
-    '<button class="btn ghost" onclick="go(\'champs\')">' + esc(T('champsT')) + '</button></div></section>';
+    '<div class="btn-row" style="justify-content:center"><button class="btn primary" onclick="go(\'home\')">' + esc(T('home')) + '</button>' +
+    '<button class="btn ghost" onclick="go(\'champs\')">' + esc(T('champsT')) + '</button>' +
+    (opsCan('admin') ? '<button class="btn ghost" onclick="go(\'admin\',\'apps\')">' + esc(T('admin')) + ' ←</button>' : '') +
+    '</div></section>';
   document.getElementById('pQr').innerHTML = QR.svg('https://arbukhatir.github.io/kalba-demo/#' + (team ? 't' : 'p') + '/' + reg, { ecl: 'M', margin: 2 });
   /* The entry is filed. Without this the squad stays in memory and the next visit to
      the same sport's form opens pre-filled with a team that has already registered. */
